@@ -15,6 +15,13 @@ interface LoginBody {
   email: string;
   password: string;
 }
+// Define the RolePrivileges interface to match your model
+interface RolePrivilege {
+  id?: number;
+  role_id: number;
+  privilege: string;
+  // Add other fields if they exist in your model
+}
 
 export const register = async (req: Request<{}, {}, RegisterBody>, _res: Response, _next: NextFunction) => {
   const { full_name, email, password, role_id, phone, city } = req.body;
@@ -55,8 +62,17 @@ export const login = async (req: Request<{}, {}, LoginBody>, res: Response) => {
     throw new Error('Invalid email or password');
   }
 
+  // Fetch privileges for the role
+  const privileges: RolePrivilege[] = await db.RolePrivileges.findAll({ where: { role_id: user.role_id } });
+  
+  // Type the reduce function explicitly
+  const privMap: { [key: string]: number } = privileges.reduce(
+    (acc: { [key: string]: number }, priv: RolePrivilege) => ({ ...acc, [priv.privilege]: 1 }), 
+    {}
+  );
+
   const token = jwt.sign(
-    { userId: user.id, role_id: user.role_id },
+    { userId: user.id, role_id: user.role_id, privileges: privMap },
     process.env.JWT_SECRET as string,
     { expiresIn: '1h' }
   );

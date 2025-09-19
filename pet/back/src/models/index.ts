@@ -95,7 +95,9 @@ db.Users.hasMany(db.ModerationQueue, { foreignKey: 'submitted_by_id', onDelete: 
 db.ModerationQueue.belongsTo(db.Users, { foreignKey: 'submitted_by_id' });
 db.Users.hasMany(db.ModerationQueue, { as: 'AssignedQueues', foreignKey: 'assigned_user_id', onDelete: 'SET NULL' });
 db.ModerationQueue.belongsTo(db.Users, { as: 'Assignee', foreignKey: 'assigned_user_id' });
+//
 
+//
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 

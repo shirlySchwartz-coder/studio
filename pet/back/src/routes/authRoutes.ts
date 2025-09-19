@@ -13,7 +13,7 @@ const router = Router();
          res
            .status(200)
            .header('Access-Control-Expose-Headers', 'Authorization')
-           .header('Authorization', user.jwt)
+           .header('Authorization', `Bearer ${user.jwt}`)
            .json(user);
        } else {
          res.status(401).json({ message: 'Invalid email or password' });
@@ -26,13 +26,14 @@ const router = Router();
 
 
 
-router.post("/register",
-    async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            await register(req, res, next);
-        } catch (err) {
-            next(err);
-        }
-    });
+router.post('/register', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const result = await register(req, res, next);
+    res.status(201).json(result);
+  } catch (err: any) {
+    console.error('Register route error:', err);
+    res.status(err.message === 'Email already in use' ? 400 : 500).json({ message: err.message || 'Server error' });
+  }
+});
 
 export default router;

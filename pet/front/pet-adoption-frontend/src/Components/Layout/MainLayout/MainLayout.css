@@ -1,0 +1,20 @@
+.MainLayout{
+    height: 100vh;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    grid-template-columns: 200px 1fr;
+    box-sizing: border-box;
+}
+.MainLayout > header,
+.MainLayout > footer {
+    grid-column: span 6;
+}
+.MainLayout > main {
+    grid-row: 2 / 3;
+    grid-column: span 5;
+    
+}
+.MainLayout , 
+.MainLayout > * {
+    border: 1px solid black;
+}

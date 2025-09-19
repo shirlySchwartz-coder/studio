@@ -1,0 +1,9 @@
+'/api/auth'
+post - /api/auth/login -  login
+post - /api/auth/register -  register
+
+
+'/api/animals'
+get - /api/animals/list -  get animal list
+post - /api/animals/addNew -  add new animal
+//put - /api/animals/update  -  update animal
