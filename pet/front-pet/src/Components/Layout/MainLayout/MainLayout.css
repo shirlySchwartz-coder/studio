@@ -16,5 +16,6 @@
 }
 .MainLayout , 
 .MainLayout > * {
-    border: 1px solid black;
+    /* border: 1px solid rgb(182, 177, 177); */
 }
+

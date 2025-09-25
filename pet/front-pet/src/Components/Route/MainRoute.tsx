@@ -7,6 +7,7 @@ export function MainRoute()  {
     return (
         <div>
             <Routes>
+                <Route path="/" element={<Login/>} />
                 <Route path="/home" element={<Home/>} />
                  <Route path="/login" element={<Login/>} />
                 {/* Define your routes here */}
