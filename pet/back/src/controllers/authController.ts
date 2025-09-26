@@ -32,16 +32,21 @@ export const register = async (req: Request<{}, {}, RegisterBody>, _res: Respons
     throw new Error('Email already in use');
   }
 
-  const user = await db.Users.create({
+  try {
+    const result = await db.Users.create({
     full_name,
     email,
     password_hash: hashedPassword,
     role_id,
     phone: phone || null,
     city: city || null,
-  });
+    });
+    return { message: 'User registered successfully', userId: result.id };
+  } catch (error) {
+    throw new Error('Error creating user: ' + (error as Error).message);
+  }
 
-  return { message: 'User registered successfully', userId: user.id };
+  
 };
 
 export const login = async (req: Request<{}, {}, LoginBody>, res: Response) => {

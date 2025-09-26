@@ -1,10 +1,10 @@
-import express from 'express';
+import express ,{ Request,Response, NextFunction} from 'express';
 import dotenv from 'dotenv';
 import db from './models';
 //import { sequelize } from './models';
 import { errorHandler } from './middleware/errorHandler';
-import authRoutes from './routes/authRoutes';
-import animalRoutes from './routes/animalRoutes';
+import  authRouter  from './routes/authRoutes';
+import animalsRouter from './routes/animalRoutes';
 import cors from 'cors';
 
 dotenv.config();
@@ -18,21 +18,30 @@ app.use(cors({
   exposedHeaders: ['Authorization'],
   credentials: true,
 }));
+
 app.use(express.json());
 
-
-app.use('/api/auth', authRoutes);
-app.use('/api/animals', animalRoutes);
-
+app.use('/api/auth', authRouter);
+app.use('/api/animals', animalsRouter);
 app.use(errorHandler);
 
-db.sequelize.authenticate().then(() =>{
-  console.log('Database connected successfully');
+// Global error handler
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  console.error(err.stack);
+  const status = err.status || 500;
+  const message = err.message || 'Internal Server Error';
+  res.status(status).json({ error: message });
+});
 
-  app.listen(process.env.PORT, () => {
-  console.log(`Server running on port ${process.env.PORT}`);
-  });
+
+db.sequelize.authenticate().
+  then(() => {
+  console.log('Database connected successfully');
 }).catch((error: Error) => {
   console.error('Unable to connect to the database:', error);
   process.exit(1);
 })
+
+app.listen(process.env.PORT, () => {
+  console.log(`Server running on port ${process.env.PORT}`);
+  });

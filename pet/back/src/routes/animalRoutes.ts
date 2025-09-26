@@ -1,11 +1,13 @@
-import { Router , Request, Response, NextFunction} from 'express';
+import express,{ Router , Request, Response, NextFunction} from 'express';
 import { verifyToken, checkRole } from '../middleware/auth';
 import { createAnimal, getAnimals } from '../controllers/animalController';
 
-const router = Router();
-router.get('/list',
-  //verifyToken, //checkRole(['can_view_public_listings']),
+const animalsRouter = express.Router();
+
+animalsRouter.get('/list',
+  verifyToken, checkRole(['can_view_public_listings']),
   async (req: Request, res: Response, next: NextFunction) => {
+    console.log("get list:",req.headers);
     try {
       res
         .status(200)
@@ -22,7 +24,7 @@ router.get('/list',
   });
 
 
-router.post('/add', verifyToken, checkRole(['can_post_animals']), 
+animalsRouter.post('/add', verifyToken, checkRole(['can_post_animals']), 
      async (req: Request, res: Response, next: NextFunction) => { 
        try {
          res
@@ -43,4 +45,4 @@ router.post('/add', verifyToken, checkRole(['can_post_animals']),
      }
    );
 
-export default router;
+export default animalsRouter;

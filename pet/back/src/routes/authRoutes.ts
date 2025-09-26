@@ -1,9 +1,10 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { register, login } from '../controllers/authController';
 
-const router = Router();
+const authRouter = Router();
 
- router.post('/login', async (req: Request, res: Response, next: NextFunction) => {
+authRouter.post(
+  '/login', async (req: Request, res: Response, next: NextFunction) => {
      console.log('The request:', req.body);
      try {
        const user = await login(req, res); // Removed 'next'
@@ -26,7 +27,8 @@ const router = Router();
 
 
 
-router.post('/register', async (req: Request, res: Response, next: NextFunction) => {
+authRouter.post(
+  '/register', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const result = await register(req, res, next);
     res.status(201).json(result);
@@ -36,4 +38,4 @@ router.post('/register', async (req: Request, res: Response, next: NextFunction)
   }
 });
 
-export default router;
+export default authRouter;

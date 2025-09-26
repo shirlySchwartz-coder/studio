@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from './context/AuthProvider';
 import { AnimalsProvider } from './context/AnimalsProvider';
 import MainLayout from './Components/Layout/MainLayout/MainLayout';
+import './index.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

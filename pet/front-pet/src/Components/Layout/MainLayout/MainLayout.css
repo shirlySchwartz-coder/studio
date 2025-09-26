@@ -1,3 +1,20 @@
+html, body ,#root {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    font-style: normal;
+}
+
+.Box{
+    display: inline-block;
+    padding: 10px;
+    margin: 10px;
+    border: 1px solid black;
+    border-radius: 10px;
+    box-shadow: 5px 5px 5px grey;
+}
+
 .MainLayout{
     height: 100vh;
     display: grid;
@@ -16,6 +33,10 @@
 }
 .MainLayout , 
 .MainLayout > * {
-    /* border: 1px solid rgb(182, 177, 177); */
+     border: 0.5px groove rgb(182, 177, 177); 
 }
-
+.LogoImage{
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 10px;
+}
