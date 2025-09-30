@@ -7,3 +7,4 @@ post - /api/auth/register -  register
 get - /api/animals/list -  get animal list
 post - /api/animals/addNew -  add new animal
 //put - /api/animals/update  -  update animal
+post -/api/upload - upload image 

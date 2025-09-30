@@ -1,6 +1,6 @@
 export function Menu() {
   return (
-    <div className="Menu">
+    <div className="Menu nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
       Menu
       <ul>
         <li>

@@ -36,22 +36,7 @@ interface AnimalBody {
 }; */
 
 export const createAnimal = async (req: Request, res: Response, next: NextFunction) => {
-  const {
-    name,
-    species_id,
-    breed,
-    gender_id,
-    age_months,
-    size_id,
-    description,
-    image_url,
-    status_id,
-    shelter_id,
-    is_neutered,
-    is_house_trained,
-    vaccination_status,
-  } = req.body;
-
+  const { name, breed, species_id, status_id, shelter_id, gender_id, age_months, size_id, description, is_neutered, is_house_trained, vaccination_status, image_url } = req.body;
   if (!name || !species_id || !gender_id || !size_id || !status_id || !shelter_id) {
     throw new Error('Missing required fields');
   }

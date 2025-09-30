@@ -83,7 +83,7 @@ export const login = async (req: Request<{}, {}, LoginBody>, res: Response) => {
   );
 
   console.log(user.full_name, 'logged in successfully');
-  return { jwt: token, userId: user.id, role_id: user.role_id, full_name: user.full_name };
+  return { token: token, userId: user.id, role_id: user.role_id, full_name: user.full_name };
 };
 
 export const logout = (_req: Request, _res: Response) => {

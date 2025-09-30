@@ -10,11 +10,11 @@ authRouter.post(
        const user = await login(req, res); // Removed 'next'
        //console.log('The response:', user);
        
-       if (user && user.jwt && user.jwt.length > 10) {
+       if (user && user.token && user.token.length > 10) {
          res
            .status(200)
            .header('Access-Control-Expose-Headers', 'Authorization')
-           .header('Authorization', `Bearer ${user.jwt}`)
+           .header('Authorization', `Bearer ${user.token}`)
            .json(user);
        } else {
          res.status(401).json({ message: 'Invalid email or password' });

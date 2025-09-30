@@ -1,46 +1,55 @@
 import { useActionState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
-import { useAuth } from '../../context/AuthProvider';
-import { API_URL } from '../utils/sever';
+import { API_URL } from '../utils/constants';
+import { AuthState } from '../../redux/AuthReducer';
 
-//const API_URL = 'http://localhost:8080/api';
+type userInput = {
+  full_name: string;
+  email: string;
+  password: string;
+  role_id: number;
+  phone?: string;
+  city?: string;
+};
 
 type RegisterState = {
   error: string | null;
-  token: string | null;
-  full_name: string | null;
-  role_id: number | null;
+  success: boolean;
 };
 
 const initialState: RegisterState = {
   error: null,
-  token: null,
-  full_name: null,
-  role_id: null,
+  success: false,
 };
 
 async function registerAction(
   prevState: RegisterState,
-  formData: FormData
+  formData: FormData,
+  dispatch: any
 ): Promise<RegisterState> {
+  const full_name = formData.get('full_name') as string;
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
-  const full_name = formData.get('full_name') as string;
+  const phone = formData.get('phone') as string | null;
+  const city = formData.get('city') as string | null;
+  const role_id = 3 | 0; // Assuming role_id 3 is for standard users
 
   try {
     const response = await axios.post(`${API_URL}/auth/register`, {
+      full_name,
       email,
       password,
-      full_name,
-      role_id: 1, // Assuming role_id 1 is for standard users
+      phone,
+      city,
+      role_id: 3, // Assuming role_id 3 is for standard users
     });
-    const token = response.data.jwt;
-    const role_id = response.data.role_id;
-    const full_name_response = response.data.full_name;
-    localStorage.setItem('token', token); // Store token in localStorage
 
-    return { error: null, token, full_name: full_name_response, role_id };
+    return {
+      error: null,
+      success: response.status === 201,
+    };
   } catch (err: any) {
     if (err.response?.status === 403) {
       return {
@@ -54,28 +63,28 @@ async function registerAction(
         error: 'Email already exists or invalid input.',
       };
     }
-    return { ...initialState, error: 'Registration failed. Please try again.' };
+    return {
+      ...initialState,
+      error: 'Registration failed. Please try again.',
+    };
   }
 }
 
 export function Register() {
+  const dispatch = useDispatch();
+  const auth = useSelector((state: AuthState) => state);
   const navigate = useNavigate();
   const [state, formAction, isPending] = useActionState(
-    registerAction,
+    (prevState: RegisterState, formData: FormData) =>
+      registerAction(prevState, formData, dispatch),
     initialState
   );
-  const { setAuth } = useAuth();
 
   useEffect(() => {
-    if (state.token) {
-      setAuth({
-        token: state.token,
-        full_name: state.full_name,
-        role_id: state.role_id,
-      });
-      navigate('/home');
+    if (state.success || auth.isLoggedIn) {
+      navigate('/login');
     }
-  }, [state.token, navigate, setAuth]);
+  }, [state.success, auth.isLoggedIn, navigate]);
 
   return (
     <div className="container mx-auto p-4">

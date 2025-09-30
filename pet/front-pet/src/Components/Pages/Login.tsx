@@ -1,28 +1,27 @@
-import { useActionState } from 'react';
+import { useActionState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { useEffect } from 'react';
-import { useAuth } from '../../context/AuthProvider';
 
-const API_URL = 'http://localhost:8080/api';
+import { useDispatch, useSelector } from 'react-redux';
+import axios from 'axios';
+import { API_URL } from '../utils/constants';
+import { store } from '../../redux/store';
+import { AuthState } from '../../redux/AuthReducer';
+import { decodeJWT } from '../utils/decodeJWT';
 
 type LoginState = {
   error: string | null;
-  token: string | null;
-  full_name: string | null;
-  role_id: number | null;
+  success: boolean;
 };
 
 const initialState: LoginState = {
   error: null,
-  token: null,
-  full_name: null,
-  role_id: null,
+  success: false,
 };
 
 async function loginAction(
   prevState: LoginState,
-  formData: FormData
+  formData: FormData,
+  dispatch: any
 ): Promise<LoginState> {
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
@@ -32,40 +31,41 @@ async function loginAction(
       email,
       password,
     });
-    const token = response.data.jwt;
-    const role_id = response.data.role_id;
-    const full_name = response.data.full_name;
-    localStorage.setItem('token', token); // Store token in localStorage
-
-    return { error: null, token, full_name, role_id: role_id };
-  } catch (err) {
-    console.error(err);
-    return {
-      error: 'Login failed',
-      token: null,
-      full_name: null,
-      role_id: null,
-    };
+    if (response.data && response.data.token) {
+      const userData = response.data;
+      if (userData) {
+        dispatch({ type: 'LOGIN', payload: { userData } });
+        return { error: null, success: true };
+      } else {
+        dispatch({ type: 'LOGIN_FAILED', payload: 'Invalid token' });
+        return { error: 'Invalid token', success: false };
+      }
+    } else {
+      dispatch({ type: 'LOGIN_FAILED', payload: 'Login failed' });
+      return { error: 'Login failed', success: false };
+    }
+  } catch (err: any) {
+    return { error: err || 'Login failed', success: false };
   }
 }
+
 export function Login() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [state, formAction, isPending] = useActionState(
-    loginAction,
+    (prevState: LoginState, formData: FormData) =>
+      loginAction(prevState, formData, dispatch),
     initialState
   );
-  const { setAuth } = useAuth();
+  const auth = useSelector((state: AuthState) => state);
 
   useEffect(() => {
-    if (state.token) {
-      setAuth({
-        token: state.token,
-        full_name: state.full_name,
-        role_id: state.role_id,
-      }); // Update with full user data if needed
+    loginAction(state, new FormData(), dispatch);
+    if (state.success || auth.isLoggedIn) {
+      //dispatch({ type: 'LOGIN', payload: auth });
       navigate('/home');
     }
-  }, [state.token, navigate, setAuth]);
+  }, [state.success, auth.isLoggedIn, navigate]);
 
   return (
     <div className="container mx-auto p-4">

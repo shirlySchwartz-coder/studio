@@ -2,15 +2,14 @@ import { Header } from '../Header/Header';
 import { Footer } from '../Footer/Footer';
 import { MainRoute } from '../../Route/MainRoute';
 import './MainLayout.css';
-import { Login } from '../../Pages/Login';
 import { SideMenu } from '../SideMenu/SideMenu';
 
 function MainLayout() {
   return (
     <div className="MainLayout container mx-auto p-4">
-      <header>
+      {/*  <header>
         <Header />
-      </header>
+      </header> */}
       {/* <aside>
         <SideMenu />
       </aside> */}

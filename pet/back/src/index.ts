@@ -5,6 +5,7 @@ import db from './models';
 import { errorHandler } from './middleware/errorHandler';
 import  authRouter  from './routes/authRoutes';
 import animalsRouter from './routes/animalRoutes';
+import { uploadRouter } from './routes/upload';
 import cors from 'cors';
 
 dotenv.config();
@@ -23,6 +24,9 @@ app.use(express.json());
 
 app.use('/api/auth', authRouter);
 app.use('/api/animals', animalsRouter);
+app.use('/uploads', express.static('uploads')); // Serve static files from the 'uploads' directory
+
+// Use the error handling middleware
 app.use(errorHandler);
 
 // Global error handler

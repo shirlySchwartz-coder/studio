@@ -11,7 +11,7 @@ animalsRouter.get('/list',
     try {
       res
         .status(200)
-        .header('Access-Control-Expose-Headers', 'Authorization')
+        .header('Content-Type', 'Authorization')
         .header('Authorization', req.headers['authorization'] || '')
         .json({
           animals: await getAnimals(req, res, next)
@@ -24,16 +24,17 @@ animalsRouter.get('/list',
   });
 
 
-animalsRouter.post('/add', verifyToken, checkRole(['can_post_animals']), 
-     async (req: Request, res: Response, next: NextFunction) => { 
+animalsRouter.post('/addNew', verifyToken, checkRole(['can_post_animals']), 
+  async (req: Request, res: Response, next: NextFunction) => { 
+      
        try {
          res
            .status(201)
-           .header('Access-Control-Expose-Headers', 'Authorization')
+           .header('Content-Type', 'Authorization')
            .header('Authorization', req.headers['authorization'] || '')  
            .json({
            message: 'Animal added successfully',
-           animal: await createAnimal(req, res, next)
+           animal: await createAnimal(req.body, res, next)
          });
        } catch (err: any) {
          console.error('Error in /add route:', err);

@@ -14,7 +14,6 @@ export function MainRoute() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/addAnimal" element={<AddAnimal />} />
-        {/* Define your routes here */}
         <Route path="/about" element={<h1>About Page</h1>} />
         <Route path="*" element={<Page404 />} />
       </Routes>
