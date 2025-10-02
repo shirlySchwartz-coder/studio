@@ -60,7 +60,7 @@ export function Login() {
   const auth = useSelector((state: AuthState) => state);
 
   useEffect(() => {
-    loginAction(state, new FormData(), dispatch);
+    //loginAction(state, new FormData(), dispatch);
     if (state.success || auth.isLoggedIn) {
       //dispatch({ type: 'LOGIN', payload: auth });
       navigate('/home');

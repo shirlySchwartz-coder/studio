@@ -1,0 +1,12 @@
+{
+  "name": "pet-net",
+  "version": "1.0.0",
+  "description": "pet app",
+  "license": "ISC",
+  "author": "Shirly Schwartz",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}

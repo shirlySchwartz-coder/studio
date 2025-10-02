@@ -32,21 +32,16 @@ export const register = async (req: Request<{}, {}, RegisterBody>, _res: Respons
     throw new Error('Email already in use');
   }
 
-  try {
-    const result = await db.Users.create({
+  const user = await db.Users.create({
     full_name,
     email,
     password_hash: hashedPassword,
     role_id,
     phone: phone || null,
     city: city || null,
-    });
-    return { message: 'User registered successfully', userId: result.id };
-  } catch (error) {
-    throw new Error('Error creating user: ' + (error as Error).message);
-  }
+  });
 
-  
+  return { message: 'User registered successfully', userId: user.id };
 };
 
 export const login = async (req: Request<{}, {}, LoginBody>, res: Response) => {
@@ -77,13 +72,13 @@ export const login = async (req: Request<{}, {}, LoginBody>, res: Response) => {
   );
 
   const token = jwt.sign(
-    { id: user.id, role_id: user.role_id, privileges: privMap },
+    { userId: user.id, role_id: user.role_id, privileges: privMap },
     process.env.JWT_SECRET as string,
     { expiresIn: '1h' }
   );
 
   console.log(user.full_name, 'logged in successfully');
-  return { token: token, userId: user.id, role_id: user.role_id, full_name: user.full_name };
+  return { jwt: token, userId: user.id, role_id: user.role_id, full_name: user.full_name };
 };
 
 export const logout = (_req: Request, _res: Response) => {
