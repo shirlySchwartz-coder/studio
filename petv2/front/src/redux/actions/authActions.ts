@@ -6,6 +6,9 @@ export const login = createAsyncThunk(
   async (credentials: { email: string; password: string }, { rejectWithValue }) => {
     try {
       const response = await loginUser(credentials);
+      // save to local storege - need to check
+      localStorage.setItem('user', response)
+      //
       return response;
     } catch (error: any) {
       return rejectWithValue(error.message || 'שגיאה בהתחברות');

@@ -29,7 +29,7 @@ export const register = async (req: Request<{}, {}, RegisterBody>, _res: Respons
 
   const existingUser = await db.Users.findOne({ where: { email } });
   if (existingUser) {
-    throw new Error('Email already in use');
+    return new Error('Email already in use');
   }
 
   try {
