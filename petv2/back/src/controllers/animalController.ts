@@ -1,10 +1,22 @@
 import { Request, Response, NextFunction } from 'express';
 import { Op } from 'sequelize';
-import Animals from '../models/Animals';
 import AnimalMedicalEvents from '../models/AnimalMedicalEvents';
-import db from '../models'
+import db from '../models';
+import Animal from '../models/Animals'
+
+// ממשק עבור נתוני המשתמש
+interface UserPayload {
+  id: number;
+  role_id: number;
+}
+
+// הרחבת ממשק Request
+interface AuthRequest extends Request {
+  user?: UserPayload;
+}
+
 // קבלת כל החיות
-export const getAnimals = async (req: Request, res: Response, next: NextFunction) => {
+export const getAnimals = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const animals = await db.Animals.findAll();
     return animals;
@@ -13,13 +25,45 @@ export const getAnimals = async (req: Request, res: Response, next: NextFunction
   }
 };
 
-// הוספת חיה חדשה
-export const createAnimal = async (animalData: any, res: Response, next: NextFunction) => {
+// יצירת חיה חדשה
+export const createAnimal = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const animal = await db.Animals.create(animalData);
+     const { name, breed, species_id, status_id, shelter_id, gender_id, age_months, size_id, description, is_neutered, is_house_trained, vaccination_status, image_url } = req.body;
+  if (!name || !species_id || !gender_id || !size_id || !status_id || !shelter_id) {
+    throw new Error('Missing required fields');
+  }
+    // וידוא שהמשתמש מאומת
+    if (!req.user) {
+      throw new Error( 'משתמש לא מאומת' );
+    }
+
+    // יצירת החיה במסד הנתונים
+    // הנח שהעלאת הקובץ מתבצעת לפני קריאת הפונקציה הזו והמידע נשמר ב-req.file
+    // לדוג' אם השתמשת ב-multer, הנתיב לקובץ יהיה ב-req.file.path או req.file.location (אם S3)
+    const image_url_path = req.file?.filename || req.file?.path || '';
+
+    const animal = await db.Animals.create({
+      name:name,
+      species_id:species_id,
+      breed:breed || null,
+      gender_id:gender_id,
+      age_months:age_months||null,
+      size_id:size_id ||null,
+      description:description||null,
+      image_url : image_url_path || null,
+      status_id:status_id,
+      shelter_id:shelter_id,
+      is_neutered:is_neutered,
+      is_house_trained:is_house_trained,
+      vaccination_status:vaccination_status,
+      created_at: new Date(),
+      created_by: req.user.id, // שמירת מזהה המשתמש שיצר את החיה
+    });
+
     return animal;
-  } catch (error: any) {
-    throw new Error('שגיאה בהוספת חיה');
+  } catch (err: any) {
+    console.error('שגיאה ביצירת חיה:', err);
+    next(err);
   }
 };
 

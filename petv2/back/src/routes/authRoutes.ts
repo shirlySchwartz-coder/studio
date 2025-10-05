@@ -4,7 +4,7 @@ import { register, login } from '../controllers/authController';
 const authRouter = Router();
 
 authRouter.post('/register', register);
-//authRouter.post('/login', login);
+
 authRouter.post('/login',
     async (req: Request, res: Response, next: NextFunction) => {
         
