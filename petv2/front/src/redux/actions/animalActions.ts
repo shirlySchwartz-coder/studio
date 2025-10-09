@@ -1,22 +1,26 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { fetchAnimals, createAnimal, searchAnimalsByCriteria, fetchMedicalFosterAnimals } from '../../Components/Queries/animalQueries';
-import { Animal } from '../../Components/Models/Animal';
+import {
+  fetchAnimals, searchAnimalsByCriteria,
+  fetchMedicalFosterAnimals, createAnimal
+} from '../../Components/Queries/animalQueries';
 
-export const getAnimals = createAsyncThunk('animals/getAnimals',
+export const getAnimals = createAsyncThunk(
+  'animals/getAnimals',
   async (_, { rejectWithValue }) => {
   try {
-    const response = await fetchAnimals();
-    return response;
+    const animals = await fetchAnimals();
+    return animals;
   } catch (error: any) {
-    return rejectWithValue(error.message || 'שגיאה בטעינת חיות');
+    return rejectWithValue(error.response?.data?.message || 'שגיאה בקבלת רשימת החיות');
   }
 });
 
-export const addAnimal = createAsyncThunk('animals/addAnimal'
-  , async (animalData: Animal, { rejectWithValue }) => {
+export const addAnimal = createAsyncThunk(
+  'animals/addAnimal',
+  async (animalData: any, { rejectWithValue }) => {
   try {
-    const response = await createAnimal(animalData);
-    return response;
+    const animal = await createAnimal(animalData);
+    return animal;
   } catch (error: any) {
     return rejectWithValue(error.message || 'שגיאה בהוספת חיה');
   }

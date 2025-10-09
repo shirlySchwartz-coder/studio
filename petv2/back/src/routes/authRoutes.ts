@@ -1,6 +1,5 @@
 import {Request,Response, NextFunction, Router } from 'express';
 import { register, login } from '../controllers/authController';
-
 const authRouter = Router();
 
 authRouter.post('/register', register);
@@ -15,7 +14,7 @@ authRouter.post('/login',
                 res.status(200)
                 .header('Access-Control-Request-Headers', 'Authorization')
                     .header('Authorization', `Bearer ${user.token}`)
-                .json(user)
+                    .json({user})
             } else {
                 res.status(401).json({message:'Invalid Email or password'})
             }

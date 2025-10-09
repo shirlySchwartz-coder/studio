@@ -5,6 +5,8 @@ import db from '../models';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
+ 
+
 // הרשמת משתמש חדש
 export const register = async (req: Request, res: Response, next: NextFunction) => {
   
@@ -57,7 +59,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
        
   const token = jwt.sign({
     userId: user.id,
-    full_name:user.full_name,
+    fullName:user.full_name,
     roleId: user.role_id
   }, JWT_SECRET, { expiresIn: '1h' });
 
@@ -66,7 +68,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
   return {
     token: token,
     userId: user.id,
-    roleId: user.role,
-    full_name:user.full_name
+    roleId: user.role_id,
+    fullName:user.full_name
   }
 };

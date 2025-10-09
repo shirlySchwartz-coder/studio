@@ -1,10 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { login, register } from '../actions/authActions';
+import { login, logout, register } from '../actions/authActions';
 
 interface AuthState {
-  user_id: number | null;
-  full_name: string | null;
-  role: string | null;
+  userId: number | null;
+  fullName: string | null;
+  roleId: number | null;
   permissions: string[];
   token: string | null;
   isLoggedIn: boolean;
@@ -13,9 +13,9 @@ interface AuthState {
 }
 
 const initialState: AuthState = {
-  user_id: null,
-  full_name: null,
-  role: null,
+  userId: null,
+  fullName: null,
+  roleId: null,
   permissions: [],
   token: null,
   isLoggedIn: false,
@@ -35,10 +35,9 @@ const authSlice = createSlice({
       })
       .addCase(login.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.user_id = action.payload.user_id;
-        state.full_name = action.payload.full_name;
-        state.role = action.payload.role;
-        state.permissions = action.payload.permissions;
+        state.userId = action.payload.userId;
+        state.fullName = action.payload.fullName;
+        state.roleId = action.payload.roleId;
         state.token = action.payload.token;
         state.isLoggedIn = true;
       })
@@ -52,9 +51,9 @@ const authSlice = createSlice({
       })
       .addCase(register.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.user_id = action.payload.user_id;
-        state.full_name = action.payload.full_name;
-        state.role = action.payload.role;
+        state.userId = action.payload.userId;
+        state.fullName = action.payload.fullName;
+        state.roleId = action.payload.roleId;
         state.permissions = action.payload.permissions;
         state.token = action.payload.token;
         state.isLoggedIn = true;
@@ -62,6 +61,14 @@ const authSlice = createSlice({
       .addCase(register.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload as string;
+      })
+    .addCase(logout.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.userId = null;
+        state.fullName = null;
+        state.roleId = null;
+        state.token = null;
+        state.isLoggedIn = false;
       });
   },
 });

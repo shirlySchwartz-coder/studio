@@ -1,8 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { getAnimals, addAnimal, searchAnimals, getMedicalFosterAnimals } from '../actions/animalActions';
+import { Animal } from '../../Components/Models/Animal';
 
 interface AnimalState {
-  animals: any[];
+  animals: Animal[];
   searchResults: any[];
   medicalFosterAnimals: any[];
   status: 'idle' | 'loading' | 'succeeded' | 'failed';

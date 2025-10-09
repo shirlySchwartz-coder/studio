@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { login } from '../../redux/actions/authActions';
+import { login, logout } from '../../redux/actions/authActions';
 import { AppDispatch, RootState } from '../../redux/store';
 import {
   containerClass,
@@ -23,6 +23,8 @@ export function Login() {
   useEffect(() => {
     if (isLoggedIn) {
       navigate('/home');
+    } else {
+      localStorage.clear();
     }
   }, [isLoggedIn, navigate]);
 

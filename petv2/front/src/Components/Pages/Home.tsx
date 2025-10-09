@@ -11,17 +11,16 @@ export function Home() {
   const { animals, status, error } = useSelector(
     (state: RootState) => state.animals
   );
-  const { isLoggedIn, permissions } = useSelector(
-    (state: RootState) => state.auth
-  );
+  const { isLoggedIn, roleId } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
     if (!isLoggedIn) {
       navigate('/login');
-    } else if (permissions.includes('can_view_public_listings')) {
+    }
+    if (roleId) {
       dispatch(getAnimals());
     }
-  }, [isLoggedIn, permissions, navigate, dispatch]);
+  }, [isLoggedIn, roleId, navigate, dispatch]);
 
   return (
     <div className={containerClass}>

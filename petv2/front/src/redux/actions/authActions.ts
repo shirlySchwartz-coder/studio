@@ -7,9 +7,10 @@ export const login = createAsyncThunk(
     try {
       const response = await loginUser(credentials);
       // save to local storege - need to check
-      localStorage.setItem('user', response)
+      localStorage.setItem('token', JSON.stringify(response.user.token))
+      console.log('response from server:',response)
       //
-      return response;
+      return response.user;
     } catch (error: any) {
       return rejectWithValue(error.message || 'שגיאה בהתחברות');
     }
@@ -25,5 +26,12 @@ export const register = createAsyncThunk(
     } catch (error: any) {
       return rejectWithValue(error.message || 'שגיאה בהרשמה');
     }
+  }
+);
+
+export const logout = createAsyncThunk(
+  'auth/logout',
+  async (userData: { full_name: string; email: string; password: string; phone: string; city: string }, { rejectWithValue }) => {
+    console.log(userData);
   }
 );
