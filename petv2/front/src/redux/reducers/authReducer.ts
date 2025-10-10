@@ -13,12 +13,12 @@ interface AuthState {
 }
 
 const initialState: AuthState = {
-  userId: null,
-  fullName: null,
-  roleId: null,
+  userId: localStorage.getItem('userId') ? Number(localStorage.getItem('userId')) : null,
+  fullName: localStorage.getItem('fullName'),
+  roleId: localStorage.getItem('roleId') ? Number(localStorage.getItem('roleId')) : null,
   permissions: [],
-  token: null,
-  isLoggedIn: false,
+  token: localStorage.getItem('token'),
+  isLoggedIn: !!localStorage.getItem('token'),
   status: 'idle',
   error: null,
 };
@@ -40,6 +40,12 @@ const authSlice = createSlice({
         state.roleId = action.payload.roleId;
         state.token = action.payload.token;
         state.isLoggedIn = true;
+
+         localStorage.setItem('token', action.payload.token);
+    localStorage.setItem('userId', action.payload.userId.toString());
+  localStorage.setItem('fullName', action.payload.fullName);
+  localStorage.setItem('roleId', action.payload.roleId.toString());
+
       })
       .addCase(login.rejected, (state, action) => {
         state.status = 'failed';
@@ -62,13 +68,14 @@ const authSlice = createSlice({
         state.status = 'failed';
         state.error = action.payload as string;
       })
-    .addCase(logout.fulfilled, (state, action) => {
-        state.status = 'succeeded';
-        state.userId = null;
-        state.fullName = null;
-        state.roleId = null;
-        state.token = null;
-        state.isLoggedIn = false;
+    .addCase(logout.fulfilled, (state) => {
+      return {
+        ...initialState,
+        userId: null,
+        roleId:null,
+        token: null,
+        isLoggedIn:false
+      }  
       });
   },
 });

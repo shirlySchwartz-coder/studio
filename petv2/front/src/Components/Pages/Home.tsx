@@ -16,11 +16,12 @@ export function Home() {
   useEffect(() => {
     if (!isLoggedIn) {
       navigate('/login');
+      return;
     }
-    if (roleId) {
+    if (animals.length === 0 && status === 'idle') {
       dispatch(getAnimals());
     }
-  }, [isLoggedIn, roleId, navigate, dispatch]);
+  }, [isLoggedIn, navigate, dispatch, animals.length, status]);
 
   return (
     <div className={containerClass}>

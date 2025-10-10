@@ -43,6 +43,7 @@ export const createAnimal = async (req: AuthRequest, res: Response, next: NextFu
     const image_url_path = req.file?.filename || req.file?.path || '';
 
     const animal = await db.Animals.create({
+      id:0,
       name:name,
       species_id:species_id,
       breed:breed || null,

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { login, logout } from '../../redux/actions/authActions';
+import { login } from '../../redux/actions/authActions';
 import { AppDispatch, RootState } from '../../redux/store';
 import {
   containerClass,
@@ -11,6 +11,8 @@ import {
   errorClass,
   labelClass,
 } from '../utils/style';
+import { useForm } from 'react-hook-form';
+import { User } from '../Models/User';
 
 export function Login() {
   const dispatch = useDispatch<AppDispatch>();
@@ -18,48 +20,49 @@ export function Login() {
   const { isLoggedIn, error, status } = useSelector(
     (state: RootState) => state.auth
   );
-  const [credentials, setCredentials] = useState({ email: '', password: '' });
+  //const [credentials, setCredentials] = useState({ email: '', password: '' });
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<User>({
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
   useEffect(() => {
     if (isLoggedIn) {
       navigate('/home');
-    } else {
-      localStorage.clear();
     }
   }, [isLoggedIn, navigate]);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    dispatch(login(credentials));
+  const onSubmit = async (userData: any) => {
+    dispatch(login(userData));
   };
 
   return (
     <div className={containerClass}>
       <h1 className="text-3xl font-bold mb-4">התחברות</h1>
-      <form onSubmit={handleSubmit} className={formClass}>
+      <form onSubmit={handleSubmit(onSubmit)} className={formClass}>
         <div className={labelClass}>
           <label>אימייל</label>
           <input
             type="email"
-            value={credentials.email}
-            onChange={(e) =>
-              setCredentials({ ...credentials, email: e.target.value })
-            }
             className={inputClass}
-            required
+            {...register('email', { required: 'שם החיה נדרש' })}
           />
+          {errors.email && <p className={errorClass}>{errors.email.message}</p>}
         </div>
         <div className={labelClass}>
           <label>סיסמה</label>
           <input
             type="password"
-            value={credentials.password}
-            onChange={(e) =>
-              setCredentials({ ...credentials, password: e.target.value })
-            }
             className={inputClass}
-            required
+            {...register('password', { required: 'סיסמה נדרשת' })}
           />
+          {errors.password && <p>{errors.password.message}</p>}
         </div>
         <button
           type="submit"

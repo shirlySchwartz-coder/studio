@@ -13,15 +13,12 @@ import {
 } from '../utils/style';
 import { Animal } from '../Models/Animal';
 import { addAnimal } from '../../redux/actions/animalActions';
-import { useAuthToken } from '../middleware/authMiddleware';
 
 export function AddAnimal() {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { status, error } = useSelector((state: RootState) => state.animals);
-  const { isLoggedIn, permissions } = useSelector(
-    (state: RootState) => state.auth
-  );
+  const { isLoggedIn, roleId } = useSelector((state: RootState) => state.auth);
   const {
     register,
     handleSubmit,
@@ -41,12 +38,8 @@ export function AddAnimal() {
   });
 
   useEffect(() => {
-    if (!isLoggedIn) {
-      navigate('/login');
-    } else if (!permissions.includes('can_post_animals')) {
-      navigate('/home');
-    }
-  }, [isLoggedIn, permissions, navigate]);
+    if (!roleId || roleId > 2) navigate('/login');
+  }, [isLoggedIn, roleId, navigate]);
 
   const onSubmit = async (animalData: Animal) => {
     dispatch(addAnimal(animalData));

@@ -18,6 +18,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
     if (existingUser) {
       throw new Error('Email already in use');
     }
+  
 try {
     const result = await db.Users.create({
       full_name,
@@ -25,7 +26,7 @@ try {
       password_hash: hashedPassword,
       phone,
       city,
-      role_id ,
+      role_id :role_id || 3 ,
     });
 //console.log('user',result)
    res.status(201).json({

@@ -26,11 +26,7 @@ export function Register() {
     city: '',
   });
 
-  useEffect(() => {
-    if (isLoggedIn) {
-      navigate('/home');
-    }
-  }, [isLoggedIn, navigate]);
+  useEffect(() => {}, [isLoggedIn, navigate]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

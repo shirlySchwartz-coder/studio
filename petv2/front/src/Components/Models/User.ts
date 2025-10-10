@@ -2,7 +2,7 @@ export class User {
   public id!: number;
   public full_name!: string;
   public email!: string;
-  public password_hash!: string;
+  public password: string;
   public role_id!: number;
   public is_active!: number;
   public created_at!: Date;
@@ -14,7 +14,7 @@ export class User {
     id: number,
     full_name: string,
     email: string,
-    password_hash: string,
+    password: string,
     role_id: number,
     is_active: number,
     created_at: Date,
@@ -25,7 +25,7 @@ export class User {
     this.id = id;
     this.full_name = full_name;
     this.email = email;
-    this.password_hash = password_hash;
+    this.password = password;
     this.role_id = role_id;
     this.is_active = is_active;
     this.created_at = created_at;

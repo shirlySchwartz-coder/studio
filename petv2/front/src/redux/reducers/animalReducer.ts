@@ -11,7 +11,7 @@ interface AnimalState {
 }
 
 const initialState: AnimalState = {
-  animals: [],
+  animals: localStorage.getItem('animals') ? JSON.parse(localStorage.getItem("users") || "[]"):[],
   searchResults: [],
   medicalFosterAnimals: [],
   status: 'idle',
@@ -31,6 +31,7 @@ const animalSlice = createSlice({
       .addCase(getAnimals.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.animals = action.payload;
+        localStorage.setItem('animals',JSON.stringify(action.payload))
       })
       .addCase(getAnimals.rejected, (state, action) => {
         state.status = 'failed';
