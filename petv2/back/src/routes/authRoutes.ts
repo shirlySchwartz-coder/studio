@@ -13,8 +13,8 @@ authRouter.post('/login',
             if (user && user.token.length > 10) {
                 res.status(200)
                 .header('Access-Control-Request-Headers', 'Authorization')
-                    .header('Authorization', `Bearer ${user.token}`)
-                    .json({user})
+                .header('Authorization', `Bearer ${user.token}`)
+                .json({user})
             } else {
                 res.status(401).json({message:'Invalid Email or password'})
             }

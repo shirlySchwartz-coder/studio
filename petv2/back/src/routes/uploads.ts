@@ -2,7 +2,6 @@ import { Router, Request, Response } from "express";
 import multer from 'multer'
 import path from 'path'
 import { verifyToken } from "../middleware/auth";
-import { error } from "console";
 
 const uploadRouter = Router();
 
@@ -22,10 +21,9 @@ const upload = multer({ storage });
 uploadRouter.post('/', verifyToken, upload.single('image'),
     (req: Request, res: Response) => {
         if (!req.file) {
-        return res.status(400).json({error: 'No File uploaded'})
+        return res.status(400).json({error: 'לא נבחר קובץ'})
         }    
-        const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+         const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
         res.status(200).json({ imageUrl });
-    
     })
     export {uploadRouter}

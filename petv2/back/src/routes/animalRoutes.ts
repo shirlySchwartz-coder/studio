@@ -53,7 +53,8 @@ animalRouter.post(
       );
       
       res.status(201)
-        .setHeader('Authorization', `Bearer ${newToken}`)
+        .header('Access-Control-Request-Headers', 'Authorization')
+        .header('Authorization', `Bearer ${newToken}`)
         .json({ message: 'החיה נוספה בהצלחה', animal });
     } catch (err: any) {
       next(err);
