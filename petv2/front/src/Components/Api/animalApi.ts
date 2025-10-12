@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Animal } from '../Models/Animal';
-import { getTokenFromLocalStorage, setAuthHeader, useAuthToken } from '../../middleware/authMiddleware';
+import { getAuthHeaders } from '../../middleware/authMiddleware';
 
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
@@ -8,14 +8,10 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
 // קבלת כל החיות
 export const fetchAnimals = async () => {
   try {
-     const token = localStorage.getItem('token');
  
       const response = await axios.get(
         `${API_URL}/animals/list`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        }
+        headers: getAuthHeaders()
       });
     console.log(response);
     return response.data.animals as Animal[];
@@ -29,7 +25,9 @@ export const fetchAnimals = async () => {
 // הוספת חיה חדשה
 export const createAnimal = async (animalData: Animal) => {
   try {
-     const token = localStorage.getItem('token');
+    const token = localStorage.getItem('token');
+    console.log('token:', token)
+    console.log('animalData:', animalData);
    
     const response = await axios.post(`${API_URL}/animals/addNew`,
       animalData,

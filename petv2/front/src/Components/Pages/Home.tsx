@@ -18,10 +18,10 @@ export function Home() {
       navigate('/login');
       return;
     }
-    if (animals.length === 0 && status === 'idle') {
+    if (animals.length === 0) {
       dispatch(getAnimals());
     }
-  }, [isLoggedIn, navigate, dispatch, animals.length, status]);
+  }, [isLoggedIn, navigate, dispatch, animals.length]);
 
   return (
     <div className={containerClass}>
@@ -48,7 +48,7 @@ export function Home() {
           ))}
         </ul>
       ) : (
-        <p>לא נמצאו חיות.</p>
+        <p>Hey... </p>
       )}
     </div>
   );

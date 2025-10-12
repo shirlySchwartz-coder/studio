@@ -18,9 +18,7 @@ export function SearchAnimal() {
   const { searchResults, status, error } = useSelector(
     (state: RootState) => state.animals
   );
-  const { isLoggedIn, permissions } = useSelector(
-    (state: RootState) => state.auth
-  );
+  const { isLoggedIn, roleId } = useSelector((state: RootState) => state.auth);
   const [filters, setFilters] = useState({
     species_id: '',
     gender_id: '',
@@ -30,12 +28,10 @@ export function SearchAnimal() {
   });
 
   useEffect(() => {
-    if (!isLoggedIn) {
+    if (!isLoggedIn || !roleId) {
       navigate('/login');
-    } else if (!permissions.includes('can_view_public_listings')) {
-      navigate('/home');
     }
-  }, [isLoggedIn, permissions, navigate]);
+  }, [isLoggedIn, roleId, navigate]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -120,6 +116,7 @@ export function SearchAnimal() {
         </button>
         {error && <p className={errorClass}>{error}</p>}
       </form>
+
       {searchResults.length > 0 ? (
         <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {searchResults.map((animal) => (

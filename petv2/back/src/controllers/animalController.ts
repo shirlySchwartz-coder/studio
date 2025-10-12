@@ -30,18 +30,14 @@ export const createAnimal = async (req: AuthRequest, res: Response, next: NextFu
   try {
      const { name, breed, species_id, status_id, shelter_id, gender_id, age_months, size_id, description, is_neutered, is_house_trained, vaccination_status, image_url } = req.body;
   if (!name || !species_id || !gender_id || !size_id || !status_id || !shelter_id) {
-    throw new Error('Missing required fields');
+    throw new Error('שדות חובה חסרים');
   }
     // וידוא שהמשתמש מאומת
-    if (!req.user) {
-      throw new Error( 'משתמש לא מאומת' );
+    if (!req.user || req.user.role_id>2) {
+      throw new Error( 'אין הרשאות להוספת חיה' );
     }
 
-    // יצירת החיה במסד הנתונים
-    // הנח שהעלאת הקובץ מתבצעת לפני קריאת הפונקציה הזו והמידע נשמר ב-req.file
-    // לדוג' אם השתמשת ב-multer, הנתיב לקובץ יהיה ב-req.file.path או req.file.location (אם S3)
-    const image_url_path = req.file?.filename || req.file?.path || '';
-
+    
     const animal = await db.Animals.create({
       id:0,
       name:name,
@@ -51,12 +47,12 @@ export const createAnimal = async (req: AuthRequest, res: Response, next: NextFu
       age_months:age_months||null,
       size_id:size_id ||null,
       description:description||null,
-      image_url : image_url_path || null,
+      image_url :image_url,
       status_id:status_id,
       shelter_id:shelter_id,
-      is_neutered:is_neutered,
-      is_house_trained:is_house_trained,
-      vaccination_status:vaccination_status,
+      is_neutered:is_neutered ||false,
+      is_house_trained:is_house_trained||false,
+      vaccination_status:vaccination_status||null,
       created_at: new Date(),
       created_by: req.user.id, // שמירת מזהה המשתמש שיצר את החיה
     });

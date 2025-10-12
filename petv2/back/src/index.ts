@@ -22,7 +22,7 @@ app.use(express.json());
 // נתיבים
 app.use('/api/auth', authRoutes);
 app.use('/api/animals', animalRoutes);
-app.use('/uploads', express.static('uploads'));
+app.use('/api/uploads', express.static('uploads'));
 app.use(errorHandler);
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {

@@ -11,19 +11,15 @@ export function MedicalFoster() {
   const { medicalFosterAnimals, status, error } = useSelector(
     (state: RootState) => state.animals
   );
-  const { isLoggedIn, permissions } = useSelector(
-    (state: RootState) => state.auth
-  );
+  const { isLoggedIn, roleId } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
-    if (!isLoggedIn) {
+    if (!isLoggedIn || !roleId || roleId > 2) {
       navigate('/login');
-    } else if (!permissions.includes('can_view_medical_foster')) {
-      navigate('/home');
     } else {
       dispatch(getMedicalFosterAnimals());
     }
-  }, [isLoggedIn, permissions, navigate, dispatch]);
+  }, [isLoggedIn, roleId, navigate, dispatch]);
 
   return (
     <div className={containerClass}>

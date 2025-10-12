@@ -34,7 +34,8 @@ export function Menu() {
   const menuItems = [
     { path: '/home', label: 'דף הבית', roles: [1, 2, 3] },
     { path: '/addAnimal', label: 'הוספת חיה', roles: [2, 3] },
-    { path: '/about', label: 'אודות', roles: [1, 2, 3] },
+    { path: '/about', label: 'אודות', roles: [1, 2, 3, 4] },
+    { path: '/searchAnimals', label: 'חיפוש ', roles: [1, 2, 3, 4] },
   ];
 
   const filteredItems = menuItems.filter(

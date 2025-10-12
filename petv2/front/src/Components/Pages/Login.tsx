@@ -13,6 +13,7 @@ import {
 } from '../utils/style';
 import { useForm } from 'react-hook-form';
 import { User } from '../Models/User';
+import { Slide, toast } from 'react-toastify';
 
 export function Login() {
   const dispatch = useDispatch<AppDispatch>();
@@ -20,7 +21,6 @@ export function Login() {
   const { isLoggedIn, error, status } = useSelector(
     (state: RootState) => state.auth
   );
-  //const [credentials, setCredentials] = useState({ email: '', password: '' });
 
   const {
     register,
@@ -51,7 +51,7 @@ export function Login() {
           <input
             type="email"
             className={inputClass}
-            {...register('email', { required: 'שם החיה נדרש' })}
+            {...register('email', { required: 'נא למלא אימייל' })}
           />
           {errors.email && <p className={errorClass}>{errors.email.message}</p>}
         </div>
@@ -60,7 +60,7 @@ export function Login() {
           <input
             type="password"
             className={inputClass}
-            {...register('password', { required: 'סיסמה נדרשת' })}
+            {...register('password', { required: 'נא למלא סיסמה' })}
           />
           {errors.password && <p>{errors.password.message}</p>}
         </div>

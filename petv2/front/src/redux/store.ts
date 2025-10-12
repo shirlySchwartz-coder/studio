@@ -1,12 +1,14 @@
 import { configureStore } from "@reduxjs/toolkit";
 import  authReducer  from "./reducers/authReducer";
 import animalReducer from "./reducers/animalReducer";
+import uploadReducer from "./reducers/uploadReducer";
 
 
  const store = configureStore({
     reducer: {
      auth: authReducer,
-    animals: animalReducer,
+     animals: animalReducer,
+     upload: uploadReducer,
   },
 });
 

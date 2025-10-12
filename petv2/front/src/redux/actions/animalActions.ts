@@ -2,7 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import {
   fetchAnimals, searchAnimalsByCriteria,
   fetchMedicalFosterAnimals, createAnimal
-} from '../../Components/Queries/animalQueries';
+} from '../../Components/Api/animalApi';
 
 export const getAnimals = createAsyncThunk(
   'animals/getAnimals',

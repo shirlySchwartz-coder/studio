@@ -13,16 +13,38 @@ import {
 } from '../utils/style';
 import { Animal } from '../Models/Animal';
 import { addAnimal } from '../../redux/actions/animalActions';
+import axios from 'axios';
+import { resetUpload } from '../../redux/reducers/uploadReducer';
+import { uploadAnimalImage } from '../../redux/actions/uploadActions';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
 
 export function AddAnimal() {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { status, error } = useSelector((state: RootState) => state.animals);
-  const { isLoggedIn, roleId } = useSelector((state: RootState) => state.auth);
+  const { isLoggedIn, roleId, token } = useSelector(
+    (state: RootState) => state.auth
+  );
+  // Animal state from Redux
+  const { status: animalStatus, error: animalError } = useSelector(
+    (state: RootState) => state.animals
+  );
+
+  // Upload state from Redux
+  const {
+    imageUrl,
+    status: uploadStatus,
+    error: uploadError,
+  } = useSelector((state: RootState) => state.upload);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
   const {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
+    watch,
   } = useForm<Animal>({
     defaultValues: {
       name: '',
@@ -38,12 +60,93 @@ export function AddAnimal() {
   });
 
   useEffect(() => {
-    if (!roleId || roleId > 2) navigate('/login');
+    if (!isLoggedIn || !roleId || roleId > 2) {
+      navigate('/login');
+    }
   }, [isLoggedIn, roleId, navigate]);
 
-  const onSubmit = async (animalData: Animal) => {
-    dispatch(addAnimal(animalData));
+  // Update form when image is uploaded successfully
+  useEffect(() => {
+    if (uploadStatus === 'succeeded' && imageUrl) {
+      setValue('image_url', imageUrl);
+    }
+  }, [uploadStatus, imageUrl, setValue]);
+
+  // Reset upload state when component unmounts
+  useEffect(() => {
+    return () => {
+      dispatch(resetUpload());
+    };
+  }, [dispatch]);
+
+  // Handle image file selection and preview
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+
+    if (!file) return;
+
+    // Validate file type
+    const validTypes = [
+      'image/jpeg',
+      'image/jpg',
+      'image/png',
+      'image/gif',
+      'image/webp',
+    ];
+    if (!validTypes.includes(file.type)) {
+      alert('אנא בחר קובץ תמונה תקין (JPG, PNG, GIF, WEBP)');
+      return;
+    }
+
+    // Validate file size (5MB max)
+    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+    if (file.size > maxSize) {
+      alert('גודל התמונה חייב להיות קטן מ-5MB');
+      return;
+    }
+
+    setSelectedFile(file);
+
+    // Create preview
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
   };
+
+  // Handle image upload via Redux
+  const handleUpload = () => {
+    if (!selectedFile) {
+      alert('אנא בחר תמונה תחילה');
+      return;
+    }
+
+    if (!token) {
+      alert('אינך מחובר. אנא התחבר מחדש.');
+      navigate('/login');
+      return;
+    }
+
+    dispatch(uploadAnimalImage({ file: selectedFile, token }));
+  };
+
+  // Handle form submission
+  const onSubmit = async (animalData: Animal) => {
+    if (!animalData.image_url) {
+      alert('אנא העלה תמונה לפני שמירת החיה');
+      return;
+    }
+
+    try {
+      await dispatch(addAnimal(animalData)).unwrap();
+      alert('החיה נוספה בהצלחה!');
+      navigate('/home');
+    } catch (error) {
+      console.error('Error adding animal:', error);
+    }
+  };
+
   return (
     <div className={containerClass}>
       <h1 className="text-3xl font-bold mb-4">הוספת חיה חדשה</h1>
@@ -138,13 +241,33 @@ export function AddAnimal() {
           )}
         </div>
         <div className={labelClass}>
-          <label>כתובת תמונה</label>
+          <label> תמונה</label>
           <input
-            {...register('image_url', { required: 'כתובת תמונה נדרשת' })}
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
             className={inputClass}
           />
-          {errors.image_url && (
-            <p className={errorClass}>{errors.image_url.message}</p>
+          {imagePreview && (
+            <div className="mt-4">
+              <img
+                src={imagePreview}
+                alt="תצוגה מקדימה"
+                className="max-w-xs Prev-Image"
+              />
+              <button
+                type="button"
+                onClick={handleUpload}
+                className={buttonClass + ' mt-2'}
+                disabled={uploadStatus === 'loading'}
+              >
+                {uploadStatus === 'loading' ? 'מעלה...' : 'אשר והעלה תמונה'}
+              </button>
+            </div>
+          )}
+          {uploadError && <p className={errorClass}>{uploadError}</p>}
+          {uploadStatus === 'succeeded' && (
+            <p className="text-green-500">תמונה הועלתה בהצלחה!</p>
           )}
         </div>
         <button

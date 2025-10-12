@@ -40,12 +40,10 @@ const authSlice = createSlice({
         state.roleId = action.payload.roleId;
         state.token = action.payload.token;
         state.isLoggedIn = true;
-
-         localStorage.setItem('token', action.payload.token);
-    localStorage.setItem('userId', action.payload.userId.toString());
-  localStorage.setItem('fullName', action.payload.fullName);
-  localStorage.setItem('roleId', action.payload.roleId.toString());
-
+        localStorage.setItem('token', action.payload.token);
+        localStorage.setItem('userId', action.payload.userId.toString());
+        localStorage.setItem('fullName', action.payload.fullName);
+        localStorage.setItem('roleId', action.payload.roleId.toString());
       })
       .addCase(login.rejected, (state, action) => {
         state.status = 'failed';
@@ -68,14 +66,15 @@ const authSlice = createSlice({
         state.status = 'failed';
         state.error = action.payload as string;
       })
-    .addCase(logout.fulfilled, (state) => {
-      return {
-        ...initialState,
-        userId: null,
-        roleId:null,
-        token: null,
-        isLoggedIn:false
-      }  
+      .addCase(logout.fulfilled, (state) => {
+         state.userId = null;
+        state.fullName = null;
+        state.roleId = null;
+        state.permissions = [];
+        state.token = null;
+        state.isLoggedIn = false;
+        state.status = 'idle';
+        state.error = null;
       });
   },
 });
