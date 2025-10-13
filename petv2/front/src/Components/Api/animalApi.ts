@@ -72,3 +72,20 @@ export const fetchMedicalFosterAnimals = async () => {
     });
   return response.data.animals;
 };
+
+export const fetchFormOptionsData = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/animals/tables-data/`);
+    console.log('✅ Tables-data fetched:', response.data);
+    return {
+    sizes: response.data.tablesData.sizes,
+    genders : response.data.tablesData.genders,
+    species: response.data.tablesData.species,
+    statuses: response.data.tablesData.statuses,
+    shelters: response.data.tablesData.shelters,
+    };
+  } catch (error:any) {
+     console.error('❌ Error fetching data:', error);
+    throw new Error(error.response?.data?.message || 'Error trying to get Sizes ');
+  }
+}

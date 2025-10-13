@@ -1,6 +1,6 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { verifyToken } from '../middleware/auth';
-import { createAnimal, getAnimals, searchAnimals, getMedicalFosterAnimals } from '../controllers/animalController';
+import { createAnimal, getAnimals, searchAnimals, getMedicalFosterAnimals, getAllTablesInfo } from '../controllers/animalController';
 import jwt from 'jsonwebtoken'
 
 const animalRouter = Router();
@@ -91,5 +91,23 @@ animalRouter.get(
     }
   }
 );
+
+
+//table-data
+animalRouter.get(
+  '/tables-data',
+  async (
+    req: Request,
+    res: Response,
+    next: NextFunction) => {
+    try {
+      const tablesData = await getAllTablesInfo(req, res, next);
+      res.status(200).json({ tablesData });
+    } catch (err: any) {
+      next(err);
+    }
+  }
+);
+
 
 export default animalRouter;

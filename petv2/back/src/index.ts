@@ -7,6 +7,7 @@ import { errorHandler } from './middleware/errorHandler';
 import db from '../src/models';
 import path from 'path';
 import { uploadRouter } from './routes/uploads';
+//import sizeRoutes from './routes/sizeRoutes';
 
 dotenv.config();
 const app = express();

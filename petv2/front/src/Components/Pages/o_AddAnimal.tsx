@@ -16,6 +16,7 @@ import { addAnimal } from '../../redux/actions/animalActions';
 import axios from 'axios';
 import { resetUpload } from '../../redux/reducers/uploadReducer';
 import { uploadAnimalImage } from '../../redux/actions/uploadActions';
+import { fetchFormOptionsData } from '../Api/animalApi';
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
 
 export function AddAnimal() {
@@ -53,7 +54,15 @@ export function AddAnimal() {
       vaccination_status: '',
       description: '',
       image_url: '',
+      shelter_id: 0,
     },
+  });
+  const [dropdowns, setDropdowns] = useState({
+    genders: [],
+    sizes: [],
+    species: [],
+    statuses: [],
+    shelters: [],
   });
 
   useEffect(() => {
@@ -61,6 +70,18 @@ export function AddAnimal() {
       navigate('/login');
     }
   }, [isLoggedIn, roleId, navigate]);
+
+  useEffect(() => {
+    const loadDropdowns = async () => {
+      try {
+        const data = await fetchFormOptionsData();
+        setDropdowns(data);
+      } catch (error) {
+        console.error('❌ Failed to load dropdown data:', error);
+      }
+    };
+    loadDropdowns();
+  }, []);
 
   // Update form when image is uploaded successfully
   useEffect(() => {
@@ -190,7 +211,7 @@ export function AddAnimal() {
   };
 
   return (
-    <div className={containerClass}>
+    <div className="add-animal-form">
       <h1 className="text-3xl font-bold mb-4">הוספת חיה חדשה</h1>
       <form onSubmit={handleSubmit(onSubmit)} className={formClass}>
         <div className={labelClass}>
@@ -216,8 +237,11 @@ export function AddAnimal() {
             className={inputClass}
           >
             <option value="">בחר מין</option>
-            <option value="1">כלב</option>
-            <option value="2">חתול</option>
+            {dropdowns.species.map((specie: any) => (
+              <option key={specie.id} value={specie.id}>
+                {specie.name}
+              </option>
+            ))}
           </select>
           {errors.species_id && (
             <p className={errorClass}>{errors.species_id.message}</p>
@@ -230,8 +254,11 @@ export function AddAnimal() {
             className={inputClass}
           >
             <option value="">בחר מגדר</option>
-            <option value="1">זכר</option>
-            <option value="2">נקבה</option>
+            {dropdowns.genders.map((gender: any) => (
+              <option key={gender.id} value={gender.id}>
+                {gender.name}
+              </option>
+            ))}
           </select>
           {errors.gender_id && (
             <p className={errorClass}>{errors.gender_id.message}</p>
@@ -244,12 +271,31 @@ export function AddAnimal() {
             className={inputClass}
           >
             <option value="">בחר גודל</option>
-            <option value="1">קטן</option>
-            <option value="2">בינוני</option>
-            <option value="3">גדול</option>
+            {dropdowns.sizes.map((size: any) => (
+              <option key={size.id} value={size.id}>
+                {size.name}
+              </option>
+            ))}
           </select>
           {errors.size_id && (
             <p className={errorClass}>{errors.size_id.message}</p>
+          )}
+        </div>
+        <div className={labelClass}>
+          <label>הגיע מעמותה</label>
+          <select
+            {...register('shelter_id', { required: 'שם עמותה חובה' })}
+            className={inputClass}
+          >
+            <option value="">בחר עמותה</option>
+            {dropdowns.shelters.map((shelter: any) => (
+              <option key={shelter.id} value={shelter.id}>
+                {shelter.name}
+              </option>
+            ))}
+          </select>
+          {errors.shelter_id && (
+            <p className={errorClass}>{errors.shelter_id.message}</p>
           )}
         </div>
         <div className="flex items-center">

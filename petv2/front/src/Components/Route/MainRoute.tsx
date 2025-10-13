@@ -3,7 +3,7 @@ import { Page404 } from '../Pages/Page404';
 import { Login } from '../Pages/Login';
 import { Home } from '../Pages/Home';
 import { Register } from '../Pages/Register';
-import { AddAnimal } from '../Pages/AddAnimal';
+import { AddAnimal } from '../Pages/AddAnimal/AddAnimal';
 import { SearchAnimal } from '../Pages/SearchAnimal';
 
 export default function MainRoute() {

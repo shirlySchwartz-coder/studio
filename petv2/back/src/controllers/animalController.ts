@@ -2,7 +2,14 @@ import { Request, Response, NextFunction } from 'express';
 import { Op } from 'sequelize';
 import AnimalMedicalEvents from '../models/AnimalMedicalEvents';
 import db from '../models';
-import Animal from '../models/Animals'
+import Animals from '../models/Animals'
+import Sizes from '../models/Sizes';
+import Shelters from '../models/Shelters';
+import AnimalStatuses from '../models/AnimalStatuses';
+import GenderTypes from '../models/GenderTypes';
+import Species from '../models/Species';
+
+
 
 // ממשק עבור נתוני המשתמש
 interface UserPayload {
@@ -102,3 +109,113 @@ export const getMedicalFosterAnimals = async (req: Request, res: Response, next:
     throw new Error('Error loading animals in need of medical care');
   }
 };
+
+// Get all sizes
+export const getAllSizes = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const sizes = await db.Sizes.findAll({
+      attributes: ['id', 'name'],
+      order: [['id', 'ASC']]
+    });
+    return sizes;
+  } catch (error: any) {
+    console.error('❌ Error fetching sizes:', error);
+    throw new Error('Failed to fetch sizes');
+  }
+} 
+// Get all genders
+export const getAllGenders = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const genders = await db.GenderTypes.findAll({
+      attributes: ['id', 'name'],
+      order: [['id', 'ASC']]
+    });
+    return genders;
+  } catch (error: any) {
+    console.error('❌ Error fetching genders:', error);
+    throw new Error('Failed to fetch genders');
+  }
+} 
+// Get all Species
+export const getAllSpecies = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const species = await db.Species.findAll({
+      attributes: ['id', 'name'],
+      order: [['id', 'ASC']]
+    });
+    return species;
+  } catch (error: any) {
+    console.error('❌ Error fetching species:', error);
+    throw new Error('Failed to fetch species');
+  }
+}
+// Get all Statuses
+export const getAllStatuses = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const statuses = await db.AnimalStatuses.findAll({
+      attributes: ['id', 'name'],
+      order: [['id', 'ASC']]
+    });
+    return statuses;
+  } catch (error: any) {
+    console.error('❌ Error fetching statuses:', error);
+    throw new Error('Failed to fetch statuses');
+  }
+} 
+// Get all Shelters
+export const getAllShelters = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const shelters = await db.Shelters.findAll({
+      attributes: ['id', 'name'],
+      order: [['id', 'ASC']]
+    });
+    return shelters;
+  } catch (error: any) {
+    console.error('❌ Error fetching shelters:', error);
+    throw new Error('Failed to fetch shelters');
+  }
+}  
+
+export const getAllTablesInfo = async (
+  req: Request,
+  res: Response,
+  next:NextFunction
+) => {
+  try {
+    const sizes: [] = await getAllSizes(req, res, next);
+    const genders: [] = await getAllGenders(req, res, next);
+    const species: [] = await getAllSpecies(req, res, next);
+    const statuses: [] = await getAllStatuses(req, res, next);
+    const shelters: [] = await getAllShelters(req, res, next);
+    return {
+    genders: genders,
+    sizes: sizes,
+    species: species,
+    statuses: statuses,
+    shelters: shelters,
+    };
+  } catch (error) {
+     console.error('❌ Error fetching data from tables:', error);
+    throw new Error('Failed to fetch data');
+  }
+}

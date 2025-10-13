@@ -1,7 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import {
   fetchAnimals, searchAnimalsByCriteria,
-  fetchMedicalFosterAnimals, createAnimal
+  fetchMedicalFosterAnimals, createAnimal,
 } from '../../Components/Api/animalApi';
 
 export const getAnimals = createAsyncThunk(
@@ -38,7 +38,9 @@ export const searchAnimals = createAsyncThunk(
   }
 );
 
-export const getMedicalFosterAnimals = createAsyncThunk('animals/getMedicalFosterAnimals', async (_, { rejectWithValue }) => {
+export const getMedicalFosterAnimals = createAsyncThunk(
+  'animals/getMedicalFosterAnimals',
+  async (_, { rejectWithValue }) => {
   try {
     const animals = await fetchMedicalFosterAnimals();
     return animals;
@@ -46,3 +48,4 @@ export const getMedicalFosterAnimals = createAsyncThunk('animals/getMedicalFoste
     return rejectWithValue(error.message || 'שגיאה בטעינת חיות הזקוקות לאומנה רפואית');
   }
 });
+
