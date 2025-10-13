@@ -10,6 +10,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 // ממשק עבור נתוני המשתמש בטוקן
 interface UserPayload {
   id: number;
+  full_name: string;
   role_id: number;
 }
 
@@ -45,8 +46,9 @@ animalRouter.post(
       // יצירת טוקן חדש
       const newToken = jwt.sign(
         {
-          id: req.user?.id,
-          role_id: req.user?.role_id
+          userId: req.user?.id,
+          fullName: req.user?.full_name,
+          roleId: req.user?.role_id,
         },
         JWT_SECRET,
         { expiresIn: '1h' }
@@ -55,7 +57,7 @@ animalRouter.post(
       res.status(201)
         .header('Access-Control-Request-Headers', 'Authorization')
         .header('Authorization', `Bearer ${newToken}`)
-        .json({ message: 'החיה נוספה בהצלחה', animal });
+        .json({ message: 'Animal added successfully', animal });
     } catch (err: any) {
       next(err);
     }

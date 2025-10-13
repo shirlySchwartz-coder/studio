@@ -7,15 +7,29 @@ export const uploadImage = async (file: File, token: string) => {
     const formData = new FormData();
     formData.append('image', file);
 
-    const response = await axios.post(`${API_URL}/uploads`, formData, {
+    console.log('📤 Uploading image to:', `${API_URL}/uploads/`);
+      console.log('📤 File details:', {
+        filename: file.name,
+        size: file.size,
+        type: file.type
+      });
+
+    const response = await axios.post(
+      `${API_URL}/uploads`,
+      formData,
+      {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'multipart/form-data',
       },
     });
 
+     console.log('✅ Upload successful:', response.data);
     return response.data;
   } catch (error: any) {
+     console.error('❌ Upload failed:', error);
+      console.error('❌ Error response:', error.response?.data);
+      console.error('❌ Error status:', error.response?.status)
     // Provide detailed error messages
     if (error.response) {
       // Server responded with error
@@ -40,5 +54,6 @@ export const uploadImage = async (file: File, token: string) => {
       // Something else happened
       throw new Error(error.message || 'שגיאה לא צפויה בהעלאת התמונה');
     }
+    
   }
 };

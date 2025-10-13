@@ -7,6 +7,7 @@ import Animal from '../models/Animals'
 // ממשק עבור נתוני המשתמש
 interface UserPayload {
   id: number;
+  full_name:string,
   role_id: number;
 }
 
@@ -21,20 +22,20 @@ export const getAnimals = async (req: AuthRequest, res: Response, next: NextFunc
     const animals = await db.Animals.findAll();
     return animals;
   } catch (error: any) {
-    throw new Error('שגיאה בטעינת חיות');
+    throw new Error('Error loading animals');
   }
 };
 
 // יצירת חיה חדשה
 export const createAnimal = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-     const { name, breed, species_id, status_id, shelter_id, gender_id, age_months, size_id, description, is_neutered, is_house_trained, vaccination_status, image_url } = req.body;
-  if (!name || !species_id || !gender_id || !size_id || !status_id || !shelter_id) {
-    throw new Error('שדות חובה חסרים');
+     const { name, breed, species_id,  shelter_id,status_id, gender_id, age_months, size_id, description, is_neutered, is_house_trained, vaccination_status, image_url } = req.body;
+  if (!name || !species_id || !gender_id || !size_id ) {
+    throw new Error('Required fields are missing');
   }
     // וידוא שהמשתמש מאומת
     if (!req.user || req.user.role_id>2) {
-      throw new Error( 'אין הרשאות להוספת חיה' );
+      throw new Error( 'No permissions to add an animal' );
     }
 
     
@@ -48,8 +49,8 @@ export const createAnimal = async (req: AuthRequest, res: Response, next: NextFu
       size_id:size_id ||null,
       description:description||null,
       image_url :image_url,
-      status_id:status_id,
-      shelter_id:shelter_id,
+      status_id:status_id ||1,
+      shelter_id:shelter_id||1,
       is_neutered:is_neutered ||false,
       is_house_trained:is_house_trained||false,
       vaccination_status:vaccination_status||null,
@@ -59,7 +60,7 @@ export const createAnimal = async (req: AuthRequest, res: Response, next: NextFu
 
     return animal;
   } catch (err: any) {
-    console.error('שגיאה ביצירת חיה:', err);
+    console.error('Error creating animal:', err);
     next(err);
   }
 };
@@ -77,7 +78,7 @@ export const searchAnimals = async (filters: any, res: Response, next: NextFunct
     const animals = await db.Animals.findAll({ where });
     return animals;
   } catch (error: any) {
-    throw new Error('שגיאה בחיפוש חיות');
+    throw new Error('Animal search error');
   }
 };
 
@@ -98,6 +99,6 @@ export const getMedicalFosterAnimals = async (req: Request, res: Response, next:
       medical_needs: animal.AnimalMedicalEvents[0].needs,
     }));
   } catch (error: any) {
-    throw new Error('שגיאה בטעינת חיות הזקוקות לאומנה רפואית');
+    throw new Error('Error loading animals in need of medical care');
   }
 };

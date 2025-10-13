@@ -25,26 +25,23 @@ export function AddAnimal() {
   const { isLoggedIn, roleId, token } = useSelector(
     (state: RootState) => state.auth
   );
-  // Animal state from Redux
-  const { status: animalStatus, error: animalError } = useSelector(
-    (state: RootState) => state.animals
-  );
-
   // Upload state from Redux
   const {
     imageUrl,
     status: uploadStatus,
     error: uploadError,
   } = useSelector((state: RootState) => state.upload);
+
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     setValue,
-    watch,
+    reset,
   } = useForm<Animal>({
     defaultValues: {
       name: '',
@@ -69,13 +66,15 @@ export function AddAnimal() {
   useEffect(() => {
     if (uploadStatus === 'succeeded' && imageUrl) {
       setValue('image_url', imageUrl);
+      console.log('✅ Image URL set in form:', imageUrl);
     }
   }, [uploadStatus, imageUrl, setValue]);
 
-  // Reset upload state when component unmounts
+  // Reset upload state when component unmounts or navigates away
   useEffect(() => {
     return () => {
       dispatch(resetUpload());
+      clearImage();
     };
   }, [dispatch]);
 
@@ -115,8 +114,25 @@ export function AddAnimal() {
     reader.readAsDataURL(file);
   };
 
+  // Clear image and reset upload state
+  const clearImage = () => {
+    setSelectedFile(null);
+    setImagePreview(null);
+    setUploadProgress(0);
+    setValue('image_url', '');
+    dispatch(resetUpload());
+
+    // Clear file input
+    const fileInput = document.getElementById(
+      'image-input'
+    ) as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
+    }
+  };
+
   // Handle image upload via Redux
-  const handleUpload = () => {
+  const handleUpload = async () => {
     if (!selectedFile) {
       alert('אנא בחר תמונה תחילה');
       return;
@@ -128,22 +144,48 @@ export function AddAnimal() {
       return;
     }
 
-    dispatch(uploadAnimalImage({ file: selectedFile, token }));
+    try {
+      setUploadProgress(0);
+      const result = await dispatch(
+        uploadAnimalImage({ file: selectedFile, token })
+      ).unwrap();
+
+      console.log('✅ Upload completed, image URL:', result);
+      setUploadProgress(100);
+    } catch (error: any) {
+      console.error('❌ Upload failed:', error);
+      setUploadProgress(0);
+    }
   };
+
+  // Simulate upload progress (since we don't have real progress tracking)
+  useEffect(() => {
+    if (uploadStatus === 'loading') {
+      const interval = setInterval(() => {
+        setUploadProgress((prev) => {
+          if (prev >= 90) return prev;
+          return prev + 10;
+        });
+      }, 200);
+      return () => clearInterval(interval);
+    }
+  }, [uploadStatus]);
 
   // Handle form submission
   const onSubmit = async (animalData: Animal) => {
-    if (!animalData.image_url) {
-      alert('אנא העלה תמונה לפני שמירת החיה');
-      return;
-    }
-
     try {
+      console.log('📤 Submitting animal data:', animalData);
+
       await dispatch(addAnimal(animalData)).unwrap();
       alert('החיה נוספה בהצלחה!');
+
+      // Reset form and clear image
+      reset();
+      clearImage();
+
       navigate('/home');
     } catch (error) {
-      console.error('Error adding animal:', error);
+      console.error('❌ Error adding animal:', error);
     }
   };
 
@@ -240,43 +282,92 @@ export function AddAnimal() {
             <p className={errorClass}>{errors.description.message}</p>
           )}
         </div>
+
         <div className={labelClass}>
           <label> תמונה</label>
           <input
+            id="image-input"
             type="file"
             accept="image/*"
             onChange={handleImageChange}
             className={inputClass}
           />
           {imagePreview && (
-            <div className="mt-4">
-              <img
-                src={imagePreview}
-                alt="תצוגה מקדימה"
-                className="max-w-xs Prev-Image"
-              />
-              <button
-                type="button"
-                onClick={handleUpload}
-                className={buttonClass + ' mt-2'}
-                disabled={uploadStatus === 'loading'}
-              >
-                {uploadStatus === 'loading' ? 'מעלה...' : 'אשר והעלה תמונה'}
-              </button>
+            <div className="mt-4 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50">
+              <div className="relative">
+                <img
+                  src={imagePreview}
+                  alt="תצוגה מקדימה"
+                  className="max-w-xs Prev-Image mx-auto rounded-lg shadow-md"
+                />
+                {/* Clear Image Button */}
+                <button
+                  type="button"
+                  onClick={clearImage}
+                  className="absolute top-2 right-2 bg-red-500 text-white px-3 py-1 rounded-full hover:bg-red-600 text-sm"
+                >
+                  ✕ מחק תמונה
+                </button>
+              </div>
+
+              {/* Upload Progress Bar */}
+              {uploadStatus === 'loading' && (
+                <div className="mt-4">
+                  <div className="w-full bg-gray-200 rounded-full h-2.5">
+                    <div
+                      className="bg-blue-600 h-2.5 rounded-full transition-all duration-300"
+                      style={{ width: `${uploadProgress}%` }}
+                    ></div>
+                  </div>
+                  <p className="text-center text-sm text-gray-600 mt-2">
+                    מעלה... {uploadProgress}%
+                  </p>
+                </div>
+              )}
+
+              {/* Upload Button */}
+              {!imageUrl && uploadStatus !== 'loading' && (
+                <button
+                  type="button"
+                  onClick={handleUpload}
+                  className={buttonClass + ' mt-4 w-full'}
+                >
+                  📤 אשר והעלה תמונה
+                </button>
+              )}
+
+              {/* Upload Success */}
+              {uploadStatus === 'succeeded' && imageUrl && (
+                <div className="mt-4">
+                  <p className="text-green-600 font-semibold text-center">
+                    ✅ תמונה הועלתה בהצלחה!
+                  </p>
+                  {process.env.NODE_ENV === 'development' && (
+                    <p className="text-xs text-gray-500 text-center mt-2 break-all">
+                      {API_URL}
+                      {imageUrl}
+                    </p>
+                  )}
+                </div>
+              )}
+              {/* Upload Error */}
+              {uploadError && (
+                <p className={errorClass + ' mt-4 text-center'}>
+                  {uploadError}
+                </p>
+              )}
             </div>
           )}
-          {uploadError && <p className={errorClass}>{uploadError}</p>}
-          {uploadStatus === 'succeeded' && (
-            <p className="text-green-500">תמונה הועלתה בהצלחה!</p>
-          )}
         </div>
+        {/* Submit Button */}
         <button
           type="submit"
-          className={buttonClass}
+          className={buttonClass + ' mt-6'}
           disabled={status === 'loading'}
         >
-          {status === 'loading' ? 'מוסיף...' : 'הוסף חיה'}
+          {status === 'loading' ? 'מוסיף...' : '➕ הוסף חיה'}
         </button>
+
         {error && <p className={errorClass}>{error}</p>}
       </form>
     </div>

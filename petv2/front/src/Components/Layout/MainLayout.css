@@ -1,4 +1,5 @@
 .Prev-Image {
     max-width: 250px;
     max-height: 250px;
+    object-fit: contain;
 }
