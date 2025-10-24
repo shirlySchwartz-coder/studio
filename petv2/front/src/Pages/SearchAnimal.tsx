@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { searchAnimals } from '../../redux/actions/animalActions';
-import { AppDispatch, RootState } from '../../redux/store';
+import { searchAnimals } from '../redux/actions/animalActions';
+import { AppDispatch, RootState } from '../redux/store';
 import {
   containerClass,
   formClass,

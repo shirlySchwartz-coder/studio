@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { uploadImage } from "../../Components/Api/uploadApi";
+import { uploadImage } from "../../Api/uploadApi";
 
 export const uploadAnimalImage = createAsyncThunk(
   'upload/uploadAnimalImage',

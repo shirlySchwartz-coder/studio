@@ -1,5 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { loginUser ,registerUser} from '../../Components/Api/authApi';
+import { loginUser ,registerUser} from '../../Api/authApi';
 import { Slide, toast } from 'react-toastify';
 
 export const login = createAsyncThunk(

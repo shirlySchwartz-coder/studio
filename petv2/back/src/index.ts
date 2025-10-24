@@ -7,6 +7,7 @@ import { errorHandler } from './middleware/errorHandler';
 import db from '../src/models';
 import path from 'path';
 import { uploadRouter } from './routes/uploads';
+import { adoptionRequestsRouter } from './routes/adoption-requests';
 //import sizeRoutes from './routes/sizeRoutes';
 
 dotenv.config();
@@ -21,12 +22,13 @@ app.use(cors({
 }));
 
 app.use(express.json());
-app.use('/api/uploads', express.static(path.join(__dirname, '../uploads')));
-
+// הגדרת תיקיית הקבצים הסטטיים
+app.use('/uploads', express.static(path.join(__dirname,'..', 'public','uploads')));
 // נתיבים
 app.use('/api/auth', authRoutes);
 app.use('/api/animals', animalRoutes);
 app.use('/api/uploads', uploadRouter);
+app.use('/api/adoption-requests', adoptionRequestsRouter);
 app.use(errorHandler);
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
@@ -47,5 +49,5 @@ db.sequelize.authenticate({alter:true}).
 
 app.listen(process.env.PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);
-    console.log(`✅ Static files served from: http://localhost:${process.env.PORT}/api/uploads/`);
+    console.log(`✅ Static files served from: http://localhost:${process.env.PORT}/public/uploads`);
   });

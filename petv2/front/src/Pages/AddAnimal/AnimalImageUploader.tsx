@@ -81,7 +81,12 @@ export const AnimalImageUploader: React.FC<Props> = ({
               </p>
               {process.env.NODE_ENV === 'development' && (
                 <p className="text-xs text-gray-500 text-center mt-2 break-all">
-                  {API_URL}
+                  URL: {API_URL}uploads/{imageUrl}
+                </p>
+              )}
+              {process.env.NODE_ENV === 'production' && (
+                <p className="text-xs text-gray-500 text-center mt-2 break-all">
+                  URL:
                   {imageUrl}
                 </p>
               )}

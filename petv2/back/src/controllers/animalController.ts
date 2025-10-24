@@ -23,6 +23,15 @@ interface AuthRequest extends Request {
   user?: UserPayload;
 }
 
+// קבלת כל החיות - אורח דף הבית
+export const getAllAnimals = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const animals = await db.Animals.findAll();
+    return animals;
+  } catch (error: any) {
+    throw new Error('Error loading animals');
+  }
+};
 // קבלת כל החיות
 export const getAnimals = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {

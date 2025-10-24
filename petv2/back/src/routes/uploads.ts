@@ -6,7 +6,10 @@ import fs from 'fs';
 
 const uploadRouter = Router();
 
-const uploadDir = path.join(__dirname, '../../uploads');
+//const uploadDir = path.join(__dirname, '../../public/uploads');
+const uploadDir = path.join(__dirname, '../../public/uploads/animals/');
+
+
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
     console.log('✅ Uploads directory created at:', uploadDir);
@@ -68,8 +71,10 @@ uploadRouter.post(
             }
 
             // Return the URL path - must match the static serving path
-            const imageUrl = `/api/uploads/${req.file.filename}`;
+            //const imageUrl = `${req.get('host')}/uploads/${req.file.filename}`;
             
+            const imageUrl = `${req.protocol}://${req.get('host')}/uploads/animals/${req.file.filename}`;
+
             console.log('✅ Image uploaded successfully:', {
                 filename: req.file.filename,
                 size: req.file.size,

@@ -1,16 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { AppDispatch, RootState } from '../../../redux/store';
+import { AppDispatch, RootState } from '../../redux/store';
 import { useForm } from 'react-hook-form';
 import { Animal } from '../../Models/Animal';
-import { addAnimal } from '../../../redux/actions/animalActions';
-import { resetUpload } from '../../../redux/reducers/uploadReducer';
-import { uploadAnimalImage } from '../../../redux/actions/uploadActions';
+import { addAnimal } from '../../redux/actions/animalActions';
+import { resetUpload } from '../../redux/reducers/uploadReducer';
+import { uploadAnimalImage } from '../../redux/actions/uploadActions';
 import { fetchFormOptionsData } from '../../Api/animalApi';
 import { AnimalFormFields } from './AnimalFormFields';
 import { AnimalImageUploader } from './AnimalImageUploader';
 import { errorClass } from '../../utils/style';
+
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
 
 export function AddAnimal() {
@@ -71,6 +72,7 @@ export function AddAnimal() {
       try {
         const data = await fetchFormOptionsData();
         setDropdowns(data);
+        localStorage.setItem('animalFormOptions', JSON.stringify(data));
       } catch (error) {
         console.error('❌ Failed to load dropdown data:', error);
       }
@@ -97,9 +99,7 @@ export function AddAnimal() {
   // Handle image file selection and preview
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-
     if (!file) return;
-
     // Validate file type
     const validTypes = [
       'image/jpeg',
@@ -112,16 +112,13 @@ export function AddAnimal() {
       alert('אנא בחר קובץ תמונה תקין (JPG, PNG, GIF, WEBP)');
       return;
     }
-
     // Validate file size (5MB max)
     const maxSize = 5 * 1024 * 1024; // 5MB in bytes
     if (file.size > maxSize) {
       alert('גודל התמונה חייב להיות קטן מ-5MB');
       return;
     }
-
     setSelectedFile(file);
-
     // Create preview
     const reader = new FileReader();
     reader.onloadend = () => {
@@ -198,7 +195,6 @@ export function AddAnimal() {
       // Reset form and clear image
       reset();
       clearImage();
-
       navigate('/home');
     } catch (error) {
       console.error('❌ Error adding animal:', error);

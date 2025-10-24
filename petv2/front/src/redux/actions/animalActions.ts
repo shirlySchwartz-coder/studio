@@ -2,8 +2,20 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import {
   fetchAnimals, searchAnimalsByCriteria,
   fetchMedicalFosterAnimals, createAnimal,
-} from '../../Components/Api/animalApi';
+  fetchAllAnimals,
+} from '../../Api/animalApi';
 
+export const getAllAnimals = createAsyncThunk(
+  'animals/getAllAnimals',
+  async (_, { rejectWithValue }) => {
+  try {
+    const animals = await fetchAllAnimals();
+    return animals;
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data?.message || 'שגיאה בקבלת רשימת החיות');
+  }
+});
+//
 export const getAnimals = createAsyncThunk(
   'animals/getAnimals',
   async (_, { rejectWithValue }) => {

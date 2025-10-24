@@ -14,6 +14,7 @@ interface Props {
     shelters: any[];
   };
 }
+
 export const AnimalFormFields: React.FC<Props> = ({
   register,
   errors,

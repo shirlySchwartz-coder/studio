@@ -1,9 +1,24 @@
 import axios from 'axios';
 import { Animal } from '../Models/Animal';
-import { getAuthHeaders } from '../../middleware/authMiddleware';
+import { getAuthHeaders } from '../middleware/authMiddleware';
 
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
+
+// ללא הרשאות קבלת כל החיות
+export const fetchAllAnimals = async () => {
+  try {
+ 
+      const response = await axios.get(
+        `${API_URL}/animals/listAll`);
+    console.log(response);
+    return response.data.animals as Animal[];
+       
+} catch (error:any) {
+  throw new Error (error.response?.data?.message );
+}
+  
+};
 
 // קבלת כל החיות
 export const fetchAnimals = async () => {

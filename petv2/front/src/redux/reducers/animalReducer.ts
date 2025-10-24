@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { getAnimals, addAnimal, searchAnimals, getMedicalFosterAnimals } from '../actions/animalActions';
-import { Animal } from '../../Components/Models/Animal';
+import { getAnimals, addAnimal, searchAnimals, getMedicalFosterAnimals, getAllAnimals } from '../actions/animalActions';
+import { Animal } from '../../Models/Animal';
 
 interface AnimalState {
   animals: Animal[];
@@ -24,6 +24,20 @@ const animalSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+      .addCase(getAllAnimals.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(getAllAnimals.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.animals = action.payload;
+        localStorage.setItem('animals', JSON.stringify(action.payload));
+      })
+      .addCase(getAllAnimals.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload as string;
+      })
+      // Get Animals with auth
       .addCase(getAnimals.pending, (state) => {
         state.status = 'loading';
         state.error = null;
@@ -44,6 +58,7 @@ const animalSlice = createSlice({
       .addCase(addAnimal.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.animals.push(action.payload);
+        localStorage.setItem('animals', JSON.stringify(state.animals));
       })
       .addCase(addAnimal.rejected, (state, action) => {
         state.status = 'failed';

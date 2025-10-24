@@ -1,6 +1,6 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { verifyToken } from '../middleware/auth';
-import { createAnimal, getAnimals, searchAnimals, getMedicalFosterAnimals, getAllTablesInfo } from '../controllers/animalController';
+import { createAnimal, getAnimals, searchAnimals, getMedicalFosterAnimals, getAllTablesInfo, getAllAnimals } from '../controllers/animalController';
 import jwt from 'jsonwebtoken'
 
 const animalRouter = Router();
@@ -20,6 +20,18 @@ interface AuthRequest extends Request {
 }
 
 
+//דף הבית קבלת רשימת כל החיות
+animalRouter.get(
+  '/listAll',
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const animals = await getAllAnimals(req, res, next);
+      res.status(200).json({ animals });
+    } catch (err: any) {
+      next(err);
+    }
+  }
+);
 // קבלת רשימת כל החיות
 animalRouter.get(
   '/list',
