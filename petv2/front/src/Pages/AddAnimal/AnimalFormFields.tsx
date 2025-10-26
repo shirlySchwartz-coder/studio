@@ -2,16 +2,24 @@ import React from 'react';
 import { FieldErrors, UseFormRegister } from 'react-hook-form';
 import { Animal } from '../../Models/Animal';
 import { inputClass, labelClass, errorClass } from '../../utils/style';
+import {
+  Gender,
+  Shelters,
+  Size,
+  Species,
+  Statuses,
+} from '../../Models/ReferenceData';
+import { AddAnimalData } from '../../Models/AddAnimalData';
 
 interface Props {
-  register: UseFormRegister<Animal>;
-  errors: FieldErrors<Animal>;
+  register: UseFormRegister<AddAnimalData>;
+  errors: FieldErrors<AddAnimalData>;
   dropdowns: {
-    genders: any[];
-    sizes: any[];
-    species: any[];
-    statuses: any[];
-    shelters: any[];
+    genders: Gender[];
+    sizes: Size[];
+    species: Species[];
+    statuses: Statuses[];
+    shelters: Shelters[];
   };
 }
 
@@ -30,6 +38,24 @@ export const AnimalFormFields: React.FC<Props> = ({
         />
         {errors.name && <p className={errorClass}>{errors.name.message}</p>}
       </div>
+      <div className={labelClass}>
+        <label>הגיע מעמותה</label>
+        <select
+          {...register('shelter_id', { required: 'שם עמותה חובה' })}
+          className={inputClass}
+        >
+          <option value="">בחר עמותה</option>
+          {dropdowns.shelters.map((shelter: any) => (
+            <option key={shelter.id} value={shelter.id}>
+              {shelter.name}
+            </option>
+          ))}
+        </select>
+        {errors.shelter_id && (
+          <p className={errorClass}>{errors.shelter_id.message}</p>
+        )}
+      </div>
+
       <div className={labelClass}>
         <label>סוג</label>
         <select
@@ -121,23 +147,6 @@ export const AnimalFormFields: React.FC<Props> = ({
         />
         {errors.vaccination_status && (
           <p className={errorClass}>{errors.vaccination_status.message}</p>
-        )}
-      </div>
-      <div className={labelClass}>
-        <label>הגיע מעמותה</label>
-        <select
-          {...register('shelter_id', { required: 'שם עמותה חובה' })}
-          className={inputClass}
-        >
-          <option value="">בחר עמותה</option>
-          {dropdowns.shelters.map((shelter: any) => (
-            <option key={shelter.id} value={shelter.id}>
-              {shelter.name}
-            </option>
-          ))}
-        </select>
-        {errors.shelter_id && (
-          <p className={errorClass}>{errors.shelter_id.message}</p>
         )}
       </div>
 

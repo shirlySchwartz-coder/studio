@@ -1,13 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { Op } from 'sequelize';
+import { Op, QueryTypes } from 'sequelize';
 import AnimalMedicalEvents from '../models/AnimalMedicalEvents';
 import db from '../models';
-import Animals from '../models/Animals'
-import Sizes from '../models/Sizes';
-import Shelters from '../models/Shelters';
-import AnimalStatuses from '../models/AnimalStatuses';
-import GenderTypes from '../models/GenderTypes';
-import Species from '../models/Species';
 
 
 
@@ -26,8 +20,66 @@ interface AuthRequest extends Request {
 // קבלת כל החיות - אורח דף הבית
 export const getAllAnimals = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const animals = await db.Animals.findAll();
-    return animals;
+    //this dosent work with associations
+    /*const animals = await db.sequelize.query(
+      `SELECT A.id, A.name,  Sp.name As species,
+      G.name As gender , Sz.name As size, Slt.name As shelter, Ans.name As status,
+      A.age_months,  A.is_neutered, A.is_house_trained, A.vaccination_status,
+      A.breed, A.description, A.image_url
+      FROM pet_adoption.animals As A 
+      inner join pet_adoption.species As Sp
+      on A.species_id = Sp.id
+      inner join gender_types As G
+      on A.gender_id= G.id
+      inner join sizes As Sz
+      on A.size_id = Sz.id
+      inner join shelters As Slt
+      on A.shelter_id= Slt.id
+      inner join animal_statuses As Ans
+      on A.status_id = Ans.id`,
+      { type: QueryTypes.SELECT }
+    );
+    // This works but dosent return the names from associations
+    //const animals = await db.Animals.findAll();
+    
+    return animals;*/
+ const animals = await db.sequelize.query(
+      `SELECT 
+        A.id, 
+        A.name, 
+        A.age_months, 
+        A.is_neutered, 
+        A.is_house_trained, 
+        A.vaccination_status,
+        A.breed, 
+        A.description, 
+        A.image_url,
+        Sp.name AS species_name,
+        G.name AS gender_name, 
+        Sz.name AS size_name, 
+        Slt.name AS shelter_name, 
+        Ans.name AS status_name
+      FROM animals AS A
+      INNER JOIN species AS Sp ON A.species_id = Sp.id
+      INNER JOIN gender_types AS G ON A.gender_id = G.id
+      INNER JOIN sizes AS Sz ON A.size_id = Sz.id
+      INNER JOIN shelters AS Slt ON A.shelter_id = Slt.id
+      INNER JOIN animal_statuses AS Ans ON A.status_id = Ans.id`,
+      { type: QueryTypes.SELECT }
+    );
+    
+    // Transform to match your frontend expectations
+    const transformedAnimals = animals.map((animal: any) => ({
+      ...animal,
+      species: { name: animal.species_name },
+      gender: { name: animal.gender_name },
+      size: { name: animal.size_name },
+      shelter: { name: animal.shelter_name },
+      status: { name: animal.status_name }
+    }));
+    
+    return transformedAnimals;
+
   } catch (error: any) {
     throw new Error('Error loading animals');
   }
@@ -118,7 +170,8 @@ export const getMedicalFosterAnimals = async (req: Request, res: Response, next:
     throw new Error('Error loading animals in need of medical care');
   }
 };
-
+//
+//Tables data
 // Get all sizes
 export const getAllSizes = async (
   req: Request,

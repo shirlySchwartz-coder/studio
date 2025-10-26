@@ -11,6 +11,7 @@ import { fetchFormOptionsData } from '../../Api/animalApi';
 import { AnimalFormFields } from './AnimalFormFields';
 import { AnimalImageUploader } from './AnimalImageUploader';
 import { errorClass } from '../../utils/style';
+import { AddAnimalData } from '../../Models/AddAnimalData';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
 
@@ -38,7 +39,7 @@ export function AddAnimal() {
     formState: { errors },
     setValue,
     reset,
-  } = useForm<Animal>({
+  } = useForm<AddAnimalData>({
     defaultValues: {
       name: '',
       breed: '',
@@ -185,7 +186,7 @@ export function AddAnimal() {
   }, [uploadStatus]);
 
   // Handle form submission
-  const onSubmit = async (animalData: Animal) => {
+  const onSubmit = async (animalData: AddAnimalData) => {
     try {
       console.log('📤 Submitting animal data:', animalData);
 

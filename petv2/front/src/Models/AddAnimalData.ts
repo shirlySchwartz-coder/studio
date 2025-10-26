@@ -1,11 +1,11 @@
-export class Animal {
+export class AddAnimalData {
   public id: number;
   public name!: string;
-  public species_name: string;
-  public size_name?: string;
-  public gender_name!: string;
-  public status_name!: string;
-  public shelter_name!: string;
+  public species_id: number;
+  public size_id?: number;
+  public gender_id!: number;
+  public status_id!: number;
+  public shelter_id!: number;
   public view_count!: number;
   public share_count!: number;
   public is_neutered!: boolean;
@@ -24,11 +24,11 @@ export class Animal {
   constructor(
     id: number,
     name: string,
-    species_name: string,
-    size_name: string,
-    gender_name: string,
-    status_name: string,
-    shelter_name: string,
+    species_id: number,
+    size_id: number,
+    gender_id: number,
+    status_id: number,
+    shelter_id: number,
     view_count: number,
     share_count: number,
     is_neutered: boolean,
@@ -46,10 +46,10 @@ export class Animal {
   ) {
     this.id = id;
     this.name = name;
-    this.species_name = species_name;
-    this.gender_name = gender_name;
-    this.status_name = status_name;
-    this.shelter_name = shelter_name;
+    this.species_id = species_id;
+    this.gender_id = gender_id;
+    this.status_id = status_id;
+    this.shelter_id = shelter_id;
     this.view_count = view_count;
     this.share_count = share_count;
     this.is_neutered = is_neutered;
@@ -59,7 +59,7 @@ export class Animal {
     this.updated_at = updated_at;
     this.breed = breed;
     this.age_months = age_months;
-    this.size_name = size_name;
+    this.size_id = size_id;
     this.description = description;
     this.image_url = image_url;
     this.approved_by_user_id = approved_by_user_id;

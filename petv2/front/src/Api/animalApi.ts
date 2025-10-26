@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { Animal } from '../Models/Animal';
+import { Gender, Shelters, Size, Species, Statuses } from '../Models/ReferenceData';
 import { getAuthHeaders } from '../middleware/authMiddleware';
 
 
@@ -92,12 +93,13 @@ export const fetchFormOptionsData = async () => {
   try {
     const response = await axios.get(`${API_URL}/animals/tables-data/`);
     console.log('✅ Tables-data fetched:', response.data);
+    
     return {
-    sizes: response.data.tablesData.sizes,
-    genders : response.data.tablesData.genders,
-    species: response.data.tablesData.species,
-    statuses: response.data.tablesData.statuses,
-    shelters: response.data.tablesData.shelters,
+    sizes: response.data.tablesData.sizes ,
+    genders : response.data.tablesData.genders ,
+    species: response.data.tablesData.species ,
+    statuses: response.data.tablesData.statuses ,
+    shelters: response.data.tablesData.shelters   ,
     };
   } catch (error:any) {
      console.error('❌ Error fetching data:', error);
