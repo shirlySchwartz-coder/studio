@@ -18,7 +18,8 @@ export const login = createAsyncThunk(
                 progress: undefined,
                 theme: 'light',
                 transition: Slide,
-              });
+         });
+        console.log('login :', response);
         return response.user;
       }
       

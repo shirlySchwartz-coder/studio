@@ -27,28 +27,17 @@ export const UserAnimalCard: React.FC<UserAnimalCardProps> = ({
   return (
     <>
       <li className="card">
-        <div>
-          <img
-            src={animal.image_url || '/placeholder-image.png'}
-            alt={animal.name}
-            className="image"
-          />
-        </div>
-        <div>
-          <p>:שם {animal.name}</p>
-        </div>
-        <div>
-          <p>:מעמותה {animal.shelter_name}</p>
-        </div>
-        <div>
-          <p>:סוג {animal.species_name}</p>
-        </div>
-        <div>
-          <p>:מין {animal.gender_name}</p>
-        </div>
-        <div>
-          <p>:גודל {animal.size_name}</p>
-        </div>
+        <img
+          src={animal.image_url || '/placeholder-image.png'}
+          alt={animal.name}
+          loading="lazy"
+          className="image"
+        />
+        <p className="name">:שם {animal.name}</p>
+        <p className="detail">:מעמותה {animal.shelter_name}</p>
+        <p className="detail">:סוג {animal.species_name}</p>
+        <p className="detail">:מין {animal.gender_name}</p>
+        <p className="detail">:גודל {animal.size_name}</p>
       </li>
     </>
   );

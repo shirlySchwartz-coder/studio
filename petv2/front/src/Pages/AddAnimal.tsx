@@ -1,17 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { AppDispatch, RootState } from '../../redux/store';
+import { AppDispatch, RootState } from '../redux/store';
 import { useForm } from 'react-hook-form';
-import { Animal } from '../../Models/Animal';
-import { addAnimal } from '../../redux/actions/animalActions';
-import { resetUpload } from '../../redux/reducers/uploadReducer';
-import { uploadAnimalImage } from '../../redux/actions/uploadActions';
-import { fetchFormOptionsData } from '../../Api/animalApi';
-import { AnimalFormFields } from './AnimalFormFields';
-import { AnimalImageUploader } from './AnimalImageUploader';
-import { errorClass } from '../../utils/style';
-import { AddAnimalData } from '../../Models/AddAnimalData';
+import { Animal } from '../Models/Animal';
+import { addAnimal } from '../redux/actions/animalActions';
+import { resetUpload } from '../redux/reducers/uploadReducer';
+import { uploadAnimalImage } from '../redux/actions/uploadActions';
+import { fetchFormOptionsData } from '../Api/animalApi';
+import { AnimalFormFields } from '../Components/AddAnimal/AnimalFormFields';
+import { AnimalImageUploader } from '../Components/AddAnimal/AnimalImageUploader';
+import { errorClass } from '../utils/style';
+import { AddAnimalData } from '../Models/AddAnimalData';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
 
@@ -60,6 +60,7 @@ export function AddAnimal() {
     species: [],
     statuses: [],
     shelters: [],
+    breeds: [],
   });
 
   useEffect(() => {

@@ -4,7 +4,6 @@ import dotenv from 'dotenv';
 import authRoutes from './routes/authRoutes';
 import animalRoutes from './routes/animalRoutes';
 import { errorHandler } from './middleware/errorHandler';
-import db from '../src/models';
 import path from 'path';
 import { uploadRouter } from './routes/uploads';
 import { adoptionRequestsRouter } from './routes/adoption-requests';
@@ -28,7 +27,7 @@ app.use('/uploads', express.static(path.join(__dirname,'..', 'public','uploads')
 app.use('/api/auth', authRoutes);
 app.use('/api/animals', animalRoutes);
 app.use('/api/uploads', uploadRouter);
-app.use('/api/adoption-requests', adoptionRequestsRouter);
+//app.use('/api/adoption-requests', adoptionRequestsRouter);
 app.use(errorHandler);
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
@@ -36,15 +35,6 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   const status = err.status || 500;
   const message = err.message || 'Internal Server Error';
   res.status(status).json({ error: message });
-})
-
-db.sequelize.authenticate({alter:true}).
-  then(() => {
-  console.log('Database synced');
-  console.log(`Database connected successfully on port:${process.env.DB_PORT}`);
-}).catch((error: Error) => {
-  console.error('Unable to connect to the database:', error);
-  process.exit(1);
 })
 
 app.listen(process.env.PORT, () => {

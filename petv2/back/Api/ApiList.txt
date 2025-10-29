@@ -1,0 +1,17 @@
+POST /auth/register
+→ { full_name, email, password, phone, city }
+→ 201 { message, userId }
+
+POST /auth/login
+→ { email, password }
+→ 200 { token, userId, roleId, fullName } + Authorization header
+
+GET /animals/listAll
+→ {}
+→ 200 {  transformedAnimals }
+
+//shelters or admins
+
+POST /animals/addNew
+→ { name, breed_id, species_id,  shelter_id,status_id, gender_id, age_months, size_id, description, is_neutered, is_house_trained, vaccination_status, image_url }
+→ 201 { token, animal } + Authorization header

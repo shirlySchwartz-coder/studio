@@ -99,7 +99,8 @@ export const fetchFormOptionsData = async () => {
     genders : response.data.tablesData.genders ,
     species: response.data.tablesData.species ,
     statuses: response.data.tablesData.statuses ,
-    shelters: response.data.tablesData.shelters   ,
+    shelters: response.data.tablesData.shelters,
+    breeds: response.data.tablesData.breeds ,
     };
   } catch (error:any) {
      console.error('❌ Error fetching data:', error);

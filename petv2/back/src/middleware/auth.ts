@@ -14,6 +14,16 @@ interface UserPayload {
 interface AuthRequest extends Request {
   user?: UserPayload;
 }
+export const createToken = (req: AuthRequest, res: Response, next: NextFunction) => {
+  const payload = {
+    userId: req.user?.userId,
+    fullName: req.user?.fullName,
+    roleId: req.user?.roleId,
+  };
+  const myJWT = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
+  return 'Bearer '+ myJWT;
+};  
+
 
 
 
@@ -40,14 +50,3 @@ export const verifyToken = (req: AuthRequest, res: Response, next: NextFunction)
     return res.status(401).json({ message: 'טוקן לא תקין' });
   }
 }
-/* // בדיקת הרשאות
-export const checkPermission = (permissions: string[]) => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    const userPermissions = (req as any).user.permissions || [];
-    const hasPermission = permissions.some((perm) => userPermissions.includes(perm));
-    if (!hasPermission) {
-      return res.status(403).json({ message: 'אין הרשאה' });
-    }
-    next();
-  };
-}; */

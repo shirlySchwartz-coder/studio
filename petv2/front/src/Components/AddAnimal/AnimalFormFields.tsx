@@ -3,6 +3,7 @@ import { FieldErrors, UseFormRegister } from 'react-hook-form';
 import { Animal } from '../../Models/Animal';
 import { inputClass, labelClass, errorClass } from '../../utils/style';
 import {
+  Breeds,
   Gender,
   Shelters,
   Size,
@@ -20,6 +21,7 @@ interface Props {
     species: Species[];
     statuses: Statuses[];
     shelters: Shelters[];
+    breeds: Breeds[];
   };
 }
 
@@ -111,10 +113,17 @@ export const AnimalFormFields: React.FC<Props> = ({
       </div>
       <div className={labelClass}>
         <label>גזע</label>
-        <input
+        <select
           {...register('breed', { required: 'גזע החיה נדרש' })}
           className={inputClass}
-        />
+        >
+          <option value="">בחר גזע</option>
+          {dropdowns.breeds.map((b: any) => (
+            <option key={b.id} value={b.name}>
+              {b.name}
+            </option>
+          ))}
+        </select>
         {errors.breed && <p className={errorClass}>{errors.breed.message}</p>}
       </div>
       <hr />

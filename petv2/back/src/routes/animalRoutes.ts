@@ -1,7 +1,8 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { verifyToken } from '../middleware/auth';
-import { createAnimal, getAnimals, searchAnimals, getMedicalFosterAnimals, getAllTablesInfo, getAllAnimals } from '../controllers/animalController';
+//import { createAnimal, getAnimals, searchAnimals, getMedicalFosterAnimals, getAllTablesInfo, getAllAnimals } from '../controllers/animalController';
 import jwt from 'jsonwebtoken'
+import { createAnimal, getAllAnimals, getAllTablesInfo } from '../controllers/animalController';
 
 const animalRouter = Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
@@ -32,6 +33,7 @@ animalRouter.get(
     }
   }
 );
+/*
 // קבלת רשימת כל החיות
 animalRouter.get(
   '/list',
@@ -45,7 +47,7 @@ animalRouter.get(
     }
   }
 );
-
+*/
 // הוספת חיה חדשה
 animalRouter.post(
   '/addNew',
@@ -75,7 +77,7 @@ animalRouter.post(
     }
   }
 );
-
+/*
 // חיפוש חיות לפי קריטריונים
 animalRouter.post(
   '/search',
@@ -103,7 +105,7 @@ animalRouter.get(
     }
   }
 );
-
+*/
 
 //table-data
 animalRouter.get(
