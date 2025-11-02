@@ -1,12 +1,13 @@
 import express, {Request,Response, NextFunction } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import authRoutes from './routes/authRoutes';
-import animalRoutes from './routes/animalRoutes';
 import { errorHandler } from './middleware/errorHandler';
 import path from 'path';
 import { uploadRouter } from './routes/uploads';
 import { adoptionRequestsRouter } from './routes/adoption-requests';
+import animalRouter from './routes/animalRoutes';
+import dashRouter from './routes/dashRoutes';
+import authRouter from './routes/authRoutes';
 //import sizeRoutes from './routes/sizeRoutes';
 
 dotenv.config();
@@ -24,9 +25,10 @@ app.use(express.json());
 // הגדרת תיקיית הקבצים הסטטיים
 app.use('/uploads', express.static(path.join(__dirname,'..', 'public','uploads')));
 // נתיבים
-app.use('/api/auth', authRoutes);
-app.use('/api/animals', animalRoutes);
+app.use('/api/auth', authRouter);
+app.use('/api/animals', animalRouter);
 app.use('/api/uploads', uploadRouter);
+app.use('/api/dashboard', dashRouter);
 //app.use('/api/adoption-requests', adoptionRequestsRouter);
 app.use(errorHandler);
 

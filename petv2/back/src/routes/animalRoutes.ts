@@ -33,21 +33,7 @@ animalRouter.get(
     }
   }
 );
-/*
-// קבלת רשימת כל החיות
-animalRouter.get(
-  '/list',
-  verifyToken,
-  async (req: AuthRequest, res: Response, next: NextFunction) => {
-    try {
-      const animals = await getAnimals(req, res, next);
-      res.status(200).json({ animals });
-    } catch (err: any) {
-      next(err);
-    }
-  }
-);
-*/
+
 // הוספת חיה חדשה
 animalRouter.post(
   '/addNew',
@@ -77,6 +63,26 @@ animalRouter.post(
     }
   }
 );
+
+//table-data
+animalRouter.get(
+  '/tables-data',
+  async (
+    req: Request,
+    res: Response,
+    next: NextFunction) => {
+    try {
+      const tablesData = await getAllTablesInfo(req, res, next);
+      res.status(200).json({ tablesData });
+    } catch (err: any) {
+      next(err);
+    }
+  }
+);
+
+
+export default animalRouter;
+
 /*
 // חיפוש חיות לפי קריטריונים
 animalRouter.post(
@@ -105,23 +111,19 @@ animalRouter.get(
     }
   }
 );
-*/
-
-//table-data
+/*
+// קבלת רשימת כל החיות
 animalRouter.get(
-  '/tables-data',
-  async (
-    req: Request,
-    res: Response,
-    next: NextFunction) => {
+  '/list',
+  verifyToken,
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
-      const tablesData = await getAllTablesInfo(req, res, next);
-      res.status(200).json({ tablesData });
+      const animals = await getAnimals(req, res, next);
+      res.status(200).json({ animals });
     } catch (err: any) {
       next(err);
     }
   }
 );
 
-
-export default animalRouter;
+*/

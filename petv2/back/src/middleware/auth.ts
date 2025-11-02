@@ -50,3 +50,13 @@ export const verifyToken = (req: AuthRequest, res: Response, next: NextFunction)
     return res.status(401).json({ message: 'טוקן לא תקין' });
   }
 }
+
+export const restrictTo = (allowedRoles: number[]) => {
+  return (req: AuthRequest, res: Response, next: NextFunction) => {
+    if (!req.user) return res.status(401).json({ message: 'Unauthorized' });
+    if (!allowedRoles.includes(req.user.roleId)) {
+      return res.status(403).json({ message: 'Forbidden: Insufficient permissions' });
+    }
+      next();
+  };
+}

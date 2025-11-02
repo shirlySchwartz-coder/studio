@@ -34,16 +34,20 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(login.fulfilled, (state, action) => {
+        const payload = action.payload;
+        if (!payload) return;
+        
         state.status = 'succeeded';
-        state.userId = action.payload.userId;
-        state.fullName = action.payload.fullName;
-        state.roleId = action.payload.roleId;
-        state.token = action.payload.token;
+        state.userId = payload.userId;
+        state.fullName = payload.fullName;
+        state.roleId = payload.roleId;
+        state.token = payload.token;
         state.isLoggedIn = true;
-        localStorage.setItem('token', action.payload.token);
-        localStorage.setItem('userId', action.payload.userId.toString());
-        localStorage.setItem('fullName', action.payload.fullName);
-        localStorage.setItem('roleId', action.payload.roleId.toString());
+
+        localStorage.setItem('token', payload.token);
+        localStorage.setItem('userId', payload.userId.toString());
+        localStorage.setItem('fullName', payload.fullName);
+        localStorage.setItem('roleId', payload.roleId.toString());
       })
       .addCase(login.rejected, (state, action) => {
         state.status = 'failed';

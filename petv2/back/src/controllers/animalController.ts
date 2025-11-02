@@ -191,7 +191,7 @@ export const getAllGenders = async (
   next: NextFunction
 ) => {
   try {
-    let sql =`SELECT id, name FROM pet_adoption.breed_types
+    let sql =`SELECT id, name FROM pet_adoption.gender_types
 order by id ASC	`
     const genders = await db.execute( sql );
     return genders;
