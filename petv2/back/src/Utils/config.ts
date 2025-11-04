@@ -1,4 +1,3 @@
-import e from 'express';
 import { env } from 'process';
 require('dotenv').config();
 

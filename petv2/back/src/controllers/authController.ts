@@ -93,8 +93,6 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
     { expiresIn: "1h" }
   );
 
-  console.log(`${user.full_name} logged in`);
-
   // CHANGE: Return data only
   return {
     token,

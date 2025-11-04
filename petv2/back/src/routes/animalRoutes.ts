@@ -36,7 +36,7 @@ animalRouter.get(
 
 // הוספת חיה חדשה
 animalRouter.post(
-  '/addNew',
+  '/addAnimal',
   verifyToken,
   async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {

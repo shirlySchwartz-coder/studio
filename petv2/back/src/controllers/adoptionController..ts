@@ -1,11 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
-import { create } from 'domain';
-
+import db from '../Dal/dal_mysql';
 
 export const createAdoptionRequest = async (
   req: Request, res: Response, next: NextFunction
 ) => {
-    try {
+   /*  try {
         const { userId, animalId, message } = req.body;
         if (!userId || !animalId || !message) { 
             return res.status(400).json({ error: 'Missing required fields:', userId, animalId, message });
@@ -23,5 +22,5 @@ export const createAdoptionRequest = async (
     } catch (error: any) {
         console.error('❌ Error creating adoption request:', error);
         throw new Error('Failed to create adoption request');
-    }
+    } */
 }

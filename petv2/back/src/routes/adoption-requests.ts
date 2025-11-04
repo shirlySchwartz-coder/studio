@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response, Router } from "express";
 import { verifyToken } from "../middleware/auth";
-import { createAdoptionRequest } from "../controllers/adoption-logic";
+import { createAdoptionRequest } from "../controllers/adoptionController.";
 
 export const adoptionRequestsRouter = Router();
 

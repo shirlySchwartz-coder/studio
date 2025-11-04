@@ -81,7 +81,7 @@ export const createAnimal = async (req: AuthRequest, res: Response, next: NextFu
       }
 
     const insertSql = `INSERT INTO animals( 
-    name, breed_id, species_id, shelter_id, status_id, gender_id, age_months, size_id, description, is_neutered, is_house_trained, vaccination_status, image_url, created_at, created_by
+    name, breed_id, species_id, shelter_id, status_id, gender_id, age_months, size_id, description, is_neutered, is_house_trained, vaccination_status, image_url, created_at, created_by_user_id
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
     await db.execute(insertSql, [

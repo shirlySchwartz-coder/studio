@@ -4,24 +4,30 @@ POST /auth/register
 
 POST /auth/login
 → { email, password }
-→ 200 { token, userId, roleId, fullName } + Authorization header
+→ 200 { token, userId, roleId, fullName } + Authorization: Bearer <token>
+
 
 GET /animals/listAll
-→ {}
-→ 200 {  transformedAnimals }
+→ (requires JWT)
+→ 200 { transformedAnimals[] }
 
-//shelters or admins
-
-POST /animals/addNew
-→ { name, breed_id, species_id,  shelter_id,status_id, gender_id, age_months, size_id, description, is_neutered, is_house_trained, vaccination_status, image_url }
-→ 201 { token, animal } + Authorization header
-
-tables-data
 GET /animals/tables-data
-→ {}
-→ 200 { genders: genders,
-    sizes: sizes,
-    species: species,
-    statuses: statuses,
-      shelters: shelters,
-      breeds: breeds }
+→ (requires JWT)
+→ 200 { genders[], sizes[], species[], statuses[], shelters[], breeds[] }
+
+
+
+POST /dashboard/addBreed
+→ (requires JWT + role 1 or 2)
+→ { name }
+→ 201 { message, breedId }
+
+POST /dashboard/addShelter
+→ (requires JWT + role 1 or 2)
+→ { name, email, password_hash, phone, city, address }
+→ 201 { message, shelterId }
+
+POST /dashboard/addNew
+→ (requires JWT + role 1 or 2)
+→ { name, breed_id, species_id, shelter_id, status_id, gender_id, age_months, size_id, description, is_neutered, is_house_trained, vaccination_status, image_url }
+→ 201 { message, animal }
