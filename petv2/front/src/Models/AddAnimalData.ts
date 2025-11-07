@@ -13,7 +13,7 @@ export class AddAnimalData {
   public vaccination_status!: string;
   public created_at!: Date;
   public updated_at!: Date;
-  public breed?: string;
+  public breed_id?: number;
   public age_months?: number;
   public description?: string;
   public image_url?: string;
@@ -36,7 +36,7 @@ export class AddAnimalData {
     vaccination_status: string,
     created_at: Date,
     updated_at: Date,
-    breed?: string,
+    breed_id?: number,
     age_months?: number,
     description?: string,
     image_url?: string,
@@ -57,7 +57,7 @@ export class AddAnimalData {
     this.vaccination_status = vaccination_status;
     this.created_at = created_at;
     this.updated_at = updated_at;
-    this.breed = breed;
+    this.breed_id = breed_id;
     this.age_months = age_months;
     this.size_id = size_id;
     this.description = description;

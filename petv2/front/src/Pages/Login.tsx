@@ -13,7 +13,6 @@ import {
 } from '../utils/style';
 import { useForm } from 'react-hook-form';
 import { User } from '../Models/User';
-import { Slide, toast } from 'react-toastify';
 
 export function Login() {
   const dispatch = useDispatch<AppDispatch>();

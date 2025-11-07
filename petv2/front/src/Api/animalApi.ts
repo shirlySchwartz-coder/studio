@@ -22,7 +22,7 @@ export const fetchAllAnimals = async () => {
 };
 
 // קבלת כל החיות
-export const fetchAnimals = async () => {
+/* export const fetchAnimals = async () => {
   try {
  
       const response = await axios.get(
@@ -36,16 +36,13 @@ export const fetchAnimals = async () => {
   throw new Error (error.response?.data?.message );
 }
   
-};
+}; */
 
 // הוספת חיה חדשה
 export const createAnimal = async (animalData: Animal) => {
   try {
     const token = localStorage.getItem('token');
-    console.log('token:', token)
-    console.log('animalData:', animalData);
-   
-    const response = await axios.post(`${API_URL}/animals/addNew`,
+    const response = await axios.post(`${API_URL}/dashboard/addAnimal`,
       animalData,
       {
         headers: {

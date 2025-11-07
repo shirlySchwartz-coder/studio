@@ -42,7 +42,7 @@ export function AddAnimal() {
   } = useForm<AddAnimalData>({
     defaultValues: {
       name: '',
-      breed: '',
+      breed_id: 0,
       species_id: 0,
       gender_id: 0,
       size_id: 0,

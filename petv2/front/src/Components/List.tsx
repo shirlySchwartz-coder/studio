@@ -22,6 +22,7 @@ export function List() {
     species: [],
     statuses: [],
     shelters: [],
+    breeds: [],
   });
   useEffect(() => {
     if (animals.length === 0) {
@@ -60,13 +61,9 @@ export function List() {
       <hr />
       <div>
         {animals.length > 0 && (
-          <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <ul className="grid grid-cols-2 md:grid-cols-2 gap-4">
             {animals.map((animal) => (
-              <UserAnimalCard
-                key={animal.id}
-                animal={animal}
-                dropdowns={dropdowns}
-              />
+              <UserAnimalCard key={animal.id} animal={animal} />
             ))}
           </ul>
         )}

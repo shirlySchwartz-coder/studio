@@ -17,17 +17,9 @@ const AnimalCard: React.FC<AnimalCardProps> = ({ animal }) => {
     <>
       <li className={styles.card}>
         <img
-          src={
-            animal.image_url
-              ? `${apiBaseUrl}${animal.image_url.startsWith('/') ? '' : '/'}${
-                  animal.image_url
-                }` // Ensure absolute URL
-              : animal.species_name === 'Dog'
-              ? placeholderImageDog
-              : placeholderImageCat
-          }
+          src={animal.image_url || '/placeholder-image.png'}
           alt={`Photo of ${animal.name}, a ${
-            animal.species_name === 'Dog' ? 'Dog' : 'Cat'
+            animal.species === 'Dog' ? 'Dog' : 'Cat'
           }`}
           className={styles.image}
           loading="lazy"
@@ -39,9 +31,9 @@ const AnimalCard: React.FC<AnimalCardProps> = ({ animal }) => {
         />
         <h2 className={styles.name}>{animal.name}</h2>
         <p className={styles.detail}>גזע: {animal.breed}</p>
-        <p className={styles.detail}>מין: {animal.species_name}</p>
-        <p className={styles.detail}>מגדר: {animal.gender_name}</p>
-        <p className={styles.detail}>גודל: {animal.size_name}</p>
+        <p className={styles.detail}>מין: {animal.species}</p>
+        <p className={styles.detail}>מגדר: {animal.gender}</p>
+        <p className={styles.detail}>גודל: {animal.size}</p>
       </li>
     </>
   );

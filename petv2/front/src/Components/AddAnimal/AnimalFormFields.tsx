@@ -114,17 +114,19 @@ export const AnimalFormFields: React.FC<Props> = ({
       <div className={labelClass}>
         <label>גזע</label>
         <select
-          {...register('breed', { required: 'גזע החיה נדרש' })}
+          {...register('breed_id', { required: 'גזע החיה נדרש' })}
           className={inputClass}
         >
           <option value="">בחר גזע</option>
           {dropdowns.breeds.map((b: any) => (
-            <option key={b.id} value={b.name}>
+            <option key={b.id} value={b.id}>
               {b.name}
             </option>
           ))}
         </select>
-        {errors.breed && <p className={errorClass}>{errors.breed.message}</p>}
+        {errors.breed_id && (
+          <p className={errorClass}>{errors.breed_id.message}</p>
+        )}
       </div>
       <hr />
 

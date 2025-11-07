@@ -39,7 +39,7 @@ export const getAllAnimals = async (req: Request, res: Response, next: NextFunct
   const animals = await db.execute(sql);
     
     // Transform to match your frontend expectations
-    const transformedAnimals = animals.map((animal: any) => ({
+   /*  const transformedAnimals = animals.map((animal: any) => ({
       ...animal,
       species: { name: animal.species_name },
       gender: { name: animal.gender_name },
@@ -47,9 +47,9 @@ export const getAllAnimals = async (req: Request, res: Response, next: NextFunct
       shelter: { name: animal.shelter_name },
       status: { name: animal.status_name },
       breed: { name: animal.breed_name } // Assuming breed_name exists
-    }));
+    })); */
     
-    return transformedAnimals;
+    return animals;
 
   } catch (error: any) {
     throw new Error('Error loading animals');

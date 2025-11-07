@@ -9,10 +9,10 @@ export const login = createAsyncThunk(
       const response = await loginUser(credentials);
 
       const userData = {
-        token: response.token,
-        userId: response.userId,
-        roleId: response.roleId,
-        fullName: response.fullName,
+        token: response.user.token,
+        userId: response.user.userId,
+        roleId: response.user.roleId,
+        fullName: response.user.fullName,
       };
          toast.success('You Are connected', {
                 position: 'top-left',
