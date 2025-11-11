@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { logout } from '../redux/actions/authActions';
 import { AppDispatch, RootState } from '../redux/store';
 import { useState } from 'react';
+import { Button } from '../Components/Ui/button';
 
 export function Menu() {
   const [isOpen, setIsOpen] = useState(false);
@@ -36,6 +37,7 @@ export function Menu() {
     { path: '/addAnimal', label: 'הוספת חיה', roles: [2, 3] },
     { path: '/about', label: 'אודות', roles: [1, 2, 3, 4] },
     { path: '/searchAnimals', label: 'חיפוש ', roles: [1, 2, 3, 4] },
+    { path: '/dash', label: 'דשבורד ', roles: [1, 2, 3] },
   ];
 
   const filteredItems = menuItems.filter(
@@ -47,57 +49,46 @@ export function Menu() {
       {/* Desktop Menu */}
       {isLoggedIn ? (
         <div className="menu-desktop">
-          <ul>
-            {filteredItems.map((item) => (
-              <li key={item.path}>
-                <a
-                  href={item.path}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    goTo(item.path);
-                  }}
-                  className={isActive(item.path) ? 'active' : ''}
-                >
-                  {item.label}
-                </a>
-              </li>
-            ))}
-          </ul>
+          {filteredItems.map((item) => (
+            <a
+              href={item.path}
+              onClick={(e) => {
+                e.preventDefault();
+                goTo(item.path);
+              }}
+              //className={isActive(item.path) ? 'active' : ''}
+              className="menu-item"
+            >
+              {item.label}
+            </a>
+          ))}
           <div className="user-section">
             <span className="user-name">{fullName || 'משתמש'}</span>
-            <button onClick={handleLogout} className="btn-logout">
+            <Button onClick={handleLogout} className="btn-ghost">
               התנתק
-            </button>
+            </Button>
           </div>
         </div>
       ) : (
         <div className="menu-desktop">
-          <ul>
-            <li>
-              <a
-                href="/login"
-                onClick={(e) => {
-                  e.preventDefault();
-                  goTo('/login');
-                }}
-                className={isActive('/login') ? 'active' : ''}
-              >
-                התחברות
-              </a>
-            </li>
-            <li>
-              <a
-                href="/register"
-                onClick={(e) => {
-                  e.preventDefault();
-                  goTo('/register');
-                }}
-                className={isActive('/register') ? 'active' : ''}
-              >
-                הרשמה
-              </a>
-            </li>
-          </ul>
+          <Button
+            onClick={(e) => {
+              e.preventDefault();
+              goTo('/login');
+            }}
+            className={isActive('/login') ? 'active' : ''}
+          >
+            התחברות
+          </Button>
+          <Button
+            onClick={(e) => {
+              e.preventDefault();
+              goTo('/register');
+            }}
+            className={isActive('/register') ? 'active' : ''}
+          >
+            הרשמה
+          </Button>
         </div>
       )}
 
@@ -114,51 +105,45 @@ export function Menu() {
               <div className="mobile-user">
                 <span>{fullName || 'משתמש'}</span>
               </div>
-              <ul>
-                {filteredItems.map((item) => (
-                  <li key={item.path}>
-                    <a
-                      href={item.path}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        goTo(item.path);
-                      }}
-                      className={isActive(item.path) ? 'active' : ''}
-                    >
-                      {item.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
+              {filteredItems.map((item) => (
+                <a
+                  href={item.path}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    goTo(item.path);
+                  }}
+                  className={isActive(item.path) ? 'active' : ''}
+                >
+                  {item.label}
+                </a>
+              ))}
+
               <button onClick={handleLogout} className="btn-logout-mobile">
                 התנתק
               </button>
             </>
           ) : (
-            <ul>
-              <li>
-                <a
-                  href="/login"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    goTo('/login');
-                  }}
-                >
-                  התחברות
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/register"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    goTo('/register');
-                  }}
-                >
-                  הרשמה
-                </a>
-              </li>
-            </ul>
+            <>
+              <a
+                href="/login"
+                onClick={(e) => {
+                  e.preventDefault();
+                  goTo('/login');
+                }}
+              >
+                התחברות
+              </a>
+
+              <a
+                href="/register"
+                onClick={(e) => {
+                  e.preventDefault();
+                  goTo('/register');
+                }}
+              >
+                הרשמה
+              </a>
+            </>
           )}
         </div>
       )}

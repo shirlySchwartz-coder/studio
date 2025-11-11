@@ -1,8 +1,11 @@
 import { useEffect } from 'react';
+import '../styles/globals.css';
 import MainRoute from '../Route/MainRoute';
 import { Footer } from './Footer';
 import { Header } from './Header';
-import './MainLayout.css';
+//import './MainLayout.css';
+import '../styles/layout.css';
+import { SideBar } from './SideBar';
 
 function MainLayout() {
   useEffect(() => {
@@ -16,14 +19,17 @@ function MainLayout() {
     };
   }, []);
   return (
-    <div className="MainLayout container mx-auto p-4">
-      <header className="MainLayout-header">
+    <div className="MainLayout containerClass container mx-auto p-4">
+      <header>
         <Header />
       </header>
-      <main className="MainLayout-main">
+      <aside>
+        <SideBar />
+      </aside>
+      <main>
         <MainRoute />
       </main>
-      <footer className="MainLayout-footer">
+      <footer>
         <Footer />
       </footer>
     </div>

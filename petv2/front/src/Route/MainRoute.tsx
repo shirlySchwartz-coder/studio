@@ -5,15 +5,18 @@ import { Home } from '../Pages/Home';
 import { Register } from '../Pages/Register';
 import { AddAnimal } from '../Pages/AddAnimal';
 import { SearchAnimal } from '../Pages/SearchAnimal';
+import { HomePage } from '../Components/HomePage/HomePage';
+import Dashboard from '../Pages/Dashboard';
 
 export default function MainRoute() {
   return (
     <div>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<HomePage />} />
         <Route path="/home" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/dash" element={<Dashboard />} />
         <Route path="/addAnimal" element={<AddAnimal />} />
         <Route path="/searchAnimals" element={<SearchAnimal />} />
         <Route path="/about" element={<h1>About Page</h1>} />

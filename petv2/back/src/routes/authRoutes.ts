@@ -10,7 +10,8 @@ authRouter.post(
            const user = await login(req, res, next);
            if (!user || !user.token) {
       throw new Error("Login failed");
-    }
+           }
+           console.log(`${user.fullName} 'is now logged in'`)
     res
       .status(200)
       .header("Authorization", `Bearer ${user.token}`)
