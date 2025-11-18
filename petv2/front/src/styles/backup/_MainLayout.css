@@ -5,7 +5,10 @@ body {
   color: #333333;
   background-color: #f9f9f9;
 }
-
+.MainLayout {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+}
 /* Enhance containerClass (assuming it's applied to the main div) */
 .containerClass {
   max-width: 1200px;

@@ -1,3 +1,4 @@
+import { Shelter } from './../models/Shelter';
 import { Request, Response, NextFunction } from 'express';
 //import AnimalMedicalEvents from '../models/AnimalMedicalEvents';
 import db from '../Dal/dal_mysql';
@@ -20,7 +21,7 @@ export const getAllAnimals = async (req: Request, res: Response, next: NextFunct
   try {
     let sql =`SELECT A.id, A.name,  Sp.name As species,
       G.name As gender , Sz.name As size, Slt.name As shelter, Ans.name As status,
-      A.age_months,  A.is_neutered, A.is_house_trained, A.vaccination_status,
+      A.age,  A.is_neutered, A.is_house_trained, A.vaccination_status,
       B.name As breed, A.description, A.image_url
       FROM pet_adoption.animals As A 
       inner join pet_adoption.species As Sp
@@ -37,36 +38,44 @@ export const getAllAnimals = async (req: Request, res: Response, next: NextFunct
       on A.breed_id = B.id`
    
   const animals = await db.execute(sql);
-    
-    // Transform to match your frontend expectations
-   /*  const transformedAnimals = animals.map((animal: any) => ({
-      ...animal,
-      species: { name: animal.species_name },
-      gender: { name: animal.gender_name },
-      size: { name: animal.size_name },
-      shelter: { name: animal.shelter_name },
-      status: { name: animal.status_name },
-      breed: { name: animal.breed_name } // Assuming breed_name exists
-    })); */
-    
-    return animals;
+      return animals;
 
   } catch (error: any) {
     throw new Error('Error loading animals');
   }
 };
 
-/*
-// קבלת כל החיות
+
+//לפי עמותה קבלת כל החיות
 export const getAnimals = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const animals = await db.Animals.findAll();
-    return animals;
+    const shelterId = req.query.shelter_id;
+    let sql =`SELECT A.id, A.name,  Sp.name As species,
+      G.name As gender , Sz.name As size, Slt.name As shelter, Ans.name As status,
+      A.age,  A.is_neutered, A.is_house_trained, A.vaccination_status,
+      B.name As breed, A.description, A.image_url
+      FROM pet_adoption.animals As A 
+      inner join pet_adoption.species As Sp
+      on A.species_id = Sp.id
+      inner join gender_types As G
+      on A.gender_id= G.id
+      inner join sizes As Sz
+      on A.size_id = Sz.id
+      inner join shelters As Slt
+      on A.shelter_id= Slt.id
+      inner join animal_statuses As Ans
+      on A.status_id = Ans.id
+      inner join breed_types As B
+      on A.breed_id = B.id
+      Where shelter_id=${shelterId}`
+   
+  const animals = await db.execute(sql);
+      return animals;
   } catch (error: any) {
     throw new Error('Error loading animals');
   }
 };
-*/
+
 // יצירת חיה חדשה
 export const createAnimal = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {

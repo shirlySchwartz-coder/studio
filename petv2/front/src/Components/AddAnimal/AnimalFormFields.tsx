@@ -31,20 +31,20 @@ export const AnimalFormFields: React.FC<Props> = ({
   dropdowns,
 }) => {
   return (
-    <>
-      <div className={labelClass}>
+    <div className="form-section">
+      <div className="form-group">
         <label>שם</label>
         <input
           {...register('name', { required: 'שם החיה נדרש' })}
-          className={inputClass}
+          className="p-3 border rounded-lg"
         />
         {errors.name && <p className={errorClass}>{errors.name.message}</p>}
       </div>
-      <div className={labelClass}>
+      <div className="form-group">
         <label>הגיע מעמותה</label>
         <select
           {...register('shelter_id', { required: 'שם עמותה חובה' })}
-          className={inputClass}
+          className="p-3 border rounded-lg"
         >
           <option value="">בחר עמותה</option>
           {dropdowns.shelters.map((shelter: any) => (
@@ -57,12 +57,11 @@ export const AnimalFormFields: React.FC<Props> = ({
           <p className={errorClass}>{errors.shelter_id.message}</p>
         )}
       </div>
-
-      <div className={labelClass}>
+      <div className="form-group">
         <label>סוג</label>
         <select
           {...register('species_id', { required: 'סוג החיה נדרש' })}
-          className={inputClass}
+          className="p-3 border rounded-lg"
         >
           <option value="">בחר סוג</option>
           {dropdowns.species.map((s: any) => (
@@ -75,12 +74,11 @@ export const AnimalFormFields: React.FC<Props> = ({
           <p className={errorClass}>{errors.species_id.message}</p>
         )}
       </div>
-
-      <div className={labelClass}>
+      <div className="form-group">
         <label>מגדר</label>
         <select
           {...register('gender_id', { required: 'מגדר החיה נדרש' })}
-          className={inputClass}
+          className="p-3 border rounded-lg"
         >
           <option value="">בחר מגדר</option>
           {dropdowns.genders.map((g: any) => (
@@ -93,12 +91,11 @@ export const AnimalFormFields: React.FC<Props> = ({
           <p className={errorClass}>{errors.gender_id.message}</p>
         )}
       </div>
-
-      <div className={labelClass}>
+      <div className="form-group">
         <label>גודל</label>
         <select
           {...register('size_id', { required: 'גודל החיה נדרש' })}
-          className={inputClass}
+          className="p-3 border rounded-lg"
         >
           <option value="">בחר גודל</option>
           {dropdowns.sizes.map((s: any) => (
@@ -111,11 +108,11 @@ export const AnimalFormFields: React.FC<Props> = ({
           <p className={errorClass}>{errors.size_id.message}</p>
         )}
       </div>
-      <div className={labelClass}>
+      <div className="form-group">
         <label>גזע</label>
         <select
           {...register('breed_id', { required: 'גזע החיה נדרש' })}
-          className={inputClass}
+          className="p-3 border rounded-lg"
         >
           <option value="">בחר גזע</option>
           {dropdowns.breeds.map((b: any) => (
@@ -131,24 +128,26 @@ export const AnimalFormFields: React.FC<Props> = ({
       <hr />
 
       <h2>מידע רפואי חיוני</h2>
-      <div className="flex items-center">
-        <input
-          type="checkbox"
-          {...register('is_neutered')}
-          className={inputClass}
-        />
-        <label className={labelClass}>מאולף בצרכים</label>
-      </div>
-      <div className="flex items-center">
-        <input
-          type="checkbox"
-          {...register('is_house_trained')}
-          className={inputClass}
-        />
-        <label className={labelClass}>מסורס</label>
+      <div className="space-y-3">
+        <div className="checkbox-group">
+          <input
+            type="checkbox"
+            {...register('is_neutered')}
+            className={inputClass}
+          />
+          <label>מאולף בצרכים</label>
+        </div>
+        <div className="checkbox-group">
+          <input
+            type="checkbox"
+            {...register('is_house_trained')}
+            className={inputClass}
+          />
+          <label>מסורס</label>
+        </div>
       </div>
 
-      <div className={labelClass}>
+      <div className="form-group">
         <label>סטטוס חיסונים</label>
         <input
           {...register('vaccination_status', {
@@ -161,16 +160,18 @@ export const AnimalFormFields: React.FC<Props> = ({
         )}
       </div>
 
-      <div className={labelClass}>
+      <div className="form-group">
         <label>תיאור</label>
         <textarea
           {...register('description', { required: 'תיאור החיה נדרש' })}
-          className={inputClass}
+          className="p-3 border rounded-lg resize-none"
+          rows={2}
+          placeholder="תיאור"
         />
         {errors.description && (
           <p className={errorClass}>{errors.description.message}</p>
         )}
       </div>
-    </>
+    </div>
   );
 };

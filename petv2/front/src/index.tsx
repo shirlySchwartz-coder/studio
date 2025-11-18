@@ -3,8 +3,8 @@ import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import store from '../src/redux/store';
-import MainLayout from './Layout/MainLayout';
 import { ToastContainer } from 'react-toastify';
+import { HomeLayout } from './Layout/HomeLayout';
 import './styles/globals.css';
 
 const root = ReactDOM.createRoot(
@@ -13,7 +13,7 @@ const root = ReactDOM.createRoot(
 root.render(
   <Provider store={store}>
     <BrowserRouter>
-      <MainLayout />
+      <HomeLayout />
     </BrowserRouter>
     <ToastContainer />
   </Provider>

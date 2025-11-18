@@ -1,3 +1,4 @@
+import { Shelter } from './../../../back/src/models/Shelter';
 import axios from 'axios';
 import { Animal } from '../Models/Animal';
 import { Gender, Shelters, Size, Species, Statuses } from '../Models/ReferenceData';
@@ -21,14 +22,22 @@ export const fetchAllAnimals = async () => {
   
 };
 
-// קבלת כל החיות
-/* export const fetchAnimals = async () => {
+// קבלת  חיות של עמותה
+ export const fetchAnimals = async (shelterId: number) => {
   try {
- 
+     const token = localStorage.getItem('token');
+  
       const response = await axios.get(
         `${API_URL}/animals/list`, {
-        headers: getAuthHeaders()
-      });
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+         },
+         params: {
+        shelter_id: shelterId,  // ← שלח כ-query parameter
+        },
+      }
+    );
     console.log(response);
     return response.data.animals as Animal[];
        
@@ -36,7 +45,7 @@ export const fetchAllAnimals = async () => {
   throw new Error (error.response?.data?.message );
 }
   
-}; */
+}; 
 
 // הוספת חיה חדשה
 export const createAnimal = async (animalData: Animal) => {

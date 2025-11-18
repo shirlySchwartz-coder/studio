@@ -14,7 +14,7 @@ export class Animal {
   public created_at!: Date;
   public updated_at!: Date;
   public breed?: string;
-  public age_months?: number;
+  public age?: number;
   public description?: string;
   public image_url?: string;
   public approved_by_user_id?: number;
@@ -37,7 +37,7 @@ export class Animal {
     created_at: Date,
     updated_at: Date,
     breed?: string,
-    age_months?: number,
+    age?: number,
     description?: string,
     image_url?: string,
     approved_by_user_id?: number,
@@ -58,7 +58,7 @@ export class Animal {
     this.created_at = created_at;
     this.updated_at = updated_at;
     this.breed = breed;
-    this.age_months = age_months;
+    this.age = age;
     this.size = size;
     this.description = description;
     this.image_url = image_url;

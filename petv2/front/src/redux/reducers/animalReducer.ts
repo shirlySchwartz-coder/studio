@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import {  addAnimal, searchAnimals, getMedicalFosterAnimals, getAllAnimals } from '../actions/animalActions';
+import {  addAnimal, searchAnimals, getMedicalFosterAnimals, getAllAnimals, getAnimals } from '../actions/animalActions';
 import { Animal } from '../../Models/Animal';
 
 interface AnimalState {
@@ -37,7 +37,6 @@ const animalSlice = createSlice({
         state.status = 'failed';
         state.error = action.payload as string;
       })
-     /*  // Get Animals with auth
       .addCase(getAnimals.pending, (state) => {
         state.status = 'loading';
         state.error = null;
@@ -50,7 +49,7 @@ const animalSlice = createSlice({
       .addCase(getAnimals.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload as string;
-      }) */
+      }) 
       .addCase(addAnimal.pending, (state) => {
         state.status = 'loading';
         state.error = null;

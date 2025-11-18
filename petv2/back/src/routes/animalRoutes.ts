@@ -2,7 +2,7 @@ import { Router, Request, Response, NextFunction } from 'express';
 import { verifyToken } from '../middleware/auth';
 //import { createAnimal, getAnimals, searchAnimals, getMedicalFosterAnimals, getAllTablesInfo, getAllAnimals } from '../controllers/animalController';
 import jwt from 'jsonwebtoken'
-import { createAnimal, getAllAnimals, getAllTablesInfo } from '../controllers/animalController';
+import { createAnimal, getAllAnimals, getAllTablesInfo,getAnimals } from '../controllers/animalController';
 
 const animalRouter = Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
@@ -27,6 +27,20 @@ animalRouter.get(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const animals = await getAllAnimals(req, res, next);
+      res.status(200).json({ animals });
+    } catch (err: any) {
+      next(err);
+    }
+  }
+);
+
+//של עמותה קבלת רשימת כל החיות
+animalRouter.get(
+  '/list',
+  verifyToken,
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+      const animals = await getAnimals(req, res, next);
       res.status(200).json({ animals });
     } catch (err: any) {
       next(err);
@@ -105,20 +119,6 @@ animalRouter.get(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const animals = await getMedicalFosterAnimals(req, res, next);
-      res.status(200).json({ animals });
-    } catch (err: any) {
-      next(err);
-    }
-  }
-);
-/*
-// קבלת רשימת כל החיות
-animalRouter.get(
-  '/list',
-  verifyToken,
-  async (req: AuthRequest, res: Response, next: NextFunction) => {
-    try {
-      const animals = await getAnimals(req, res, next);
       res.status(200).json({ animals });
     } catch (err: any) {
       next(err);

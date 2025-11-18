@@ -1,9 +1,10 @@
+import { Shelter } from './../../../../back/src/models/Shelter';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import {
    searchAnimalsByCriteria,
   fetchMedicalFosterAnimals, createAnimal,
   fetchAllAnimals,
-  //fetchAnimals
+  fetchAnimals
 } from '../../Api/animalApi';
 
 export const getAllAnimals = createAsyncThunk(
@@ -17,16 +18,16 @@ export const getAllAnimals = createAsyncThunk(
   }
 });
 //
-/* export const getAnimals = createAsyncThunk(
+ export const getAnimals = createAsyncThunk(
   'animals/getAnimals',
-  async (_, { rejectWithValue }) => {
+  async (shelterId:number, { rejectWithValue }) => {
   try {
-    const animals = await fetchAnimals();
+    const animals = await fetchAnimals(shelterId);
     return animals;
   } catch (error: any) {
     return rejectWithValue(error.response?.data?.message || 'שגיאה בקבלת רשימת החיות');
   }
-}); */
+}); 
 
 export const addAnimal = createAsyncThunk(
   'animals/addAnimal',

@@ -17,11 +17,3 @@ export const getAuthHeaders = () => {
   };
 };
 
-/* export const CheckAuth = () => {
-  let jwt = localStorage.getItem('token')?.split(" ")[1]||'';
-  if (jwt.length < 10) return false;
-  if (isExpired(jwt)) return false;
-  let myDecoded: any = decodeToken(jwt);
-  myDecoded.jwt = "Bearer " + jwt;
-  return true
-} */

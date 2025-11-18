@@ -1,114 +1,41 @@
 //import '../../styles/hero.css';
 export function Hero() {
   return (
-    <div>
-      <div
-        className="floating-shape"
-        style={{
-          width: '80px',
-          height: '80px',
-          top: '80px',
-          left: '80px',
-          background:
-            'linear-gradient(to bottom right, rgba(34, 211, 238, 0.2), rgba(251, 146, 60, 0.2))',
-        }}
-      ></div>
-      <div
-        className="floating-shape"
-        style={{
-          width: '128px',
-          height: '128px',
-          bottom: '80px',
-          right: '160px',
-          background:
-            'linear-gradient(to bottom right, rgba(34, 211, 238, 0.2), rgba(251, 146, 60, 0.2))',
-          animationDelay: '1s',
-        }}
-      ></div>
-
-      <div className="hero-content">
-        <div className="hero-grid">
-          <div>
-            <div className="hero-badge">
-              <span
-                className="animate-wiggle"
-                style={{ display: 'inline-block' }}
-              >
-                🐾
-              </span>{' '}
-              מצא את החבר הכי טוב שלך
-            </div>
-            <h1 className="hero-title">
-              מחפש/ת חבר? <br />
-              <span className="gradient-text">גם אני.</span>
+    <section className="relative bg-white">
+      <div className="max-w-7xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-8 items-center">
+          {/* Text Content - Right side for RTL */}
+          <div className="p-8 md:p-16 order-2 md:order-1">
+            <h1
+              className="mb-6 animate-fade-in"
+              style={{ color: 'var(--navy)' }}
+            >
+              אולי נהיה חברים?
             </h1>
-            <p className="hero-subtitle">
-              אני רק רוצה בית חם, לא כלוב 💙
-              <br />
-              <span
-                style={{ fontSize: '18px', color: 'var(--color-gray-500)' }}
-              >
-                הצטרפו לאלפי משפחות שמצאו אהבה אמיתית
-              </span>
+            <p className="mb-8 text-xl" style={{ color: 'var(--blue-gray)' }}>
+              אני רק רוצה בית חם, לא כלוב ❤️
             </p>
-            <div className="hero-actions">
-              <button className="btn-primary" style={{ fontSize: '18px' }}>
-                התחל את המסע שלך ✨
+            <div className="flex flex-col sm:flex-row gap-4">
+              <button
+                className="btn-primary"
+                //onClick={() => onNavigate('user')}
+              >
+                התחל לאמץ עכשיו
               </button>
-              <button className="btn-secondary" style={{ fontSize: '18px' }}>
-                למד עוד
-              </button>
-            </div>
-
-            {/* Quick Stats */}
-            <div className="hero-stats">
-              <div>
-                <div
-                  className="hero-stat-value"
-                  style={{ color: 'var(--color-cyan)' }}
-                >
-                  2,847
-                </div>
-                <div className="hero-stat-label">חיות מחכות</div>
-              </div>
-              <div>
-                <div
-                  className="hero-stat-value"
-                  style={{ color: 'var(--color-violet)' }}
-                >
-                  1,234
-                </div>
-                <div className="hero-stat-label">משפחות מאושרות</div>
-              </div>
-              <div>
-                <div
-                  className="hero-stat-value"
-                  style={{ color: 'var(--color-orange)' }}
-                >
-                  45
-                </div>
-                <div className="hero-stat-label">עמותות שותפות</div>
-              </div>
+              <button className="btn-secondary">למד עוד</button>
             </div>
           </div>
 
-          <div>
-            <div className="hero-image">
-              <img
-                src="https://images.unsplash.com/photo-1554235386-82e08c80c3ef?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjdXRlJTIwZG9nJTIwcG9ydHJhaXR8ZW58MXx8fHwxNzYyMzA2Mzk3fDA&ixlib=rb-4.1.0&q=80&w=1080"
-                alt="Happy pet"
-              />
-              <div className="hero-image-overlay"></div>
-              <div className="hero-image-badge">
-                <span style={{ fontSize: '20px' }}>❤️</span>
-                <span style={{ fontSize: '16px', marginRight: '0.5rem' }}>
-                  2,847 מחכים לך
-                </span>
-              </div>
-            </div>
+          {/* Hero Image - Left side for RTL */}
+          <div className="order-1 md:order-2 h-96 md:h-[500px] overflow-hidden">
+            <img
+              src="https://images.unsplash.com/photo-1653356161497-9c2a3ca47022?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxoYXBweSUyMGRvZyUyMGNhdCUyMGFkb3B0aW9ufGVufDF8fHx8MTc2Mjc5ODc2MHww&ixlib=rb-4.1.0&q=80&w=1080"
+              alt="Pet adoption"
+              className="w-full h-full object-cover"
+            />
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 }

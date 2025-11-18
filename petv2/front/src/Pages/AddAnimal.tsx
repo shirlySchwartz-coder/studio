@@ -204,9 +204,9 @@ export function AddAnimal() {
   };
 
   return (
-    <div className="add-animal-form">
-      <h1 className="text-3xl font-bold mb-4">הוספת חיה חדשה</h1>
-      <form onSubmit={handleSubmit(onSubmit)} className="add-animal-form">
+    <div className="add-animal-form p-4 sm:p-6 lg:p-8">
+      <h1 className="text-2xl font-bold mb-6 text-right">הוספת חיה חדשה</h1>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <AnimalFormFields
           register={register}
           errors={errors}
