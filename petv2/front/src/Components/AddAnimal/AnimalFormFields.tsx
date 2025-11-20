@@ -24,6 +24,21 @@ interface Props {
     breeds: Breeds[];
   };
 }
+const ages = [
+  { id: 1, value: 0 },
+  { id: 2, value: 0.5 },
+  { id: 3, value: 1 },
+  { id: 4, value: 2 },
+  { id: 5, value: 3 },
+  { id: 6, value: 4 },
+  { id: 7, value: 5 },
+  { id: 8, value: 6 },
+  { id: 9, value: 7 },
+  { id: 10, value: 8 },
+  { id: 11, value: 9 },
+  { id: 12, value: 10 },
+  { id: 13, value: 11 },
+];
 
 export const AnimalFormFields: React.FC<Props> = ({
   register,
@@ -118,6 +133,23 @@ export const AnimalFormFields: React.FC<Props> = ({
           {dropdowns.breeds.map((b: any) => (
             <option key={b.id} value={b.id}>
               {b.name}
+            </option>
+          ))}
+        </select>
+        {errors.breed_id && (
+          <p className={errorClass}>{errors.breed_id.message}</p>
+        )}
+      </div>
+      <div className="form-group">
+        <label>גיל</label>
+        <select
+          {...register('age', { required: 'גיל החיה נדרש' })}
+          className="p-3 border rounded-lg"
+        >
+          <option value="">בחר גיל</option>
+          {ages.map((a: any) => (
+            <option key={a.id} value={a.id}>
+              {a.value}
             </option>
           ))}
         </select>

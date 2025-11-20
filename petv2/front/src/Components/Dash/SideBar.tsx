@@ -1,5 +1,6 @@
 import React from 'react';
 import { Title } from './Title';
+import { cn } from '../Ui/utils';
 
 interface NavItem {
   icon: string;
@@ -12,7 +13,7 @@ interface NavItem {
 
 interface SideBarProps {
   userName: string;
-  userRole?: string;
+  userRole?: number;
   navItems: NavItem[];
   notificationCount?: number;
   title?: string;
@@ -26,10 +27,7 @@ export const SideBar: React.FC<SideBarProps> = ({
   title,
 }) => {
   return (
-    <div className="sidebar">
-      {title && (
-        <div style={{ fontWeight: 600, color: 'var(--navy)' }}>{title}</div>
-      )}
+    <div className="sidebar-right">
       <Title
         userName={userName}
         userRole={userRole}
@@ -37,34 +35,16 @@ export const SideBar: React.FC<SideBarProps> = ({
         title={title}
       />
       {/* Navigation */}
-      <nav className="p-4">
-        <div className="flex flex-col gap-2">
-          {navItems.map((item, index) => (
-            <button
-              key={index}
-              //onClick={item.onClick}
-              className={item.active ? 'nav-item nav-item-active' : 'nav-item'}
-            >
-              <span className="text-xl">{item.icon}</span>
-              <span className="flex-1 text-right">{item.label}</span>
-              {item.badge && (
-                <span
-                  className="badge-base"
-                  style={{
-                    background:
-                      item.badgeColor === 'orange'
-                        ? 'var(--orange)'
-                        : 'var(--red)',
-                    color: 'var(--white)',
-                  }}
-                >
-                  {item.badge}
-                </span>
-              )}
-            </button>
-          ))}
+      {navItems.map((item, index) => (
+        <div
+          key={item.label}
+          className={`sidebar-nav-item ${item.active ? 'active' : ''}`}
+        >
+          <span style={{ fontSize: '24px' }}>{item.icon}</span>
+          <span>{item.label}</span>
+          {item.badge && <span className="badge">{item.badge}</span>}
         </div>
-      </nav>
+      ))}
     </div>
   );
 };

@@ -14,7 +14,7 @@ export class AddAnimalData {
   public created_at!: Date;
   public updated_at!: Date;
   public breed_id?: number;
-  public age_months?: number;
+  public age?: number;
   public description?: string;
   public image_url?: string;
   public approved_by_user_id?: number;
@@ -37,7 +37,7 @@ export class AddAnimalData {
     created_at: Date,
     updated_at: Date,
     breed_id?: number,
-    age_months?: number,
+    age?: number,
     description?: string,
     image_url?: string,
     approved_by_user_id?: number,
@@ -58,7 +58,7 @@ export class AddAnimalData {
     this.created_at = created_at;
     this.updated_at = updated_at;
     this.breed_id = breed_id;
-    this.age_months = age_months;
+    this.age = age;
     this.size_id = size_id;
     this.description = description;
     this.image_url = image_url;

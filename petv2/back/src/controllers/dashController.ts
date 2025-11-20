@@ -57,7 +57,7 @@ export const addShelter = async (req: Request, res: Response, next: NextFunction
 } 
 export const addAnimal = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const { name, breed_id, species_id, shelter_id, status_id, gender_id, age_months, size_id, description, is_neutered, is_house_trained, vaccination_status, image_url } = req.body;
+    const { name, breed_id, species_id, shelter_id, status_id, gender_id, age, size_id, description, is_neutered, is_house_trained, vaccination_status, image_url } = req.body;
     if (!name || !species_id || !gender_id || !size_id) {
    throw new Error('Required fields are missing');
     }
@@ -70,7 +70,7 @@ export const addAnimal = async (req: AuthRequest, res: Response, next: NextFunct
   
       const insertSql = `INSERT INTO animals( 
       name, breed_id, species_id, shelter_id, status_id, gender_id,
-      age_months, size_id, description, is_neutered, is_house_trained,
+      age, size_id, description, is_neutered, is_house_trained,
       vaccination_status, image_url, created_at, created_by_user_id
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
   
@@ -81,7 +81,7 @@ export const addAnimal = async (req: AuthRequest, res: Response, next: NextFunct
         shelter_id || 1,
         status_id || 1,
         gender_id,
-        age_months || null,
+        age || null,
         size_id || null,
         description || null,
         is_neutered || false,
@@ -99,7 +99,7 @@ export const addAnimal = async (req: AuthRequest, res: Response, next: NextFunct
         shelter_id: shelter_id || 1,
         status_id: status_id || 1,    
         gender_id,
-        age_months: age_months || null,
+        age: age || null,
         size_id: size_id || null,
         description: description || null,
         is_neutered: is_neutered || false,

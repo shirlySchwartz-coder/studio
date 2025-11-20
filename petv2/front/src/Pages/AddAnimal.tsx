@@ -52,6 +52,8 @@ export function AddAnimal() {
       image_url: '',
       shelter_id: 0,
       is_house_trained: false,
+      age: 0,
+      status_id: 0,
     },
   });
   const [dropdowns, setDropdowns] = useState({
@@ -205,7 +207,6 @@ export function AddAnimal() {
 
   return (
     <div className="add-animal-form p-4 sm:p-6 lg:p-8">
-      <h1 className="text-2xl font-bold mb-6 text-right">הוספת חיה חדשה</h1>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <AnimalFormFields
           register={register}

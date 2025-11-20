@@ -4,17 +4,6 @@ import styles from '../AnimalCard/AnimalCard.module.css';
 import { Heart } from 'lucide-react';
 import { Button } from '../Ui/button';
 
-/* interface UserAnimalCardProps {
-  animal: Animal;
-  dropdowns: {
-    genders: Gender[];
-    sizes: Size[];
-    species: Species[];
-    statuses: Statuses[];
-    shelters: Shelters[];
-  };
-}
- */
 interface UserAnimalCardProps {
   animal: Animal;
 }

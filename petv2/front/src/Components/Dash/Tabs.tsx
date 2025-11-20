@@ -103,30 +103,6 @@ export const Tabs = ({}) => {
         <div className="max-w-2xl mx-auto card p-8">
           <h2 className="text-xl font-bold mb-6">הוסף חיה חדשה</h2>
           <AddAnimal />
-          <form className="grid-16">
-            <input className="p-3 border rounded-lg" placeholder="שם החיה" />
-            <div className="grid grid-cols-2 gap-4">
-              <select className="p-3 border rounded-lg">
-                <option>כלב</option>
-              </select>
-              <select className="p-3 border rounded-lg">
-                <option>זכר</option>
-              </select>
-            </div>
-            <input className="p-3 border rounded-lg" placeholder="גיל" />
-            <textarea
-              className="p-3 border rounded-lg resize-none"
-              rows={4}
-              placeholder="תיאור"
-            />
-            <div className="border-2 border-dashed rounded-lg p-8 text-center cursor-pointer">
-              <div className="text-4xl mb-2">📸</div>
-              <p>לחץ להעלאת תמונה</p>
-            </div>
-            <button type="submit" className="btn btn-primary">
-              הוסף חיה
-            </button>
-          </form>
         </div>
       )}
     </>

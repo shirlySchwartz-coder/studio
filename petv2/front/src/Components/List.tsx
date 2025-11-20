@@ -46,27 +46,16 @@ export function List() {
 
   return (
     <div className="py-20 bg-white relative overflow-hidden">
-      {/* Background decoration */}
-      <div className="floating-shape floating-shape-violet w-64 h-64 top-0 left-0"></div>
-      <div className="floating-shape w-96 h-96 bg-gradient-to-tl from-cyan-400/10 to-transparent bottom-0 right-0"></div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="section-header">
-          <div className="section-badge">✨ מיוחד בשבילך</div>
-          <h2 className="section-title">חיות מחכות לאימוץ 🐾</h2>
-          <p className="section-subtitle">כל אחד מהם מחכה למישהו כמוך</p>
-        </div>
-        {status === 'loading' && <p>טוען...</p>}
-        {error && <p className={errorClass}>{error}</p>}
-        <div className="pet-gallery">
-          {animals.length > 0 && (
-            <>
-              {animals.map((animal) => (
-                <UserAnimalCard key={animal.id} animal={animal} />
-              ))}
-            </>
-          )}
-        </div>
+      {status === 'loading' && <p>טוען...</p>}
+      {error && <p className={errorClass}>{error}</p>}
+      <div className="pet-gallery">
+        {animals.length > 0 && (
+          <>
+            {animals.map((animal) => (
+              <UserAnimalCard key={animal.id} animal={animal} />
+            ))}
+          </>
+        )}
       </div>
     </div>
   );

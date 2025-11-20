@@ -14,13 +14,9 @@ export const StatCard: React.FC<StatCardProps> = ({
 }) => {
   return (
     <div className={`stat-card stat-card-${variant}`}>
-      <div className="flex items-center justify-between">
-        <span className="icon text-4xl">{icon}</span>
-        <div className="text-right">
-          <div className="value text-3xl font-bold">{value}</div>
-          <div className="text-sm opacity-90"> {label}</div>
-        </div>
-      </div>
+      <span className="stat-card-icon">{icon}</span>
+      <div className="stat-card-value">{value}</div>
+      <div className="stat-card-label"> {label}</div>
     </div>
   );
 };

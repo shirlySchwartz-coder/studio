@@ -3,10 +3,10 @@ import { login, logout, register } from '../actions/authActions';
 
 interface AuthState {
   userId: number | null;
-  fullName: string | null;
-  roleId: number | null;
+  fullName: string  | null;
+  roleId: number  | null;
   permissions: string[];
-  token: string | null;
+  token: string   | null;
   isLoggedIn: boolean;
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
@@ -15,7 +15,7 @@ interface AuthState {
 const initialState: AuthState = {
   userId: localStorage.getItem('userId') ? Number(localStorage.getItem('userId')) : null,
   fullName: localStorage.getItem('fullName'),
-  roleId: localStorage.getItem('roleId') ? Number(localStorage.getItem('roleId')) : null,
+  roleId: localStorage.getItem('roleId') ? Number(localStorage.getItem('roleId')) :4,
   permissions: [],
   token: localStorage.getItem('token'),
   isLoggedIn: !!localStorage.getItem('token'),

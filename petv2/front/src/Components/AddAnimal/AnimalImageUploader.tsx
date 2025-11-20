@@ -25,7 +25,7 @@ export const AnimalImageUploader: React.FC<Props> = ({
   API_URL,
 }) => {
   return (
-    <div className="image-upload-section">
+    <div className="image-uploader">
       <label>תמונה</label>
       <input
         id="image-input"
@@ -79,17 +79,6 @@ export const AnimalImageUploader: React.FC<Props> = ({
               <p className="text-green-600 font-semibold text-center">
                 ✅ תמונה הועלתה בהצלחה!
               </p>
-              {process.env.NODE_ENV === 'development' && (
-                <p className="text-xs text-gray-500 text-center mt-2 break-all">
-                  URL: {API_URL}uploads/{imageUrl}
-                </p>
-              )}
-              {process.env.NODE_ENV === 'production' && (
-                <p className="text-xs text-gray-500 text-center mt-2 break-all">
-                  URL:
-                  {imageUrl}
-                </p>
-              )}
             </div>
           )}
 

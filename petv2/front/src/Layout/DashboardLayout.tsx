@@ -1,5 +1,5 @@
 import { SideBar } from '../Components/Dash/SideBar';
-import '../styles/dashboard.css';
+//import '../styles/dashboard.css';
 
 interface NavItem {
   icon: string;
@@ -13,7 +13,7 @@ interface NavItem {
 interface DashboardLayoutProps {
   children: React.ReactNode;
   userName: string;
-  userRole?: string;
+  userRole: number;
   navItems: NavItem[];
   notificationCount?: number;
   onNavigate?: (page: string) => void;
@@ -30,13 +30,13 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   title,
 }) => {
   return (
-    <div className="dash-container min-h-screen flex flex-col">
+    <div className="dashboard-wrapper">
       <aside>
         <SideBar
           {...{ userName, userRole, navItems, notificationCount, title }}
         />
       </aside>
-      <main className="content p-4 sm:p-6 lg:p-8">{children}</main>
+      <main className="dashboard-main">{children}</main>
     </div>
   );
 };
