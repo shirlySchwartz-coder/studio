@@ -1,55 +1,105 @@
 import { ChevronDown, Search } from 'lucide-react';
+import {
+  Breeds,
+  Gender,
+  ReferenceData,
+  Size,
+  Species,
+} from '../../Models/ReferenceData';
 
-export function SearchBar() {
+interface SearchBarProps {
+  genders: Gender[];
+  sizes: Size[];
+  species: Species[];
+  breeds: Breeds[];
+}
+
+export const SearchBar: React.FC<SearchBarProps> = ({
+  genders,
+  sizes,
+  species,
+  breeds,
+}) => {
+  console.log(' props:', genders, sizes, species, breeds);
   return (
-    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-10">
-      <div className="card-base p-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-          <div className="lg:col-span-2">
+    <section className="search-section">
+      <div className="search-container">
+        <div className="search-header">
+          <h3 className="search-title">מצא את החבר המושלם 🔍</h3>
+          <p className="search-subtitle">
+            השתמש בפילטרים כדי למצוא בדיוק מה שאתה מחפש
+          </p>
+        </div>
+        <div
+          style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}
+        >
+          <div className="search-input-wrapper">
+            <Search className="search-input-icon" size={24} />
+            <input
+              type="text"
+              placeholder="חפש חיה לפי סוג / עיר / גזע... 🐶🐱"
+            />
+          </div>
+
+          <div className="search-filters">
             <div className="relative">
-              <Search
+              <select className="input-base appearance-none cursor-pointer">
+                <option>סוג החיה</option>
+                {species.map((specie) => (
+                  <option key={specie.id}>{specie.name}</option>
+                ))}
+              </select>
+              <ChevronDown
                 size={20}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none"
                 style={{ color: 'var(--blue-gray)' }}
               />
-              <input
-                type="text"
-                placeholder="חפש לפי שם, גזע..."
-                className="input-base pr-10"
+            </div>
+
+            <div className="relative">
+              <select className="input-base appearance-none cursor-pointer">
+                <option>גודל</option>
+                {sizes.map((size) => (
+                  <option key={size.id}>{size.name}</option>
+                ))}
+              </select>
+              <ChevronDown
+                size={20}
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none"
+                style={{ color: 'var(--blue-gray)' }}
+              />
+            </div>
+
+            <div className="relative">
+              <select className="input-base appearance-none cursor-pointer">
+                <option>מגדר</option>
+                {genders.map((gender) => (
+                  <option key={gender.id}>{gender.name}</option>
+                ))}
+              </select>
+              <ChevronDown
+                size={20}
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none"
+                style={{ color: 'var(--blue-gray)' }}
+              />
+            </div>
+
+            <div className="relative">
+              <select className="input-base appearance-none cursor-pointer">
+                <option>גזע</option>
+                {breeds.map((breed) => (
+                  <option key={breed.id}>{breed.name}</option>
+                ))}
+              </select>
+              <ChevronDown
+                size={20}
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none"
+                style={{ color: 'var(--blue-gray)' }}
               />
             </div>
           </div>
-
-          <div className="relative">
-            <select className="input-base appearance-none cursor-pointer">
-              <option>סוג החיה</option>
-              <option>כלב</option>
-              <option>חתול</option>
-              <option>ארנב</option>
-            </select>
-            <ChevronDown
-              size={20}
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none"
-              style={{ color: 'var(--blue-gray)' }}
-            />
-          </div>
-
-          <div className="relative">
-            <select className="input-base appearance-none cursor-pointer">
-              <option>גודל</option>
-              <option>קטן</option>
-              <option>בינוני</option>
-              <option>גדול</option>
-            </select>
-            <ChevronDown
-              size={20}
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none"
-              style={{ color: 'var(--blue-gray)' }}
-            />
-          </div>
-
           <button
-            className="btn-primary"
+            className="btn-primary btn-search"
             style={{ background: 'var(--cyan)', color: 'var(--white)' }}
           >
             חפש
@@ -58,4 +108,4 @@ export function SearchBar() {
       </div>
     </section>
   );
-}
+};
