@@ -10,6 +10,7 @@ interface AuthState {
   isLoggedIn: boolean;
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
+  shelterId: number | null;
 }
 
 const initialState: AuthState = {
@@ -21,6 +22,7 @@ const initialState: AuthState = {
   isLoggedIn: !!localStorage.getItem('token'),
   status: 'idle',
   error: null,
+  shelterId: localStorage.getItem('shelterId') ? Number(localStorage.getItem('shelterId')) : null,
 };
 
 const authSlice = createSlice({
@@ -43,11 +45,13 @@ const authSlice = createSlice({
         state.roleId = payload.roleId;
         state.token = payload.token;
         state.isLoggedIn = true;
+        state.shelterId = payload.shelterId;
 
         localStorage.setItem('token', payload.token);
         localStorage.setItem('userId', payload.userId.toString());
         localStorage.setItem('fullName', payload.fullName);
         localStorage.setItem('roleId', payload.roleId.toString());
+        localStorage.setItem('shelterId', payload.shelterId ? payload.shelterId.toString() : '');
       })
       .addCase(login.rejected, (state, action) => {
         state.status = 'failed';

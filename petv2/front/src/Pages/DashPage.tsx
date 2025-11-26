@@ -4,6 +4,7 @@ import { Tabs } from '../Components/Dash/Tabs';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../redux/store';
+import { getReferenceData } from '../redux/actions/animalActions';
 
 interface NavItem {
   icon: string;
@@ -152,6 +153,11 @@ function DashPage() {
     setNavItems(menuConfig[r] || menuConfig[3]); // fallback ל-user רגיל
     setStatsItems(statsConfig[r] || statsConfig[3]);
   }, [roleId, isLoggedIn]);
+  useEffect(() => {
+    if (roleId && isLoggedIn) {
+      dispatch(getReferenceData()); // טעינה גלובלית – פעם אחת
+    }
+  }, [dispatch, roleId, isLoggedIn]);
 
   if (!isLoggedIn || !fullName) {
     return <div>טוען...</div>;

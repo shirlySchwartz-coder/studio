@@ -1,3 +1,4 @@
+import { Shelter } from './../models/Shelter';
 import  { Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
@@ -68,9 +69,9 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
     throw new Error('Email and password are required');
   }
 
-  const sql = `SELECT id, full_name, password_hash, role_id FROM users WHERE email = ?`;
+  const sql = `SELECT id, full_name, password_hash, role_id, shelter_id FROM users WHERE email = ?`;
   const users = await db.execute<
-    { id: number; full_name: string; password_hash: string; role_id: number }[]
+    { id: number; full_name: string; password_hash: string; role_id: number, shelter_id:number }[]
     >(sql, [email]);
   
    if (users.length === 0) {
@@ -83,6 +84,12 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
   if (!isPasswordMatch) {
     throw new Error("Invalid email or password");
   }
+
+  if (user.role_id === 2) {
+  const shelter = await db.execute(`SELECT id FROM shelters WHERE id = ?`, [user.shelter_id]);
+  if (!shelter[0]) throw new Error('Shelter not linked');
+} 
+
   const token = jwt.sign(
     {
       userId: user.id,
@@ -99,5 +106,6 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
     userId: user.id,
     roleId: user.role_id,
     fullName: user.full_name,
+    shelterId: user.shelter_id || null,
   };
 };

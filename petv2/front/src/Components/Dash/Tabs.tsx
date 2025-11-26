@@ -3,7 +3,7 @@ import { useState } from 'react';
 import Table from './Table';
 import { AddAnimal } from '../../Pages/AddAnimal';
 
-export const Tabs = ({}) => {
+export const Tabs = () => {
   const [activeTab, setActiveTab] = useState<'animals' | 'requests' | 'add'>(
     'animals'
   );

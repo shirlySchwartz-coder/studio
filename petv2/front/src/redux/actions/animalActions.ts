@@ -1,11 +1,14 @@
-import { Shelter } from './../../../../back/src/models/Shelter';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import {
    searchAnimalsByCriteria,
   fetchMedicalFosterAnimals, createAnimal,
   fetchAllAnimals,
-  fetchAnimals
+  fetchAnimalsByShelter,
+  updateAnimalById,
+  fetchReferenceData,
 } from '../../Api/animalApi';
+import { AddAnimalData } from '../../Models/AddAnimalData';
+import { RootState } from '../store';
 
 export const getAllAnimals = createAsyncThunk(
   'animals/getAllAnimals',
@@ -16,29 +19,10 @@ export const getAllAnimals = createAsyncThunk(
   } catch (error: any) {
     return rejectWithValue(error.response?.data?.message || 'שגיאה בקבלת רשימת החיות');
   }
-});
-//
- export const getAnimals = createAsyncThunk(
-  'animals/getAnimals',
-  async (shelterId:number, { rejectWithValue }) => {
-  try {
-    const animals = await fetchAnimals(shelterId);
-    return animals;
-  } catch (error: any) {
-    return rejectWithValue(error.response?.data?.message || 'שגיאה בקבלת רשימת החיות');
-  }
-}); 
+  });
 
-export const addAnimal = createAsyncThunk(
-  'animals/addAnimal',
-  async (animalData: any, { rejectWithValue }) => {
-  try {
-    const animal = await createAnimal(animalData);
-    return animal;
-  } catch (error: any) {
-    return rejectWithValue(error.message || 'שגיאה בהוספת חיה');
-  }
-});
+  
+
 
 export const searchAnimals = createAsyncThunk(
   'animals/searchAnimals',
@@ -63,3 +47,55 @@ export const getMedicalFosterAnimals = createAsyncThunk(
   }
 });
 
+
+
+
+//**********************פונקציות למנהלים ולעמותות בלבד*********************
+ export const getAnimals = createAsyncThunk(
+  'animals/getAnimals',
+   async (shelterId: number, { rejectWithValue }) => {
+  
+  if (shelterId >2 && !shelterId) {
+    throw new Error('Shelter not linked');  // **[CHANGE]**: בדיקה מקומית
+  }
+  try {
+    const animals = await fetchAnimalsByShelter(shelterId);
+    return animals;
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data?.message || 'שגיאה בקבלת רשימת החיות');
+  }
+}); 
+
+export const addAnimal = createAsyncThunk(
+  'animals/addAnimal',
+  async (animalData: AddAnimalData, { rejectWithValue }) => {
+  try {
+    const animal = await createAnimal(animalData);
+    return animal;
+  } catch (error: any) {
+    return rejectWithValue(error.message || 'שגיאה בהוספת חיה');
+  }
+  });
+export const updateAnimal = createAsyncThunk(
+  'animals/updateAnimal',
+  async (animalData: any, { rejectWithValue }) => {
+    try {
+      const updatedAnimal = await updateAnimalById(animalData);
+      return updatedAnimal;
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'שגיאה בעדכון פרטי החיה');
+    }
+  });
+
+
+export const getReferenceData:any = createAsyncThunk(
+  'animals/fetchReferenceData',
+  async (_, { rejectWithValue }) => {
+    try {
+      const data = await fetchReferenceData();
+      return data;
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'שגיאה בטעינת נתוני טבלאות');
+    }
+  }
+);

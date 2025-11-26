@@ -12,7 +12,6 @@ interface AuthRequest extends Request {
   user?: UserPayload;
 }
 
-
 export const addBreed = async (req: Request, res: Response, next: NextFunction) => {
     try {
     const { name } = req.body || {};
@@ -113,4 +112,6 @@ export const addAnimal = async (req: AuthRequest, res: Response, next: NextFunct
       console.error('Error creating animal:', err);
       next(err);
     }
-  };
+};
+
+  

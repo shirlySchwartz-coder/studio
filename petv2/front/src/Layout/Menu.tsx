@@ -58,6 +58,7 @@ export function Menu() {
               }}
               //className={isActive(item.path) ? 'active' : ''}
               className="menu-item"
+              key={item.label}
             >
               {item.label}
             </a>

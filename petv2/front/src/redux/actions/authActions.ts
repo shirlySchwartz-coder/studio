@@ -13,6 +13,7 @@ export const login = createAsyncThunk(
         userId: response.user.userId,
         roleId: response.user.roleId,
         fullName: response.user.fullName,
+        shelterId: response.user.shelterId|| null,
       };
          toast.success('You Are connected', {
                 position: 'top-left',
