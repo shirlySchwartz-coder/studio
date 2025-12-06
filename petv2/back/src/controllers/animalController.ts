@@ -2,6 +2,7 @@ import { Shelter } from './../models/Shelter';
 import { Request, Response, NextFunction } from 'express';
 //import AnimalMedicalEvents from '../models/AnimalMedicalEvents';
 import db from '../Dal/dal_mysql';
+import { Animal } from '../models/Animal';
 
 
 // ממשק עבור נתוני המשתמש
@@ -48,13 +49,13 @@ export const getAllAnimals = async (req: Request, res: Response, next: NextFunct
 
 
 //לפי עמותה קבלת כל החיות
-export const getAnimals = async (req: AuthRequest, res: Response, next: NextFunction) => {
+export const getAnimalsByShelter = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     if(req.user?.role_id!>2){
       throw new Error('No permissions to view animals');
     }
 
-    const shelterId = req.user?.shelter_id;
+    const shelterId = req.params?.shelterId;
     if (!shelterId) {
       throw new Error('Shelter ID not found for the user');
     }
@@ -75,10 +76,10 @@ export const getAnimals = async (req: AuthRequest, res: Response, next: NextFunc
       on A.status_id = Ans.id
       inner join breed_types As B
       on A.breed_id = B.id
-      Where shelter_id=${shelterId}`
+      Where shelter_id=?`
    
-  const animals = await db.execute(sql);
-      return animals;
+  const animals = await db.execute<{animals:Animal []}>(sql,[shelterId]);
+      return animals ;
   } catch (error: any) {
     throw new Error('Error loading animals');
   }
@@ -329,42 +330,3 @@ export const getAllTablesInfo = async (
   }
 }
 
-/*
-// חיפוש חיות לפי קריטריונים
-export const searchAnimals = async (filters: any, res: Response, next: NextFunction) => {
-  try {
-    const where: any = {};
-    if (filters.species_id) where.species_id = filters.species_id;
-    if (filters.gender_id) where.gender_id = filters.gender_id;
-    if (filters.size_id) where.size_id = filters.size_id;
-    if (filters.is_neutered !== undefined) where.is_neutered = filters.is_neutered;
-    if (filters.vaccination_status) where.vaccination_status = { [Op.like]: `%${filters.vaccination_status}%` };
-
-    const animals = await db.Animals.findAll({ where });
-    return animals;
-  } catch (error: any) {
-    throw new Error('Animal search error');
-  }
-};
-
-// קבלת חיות הזקוקות לאומנה רפואית
-export const getMedicalFosterAnimals = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const animals = await db.Animals.findAll({
-      include: [
-        {
-          model: AnimalMedicalEvents,
-          where: { needs: { [Op.ne]: null } },
-          required: true,
-        },
-      ],
-    });
-    return animals.map((animal: any) => ({
-      ...animal.dataValues,
-      medical_needs: animal.AnimalMedicalEvents[0].needs,
-    }));
-  } catch (error: any) {
-    throw new Error('Error loading animals in need of medical care');
-  }
-};
-//*/

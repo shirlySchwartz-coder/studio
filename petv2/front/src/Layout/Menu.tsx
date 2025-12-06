@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { logout } from '../redux/actions/authActions';
-import { AppDispatch, RootState } from '../redux/store';
+import { logout } from '../Redux/actions/authActions';
+import { AppDispatch, RootState } from '../Redux/store';
 import { useState } from 'react';
 import { Button } from '../Components/Ui/button';
 

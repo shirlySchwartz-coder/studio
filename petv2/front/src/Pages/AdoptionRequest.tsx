@@ -2,7 +2,7 @@ import { useEffect, useActionState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
-import { RootState } from '../redux/store';
+import { RootState } from '../Redux/store';
 
 const API_URL = 'http://localhost:8080/api';
 

@@ -3,8 +3,8 @@ import { Stats } from '../Components/Dash/Stats';
 import { Tabs } from '../Components/Dash/Tabs';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../redux/store';
-import { getReferenceData } from '../redux/actions/animalActions';
+import { AppDispatch, RootState } from '../Redux/store';
+import { getReferenceData } from '../Redux/actions/animalActions';
 
 interface NavItem {
   icon: string;

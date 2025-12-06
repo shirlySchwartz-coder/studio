@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { AppDispatch, RootState } from '../redux/store';
+import { AppDispatch, RootState } from '../Redux/store';
 import { useForm } from 'react-hook-form';
 import { Animal } from '../Models/Animal';
-import { addAnimal } from '../redux/actions/animalActions';
-import { resetUpload } from '../redux/reducers/uploadReducer';
-import { uploadAnimalImage } from '../redux/actions/uploadActions';
-import { fetchFormOptionsData } from '../Api/animalApi';
+import { addAnimal, getReferenceData } from '../Redux/actions/animalActions';
+import { resetUpload } from '../Redux/reducers/uploadReducer';
+import { uploadAnimalImage } from '../Redux/actions/uploadActions';
+import { fetchReferenceData } from '../Api/animalApi';
 import { AnimalFormFields } from '../Components/AddAnimal/AnimalFormFields';
 import { AnimalImageUploader } from '../Components/AddAnimal/AnimalImageUploader';
 import { errorClass } from '../utils/style';
@@ -18,10 +18,8 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
 export function AddAnimal() {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const { status, error } = useSelector((state: RootState) => state.animals);
-  const { isLoggedIn, roleId, token } = useSelector(
-    (state: RootState) => state.auth
-  );
+  const { status, error, referenceData } = useSelector((state: RootState) => state.animals);
+  const { isLoggedIn, roleId, token } = useSelector((state: RootState) => state.auth);
   // Upload state from Redux
   const {
     imageUrl,
@@ -56,14 +54,7 @@ export function AddAnimal() {
       status_id: 0,
     },
   });
-  const [dropdowns, setDropdowns] = useState({
-    genders: [],
-    sizes: [],
-    species: [],
-    statuses: [],
-    shelters: [],
-    breeds: [],
-  });
+ 
 
   useEffect(() => {
     if (!isLoggedIn || !roleId || roleId > 2) {
@@ -71,18 +62,11 @@ export function AddAnimal() {
     }
   }, [isLoggedIn, roleId, navigate]);
 
-  useEffect(() => {
-    const loadDropdowns = async () => {
-      try {
-        const data = await fetchFormOptionsData();
-        setDropdowns(data);
-        localStorage.setItem('animalFormOptions', JSON.stringify(data));
-      } catch (error) {
-        console.error('❌ Failed to load dropdown data:', error);
-      }
-    };
-    loadDropdowns();
-  }, []);
+ useEffect(() => {
+   if (!referenceData || Object.keys(referenceData).length === 0) {
+     dispatch(getReferenceData());
+   }
+ }, [dispatch, referenceData]);
 
   // Reset upload state when component unmounts or navigates away
   useEffect(() => {
@@ -211,7 +195,7 @@ export function AddAnimal() {
         <AnimalFormFields
           register={register}
           errors={errors}
-          dropdowns={dropdowns}
+          dropdowns={referenceData}
         />
         <AnimalImageUploader
           handleImageChange={handleImageChange}

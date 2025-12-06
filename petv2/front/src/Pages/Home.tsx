@@ -3,7 +3,7 @@ import { List } from '../Components/List';
 import { Hero } from '../Components/Hero/Hero';
 import { SearchBar } from '../Components/SearchBar/SearchBar';
 import { useEffect, useState } from 'react';
-import { fetchFormOptionsData } from '../Api/animalApi';
+import { fetchReferenceData } from '../Api/animalApi';
 import { ReferenceData } from '../Models/ReferenceData';
 
 export const Home = () => {
@@ -21,13 +21,13 @@ export const Home = () => {
   useEffect(() => {
     const loadFilters = async () => {
       try {
-        const cached = localStorage.getItem('animalFormOptions');
+        const cached = localStorage.getItem('referenceData');
         if (cached) {
           setFilters(JSON.parse(cached));
           setLoading(false);
           return;
         }
-        const data = await fetchFormOptionsData();
+        const data = await fetchReferenceData();
         console.log(data);
         setFilters(data);
         localStorage.setItem('animalFormOptions', JSON.stringify(data));

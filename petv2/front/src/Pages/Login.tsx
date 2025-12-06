@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { login } from '../redux/actions/authActions';
-import { AppDispatch, RootState } from '../redux/store';
+import { login } from '../Redux/actions/authActions';
+import { AppDispatch, RootState } from '../Redux/store';
 import {
   containerClass,
   formClass,

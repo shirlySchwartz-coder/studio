@@ -8,9 +8,9 @@ import {
   X,
 } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../redux/store';
+import { AppDispatch, RootState } from '../../Redux/store';
 import { useEffect, useState } from 'react';
-import { getAnimals, updateAnimal } from '../../redux/actions/animalActions';
+import { getAnimals, updateAnimal } from '../../Redux/actions/animalActions';
 import { toast } from 'sonner';
 
 export default function Table() {

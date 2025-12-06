@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { getMedicalFosterAnimals } from '../redux/actions/animalActions';
-import { AppDispatch, RootState } from '../redux/store';
+import { getMedicalFosterAnimals } from '../Redux/actions/animalActions';
+import { AppDispatch, RootState } from '../Redux/store';
 import { containerClass, errorClass } from '../utils/style';
 
 export function MedicalFoster() {

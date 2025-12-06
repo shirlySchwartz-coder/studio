@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { searchAnimals } from '../redux/actions/animalActions';
-import { AppDispatch, RootState } from '../redux/store';
+import { searchAnimals } from '../Redux/actions/animalActions';
+import { AppDispatch, RootState } from '../Redux/store';
 import {
   containerClass,
   formClass,
@@ -15,7 +15,7 @@ import {
 export function SearchAnimal() {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const { searchResults, status, error } = useSelector(
+  const { searchResults, status, error, referenceData } = useSelector(
     (state: RootState) => state.animals
   );
   const { isLoggedIn, roleId } = useSelector((state: RootState) => state.auth);
@@ -52,8 +52,9 @@ export function SearchAnimal() {
             }
           >
             <option value="">בחר מין</option>
-            <option value="1">כלב</option>
-            <option value="2">חתול</option>
+            {referenceData.species.map((specie) => (
+              <option value={specie.id}>{specie.name}</option>
+            ))}
           </select>
         </div>
         <div className={labelClass}>
@@ -66,8 +67,9 @@ export function SearchAnimal() {
             }
           >
             <option value="">בחר מגדר</option>
-            <option value="1">זכר</option>
-            <option value="2">נקבה</option>
+            {referenceData.genders.map((gender) => (
+              <option value={gender.id}>{gender.name}</option>
+            ))}
           </select>
         </div>
         <div className={labelClass}>
@@ -80,9 +82,9 @@ export function SearchAnimal() {
             }
           >
             <option value="">בחר גודל</option>
-            <option value="1">קטן</option>
-            <option value="2">בינוני</option>
-            <option value="3">גדול</option>
+            {referenceData.sizes.map((size) => (
+              <option value={size.id}>{size.name}</option>
+            ))}
           </select>
         </div>
         <div className="flex items-center">

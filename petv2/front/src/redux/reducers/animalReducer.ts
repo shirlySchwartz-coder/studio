@@ -1,11 +1,19 @@
-import { ReferenceData } from './../../Models/ReferenceData';
+import { ReferenceData } from '../../Models/ReferenceData';
 import { createSlice } from '@reduxjs/toolkit';
 import {
-  addAnimal, searchAnimals, getMedicalFosterAnimals,
-  getAllAnimals, getAnimals, updateAnimal, getReferenceData
+  addAnimal,
+  searchAnimals,
+  getMedicalFosterAnimals,
+  getAllAnimals,
+  getAnimals,
+  updateAnimal,
+  getReferenceData,
 } from '../actions/animalActions';
 import { Animal } from '../../Models/Animal';
-import { loadReferenceData, saveReferenceData } from '../../utils/referenceDataUtils';
+import {
+  loadReferenceData,
+  saveReferenceData,
+} from '../../utils/referenceDataUtils';
 
 interface AnimalState {
   animals: Animal[];
@@ -17,9 +25,11 @@ interface AnimalState {
 }
 
 const initialState: AnimalState = {
-  animals: localStorage.getItem('animals') ? JSON.parse(localStorage.getItem('animals') || '[]'):[],
-  referenceData:loadReferenceData(),
-    searchResults: [],
+  animals: localStorage.getItem('animals')
+    ? JSON.parse(localStorage.getItem('animals') || '[]')
+    : [],
+  referenceData: loadReferenceData(),
+  searchResults: [],
   medicalFosterAnimals: [],
   status: 'idle',
   error: null,
@@ -56,7 +66,7 @@ const animalSlice = createSlice({
       .addCase(getAnimals.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload as string;
-      }) 
+      })
       .addCase(addAnimal.pending, (state) => {
         state.status = 'loading';
         state.error = null;
@@ -77,9 +87,9 @@ const animalSlice = createSlice({
       .addCase(updateAnimal.fulfilled, (state, action) => {
         state.status = 'succeeded';
         const updated = action.payload;
-        const index = state.animals.findIndex(a => a.id === updated.id);
+        const index = state.animals.findIndex((a) => a.id === updated.id);
         if (index !== -1) {
-        state.animals[index] = updated; // עדכון החיה ברשימה
+          state.animals[index] = updated; // עדכון החיה ברשימה
         }
       })
       .addCase(updateAnimal.rejected, (state, action) => {
@@ -110,21 +120,18 @@ const animalSlice = createSlice({
         state.status = 'failed';
         state.error = action.payload as string;
       })
-    .addCase(getReferenceData.pending, (state) => {
+      .addCase(getReferenceData.pending, (state) => {
         state.status = 'loading';
         state.error = null;
       })
       .addCase(getReferenceData.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.referenceData = action.payload;
-        // שמירה אוטומטית ב-localStorage
         saveReferenceData(action.payload);
       })
       .addCase(getReferenceData.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload as string;
-        // fallback ל-localStorage
-        state.referenceData = loadReferenceData();
       });
   },
 });

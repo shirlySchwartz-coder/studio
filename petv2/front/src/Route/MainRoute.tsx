@@ -6,12 +6,13 @@ import { Register } from '../Pages/Register';
 import { AddAnimal } from '../Pages/AddAnimal';
 import { SearchAnimal } from '../Pages/SearchAnimal';
 import DashPage from '../Pages/DashPage';
+import HomePage from '../Pages/HomePage';
 
 export default function MainRoute() {
   return (
     <div>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<HomePage />} />
         <Route path="/home" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />

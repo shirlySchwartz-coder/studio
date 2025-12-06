@@ -28,8 +28,8 @@ export interface Breeds {
 export interface ReferenceData {
   sizes: Size[];
   genders: Gender[];
-    species: Species[];
-     statuses: Statuses[],
-  shelters: Shelters[],
+  species: Species[];
   breeds: Breeds[],
+  statuses: Statuses[],
+  shelters: Shelters[],
 }

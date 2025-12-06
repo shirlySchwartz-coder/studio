@@ -1,85 +1,73 @@
 import axios from 'axios';
 import { Animal } from '../Models/Animal';
-import { Gender, Shelters, Size, Species, Statuses } from '../Models/ReferenceData';
+import {
+  Gender,
+  ReferenceData,
+  Shelters,
+  Size,
+  Species,
+  Statuses,
+} from '../Models/ReferenceData';
 import { getAuthHeaders } from '../middleware/authMiddleware';
 import { AddAnimalData } from '../Models/AddAnimalData';
-import { loadReferenceData, saveReferenceData } from '../utils/referenceDataUtils';
-
+import {
+  loadReferenceData,
+  saveReferenceData,
+} from '../utils/referenceDataUtils';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
-
-
-  
 
 //*****************פונקיות משמש או אורח********************
 
 // ללא הרשאות קבלת כל החיות
 export const fetchAllAnimals = async () => {
   try {
- 
-      const response = await axios.get(
-        `${API_URL}/animals/listAll`);
+    const response = await axios.get(`${API_URL}/animals/listAll`);
     console.log(response);
     return response.data.animals as Animal[];
-       
-} catch (error:any) {
-  throw new Error (error.response?.data?.message );
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message);
   }
 };
-// קבלת נתוני טבלאות- אפשרויות לטפסים ****אפשר למחוק כי יש פונקציה דומה למטה
-export const fetchFormOptionsData = async () => {
-  try {
-    const response = await axios.get(`${API_URL}/animals/tables-data/`);
-    console.log('✅ Tables-data fetched:', response.data);
-    
-    return {
-    sizes: response.data.tablesData.sizes ,
-    genders : response.data.tablesData.genders ,
-    species: response.data.tablesData.species ,
-    statuses: response.data.tablesData.statuses ,
-    shelters: response.data.tablesData.shelters,
-    breeds: response.data.tablesData.breeds ,
-    };
-  } catch (error:any) {
-     console.error('❌ Error fetching data:', error);
-    throw new Error(error.response?.data?.message || 'Error trying to get Sizes ');
-  }
-};
+
 // קבלת נתוני טבלאות עם שמירה ב-localStorage
-export const fetchReferenceData = async (): Promise<any> => {
+export const fetchReferenceData = async (): Promise<ReferenceData> => {
   try {
     const response = await axios.get(`${API_URL}/animals/tables-data/`);
     console.log('✅ Reference data fetched from API:', response.data);
-    
+
     // שמירה מיידית ב-localStorage דרך helper
     saveReferenceData(response.data.tablesData);
-    
+
     return {
-      sizes: response.data.tablesData.sizes ,
-      genders: response.data.tablesData.genders ,
-      species: response.data.tablesData.species ,
-      statuses: response.data.tablesData.statuses ,
-      shelters: response.data.tablesData.shelters ,
-      breeds: response.data.tablesData.breeds ,
+      sizes: response.data.tablesData.sizes,
+      genders: response.data.tablesData.genders,
+      species: response.data.tablesData.species,
+      statuses: response.data.tablesData.statuses,
+      shelters: response.data.tablesData.shelters,
+      breeds: response.data.tablesData.breeds,
     };
   } catch (error: any) {
     console.error('❌ Error fetching reference data:', error);
-    // fallback ל-localStorage אם API נכשל
-    return loadReferenceData();
+    const fallback = loadReferenceData();
+    return fallback;
   }
 };
 
 // חיפוש חיות לפי קריטריונים
 export const searchAnimalsByCriteria = async (filters: {
-  species_id?: string; gender_id?: string; size_id?: string; is_neutered?: boolean; vaccination_status?: string
+  species_id?: string;
+  gender_id?: string;
+  size_id?: string;
+  is_neutered?: boolean;
+  vaccination_status?: string;
 }) => {
   const token = localStorage.getItem('token');
-  const response = await axios.post(
-    `${API_URL}/animals/search`, filters, {
+  const response = await axios.post(`${API_URL}/animals/search`, filters, {
     headers: {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
-    }
+    },
   });
   return response.data.animals;
 };
@@ -87,69 +75,69 @@ export const searchAnimalsByCriteria = async (filters: {
 // קבלת חיות הזקוקות לאומנה רפואית
 export const fetchMedicalFosterAnimals = async () => {
   const token = localStorage.getItem('token');
-  const response = await axios.get(
-    `${API_URL}/animals/medical-foster`, {
-      headers: {
+  const response = await axios.get(`${API_URL}/animals/medical-foster`, {
+    headers: {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
-    }
-    });
+    },
+  });
   return response.data.animals;
 };
 
 //**********************פונקציות למנהלים ולעמותות בלבד*********************
 
 // קבלת  חיות של עמותה
- export const fetchAnimalsByShelter = async (shelterId: number) => {
+export const fetchAnimalsByShelter = async (shelterId: number) => {
   try {
-     const token = localStorage.getItem('token');
-  
-      const response = await axios.get(
-        `${API_URL}/animals/list/${shelterId}`, 
-        {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-         }
-      }
-    );
+    const token = localStorage.getItem('token');
+
+    const response = await axios.get(`${API_URL}/animals/list/${shelterId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
     console.log(response);
     return response.data.animals as Animal[];
-       
-} catch (error:any) {
-  throw new Error (error.response?.data?.message );
-}
-}; 
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message);
+  }
+};
 
 // הוספת חיה חדשה
 export const createAnimal = async (animalData: AddAnimalData) => {
   try {
     const token = localStorage.getItem('token');
-    const response = await axios.post(`${API_URL}/dashboard/addAnimal`,
+    const response = await axios.post(
+      `${API_URL}/dashboard/addAnimal`,
       animalData,
       {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
-        }
+        },
       }
     );
-    
+
     return response.data;
-  } catch (error:any) {
-    throw new Error(error.response?.data.message || 'Error adding animal')
+  } catch (error: any) {
+    throw new Error(error.response?.data.message || 'Error adding animal');
   }
 };
 // עדכון פרטי חיה
 export const updateAnimalById = async (animalData: AddAnimalData) => {
   try {
-    const roleId = (localStorage.getItem('role_id'))? parseInt(localStorage.getItem('role_id') || '0', 10) : 0;
-    if (roleId >=3) {
+    const roleId = localStorage.getItem('role_id')
+      ? parseInt(localStorage.getItem('role_id') || '0', 10)
+      : 0;
+    if (roleId >= 3) {
       throw new Error('אין לך הרשאות לעדכן חיה');
     }
     const token = localStorage.getItem('token');
-    if (!token) { throw new Error('משתמש לא מחובר'); }
-    
+    if (!token) {
+      throw new Error('משתמש לא מחובר');
+    }
+
     const response = await axios.put(
       `${API_URL}/animals/updateAnimal/${animalData.id}`,
       animalData,
@@ -157,17 +145,14 @@ export const updateAnimalById = async (animalData: AddAnimalData) => {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
-        }
+        },
       }
     );
     return response.data.animal as Animal;
-    
-  } catch (error:any) {
+  } catch (error: any) {
     console.error('שגיאה בעדכון חיה:', error);
-    const message = error.response?.data?.message || error.message || 'שגיאה בעדכון החיה';
+    const message =
+      error.response?.data?.message || error.message || 'שגיאה בעדכון החיה';
     throw new Error(message);
   }
-}
-
-
-
+};
