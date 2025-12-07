@@ -5,7 +5,7 @@ import {
   searchAnimals,
   getMedicalFosterAnimals,
   getAllAnimals,
-  getAnimals,
+  getAnimalsByShelter,
   updateAnimal,
   getReferenceData,
 } from '../actions/animalActions';
@@ -54,16 +54,16 @@ const animalSlice = createSlice({
         state.status = 'failed';
         state.error = action.payload as string;
       })
-      .addCase(getAnimals.pending, (state) => {
+      .addCase(getAnimalsByShelter.pending, (state) => {
         state.status = 'loading';
         state.error = null;
       })
-      .addCase(getAnimals.fulfilled, (state, action) => {
+      .addCase(getAnimalsByShelter.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.animals = action.payload;
         localStorage.setItem('animals', JSON.stringify(action.payload));
       })
-      .addCase(getAnimals.rejected, (state, action) => {
+      .addCase(getAnimalsByShelter.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload as string;
       })

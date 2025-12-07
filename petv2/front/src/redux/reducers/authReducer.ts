@@ -47,7 +47,6 @@ const authSlice = createSlice({
         state.isLoggedIn = true;
         state.shelterId = payload.shelterId;
 
-        localStorage.setItem('token', payload.token);
         localStorage.setItem('userId', payload.userId.toString());
         localStorage.setItem('fullName', payload.fullName);
         localStorage.setItem('roleId', payload.roleId.toString());

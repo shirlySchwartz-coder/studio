@@ -1,6 +1,5 @@
 import React from 'react';
 import { Animal } from '../../Models/Animal';
-import styles from '../AnimalCard/AnimalCard.module.css';
 import { Heart } from 'lucide-react';
 import { Button } from '../Ui/button';
 
@@ -9,22 +8,17 @@ interface UserAnimalCardProps {
 }
 
 export const UserAnimalCard: React.FC<UserAnimalCardProps> = ({ animal }) => {
-  const apiBaseUrl = process.env.REACT_APP_API_URL || 'http://localhost:8080';
-
-  const defaultImageDog = `http://localhost:8080/uploads/animals/max-1764147437538-291335760.webp`;
-  const defaultImageCat = `http://localhost:8080/uploads/animals/max-1764147437538-291335760.webp`;
+  const defaultImageDog = `http://localhost:8080/uploads/animals/dog.jpeg`;
+  const defaultImageCat = `http://localhost:8080/uploads/animals/cat.jpeg`;
 
   return (
     <div className="pet-card">
       <div className="pet-card-image">
         <img
-          src={
-            animal.image_url ||
-            (animal.species === 'כלב' ? defaultImageDog : defaultImageCat)
-          }
+          src={animal.image_url}
           alt={animal.name}
           loading="lazy"
-          className={styles.image}
+          className="image"
           onError={(e) => {
             console.log('Image load error:', e);
             // Fallback to generic default if image fails to load
@@ -48,11 +42,11 @@ export const UserAnimalCard: React.FC<UserAnimalCardProps> = ({ animal }) => {
       <div className="pet-card-content">
         <h3 className="pet-card-title"> {animal.name} ❤️</h3>
         <div className="pet-card-details">
-          <p className={styles.detail}>עמותה: {animal.shelter}</p>
-          <p className={styles.detail}>גזע: {animal.breed}</p>
-          <p className={styles.detail}>סוג: {animal.species}</p>
-          <p className={styles.detail}>מין: {animal.gender}</p>
-          <p className={styles.detail}>גודל: {animal.size}</p>
+          <p className="detail">עמותה: {animal.shelter}</p>
+          <p className="detail">גזע: {animal.breed}</p>
+          <p className="detail">סוג: {animal.species}</p>
+          <p className="detail">מין: {animal.gender}</p>
+          <p className="detail">גודל: {animal.size}</p>
         </div>
         <Button className="btn-primary" style={{ width: '100%' }}>
           צפה בפרטים ✨

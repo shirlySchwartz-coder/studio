@@ -3,8 +3,7 @@ import { AppDispatch, RootState } from '../Redux/store';
 import { useEffect } from 'react';
 import { getAllAnimals } from '../Redux/actions/animalActions';
 import { errorClass } from '../utils/style';
-import { UserAnimalCard } from './UserAnimalCard/UserAnimalCard';
-
+import { UserAnimalCard } from '../Components/UserAnimalCard/UserAnimalCard';
 export function List() {
   const dispatch = useDispatch<AppDispatch>();
 
@@ -18,7 +17,6 @@ export function List() {
     }
   }, [dispatch, animals.length]);
 
- 
   return (
     <div className="py-20 bg-white relative overflow-hidden">
       {status === 'loading' && <p>טוען...</p>}

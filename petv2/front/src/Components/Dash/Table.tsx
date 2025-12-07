@@ -10,23 +10,27 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../Redux/store';
 import { useEffect, useState } from 'react';
-import { getAnimals, updateAnimal } from '../../Redux/actions/animalActions';
+import {
+  getAnimalsByShelter,
+  updateAnimal,
+} from '../../Redux/actions/animalActions';
 import { toast } from 'sonner';
+import { AnimalEditData } from '../../Models/AnimalEditData';
 
 export default function Table() {
   const dispatch = useDispatch<AppDispatch>();
   const { animals, referenceData } = useSelector(
     (state: RootState) => state.animals
   );
+  const { userId, shelterId } = useSelector((state: RootState) => state.auth);
   const [expandedId, setExpandedId] = useState<number | null>(null);
-  const [editData, setEditData] = useState<any>({});
+  const [editData, setEditData] = useState<Partial<AnimalEditData>>({});
 
   useEffect(() => {
-    const shelterId = Number(localStorage.getItem('shelterId'));
     if (shelterId) {
-      dispatch(getAnimals(shelterId));
+      dispatch(getAnimalsByShelter(shelterId));
     }
-  }, [dispatch, animals.length]);
+  }, [dispatch]);
 
   const toggleExpand = (id: number) => {
     setExpandedId(expandedId === id ? null : id);
@@ -66,7 +70,7 @@ export default function Table() {
         setExpandedId(null);
         // refresh מיידי – קריאה מחדש לרשימת חיות
         const userId = Number(localStorage.getItem('shelterId'));
-        await dispatch(getAnimals(userId));
+        await dispatch(getAnimalsByShelter(userId));
       } else {
         const errorMsg = (actionResult as any).payload || 'שגיאה לא ידועה';
         toast.error('שגיאה בשמירה', { description: errorMsg });
@@ -136,9 +140,10 @@ export default function Table() {
                   <td colSpan={7}>
                     <div className="edit-row-content">
                       <div className="edit-field">
-                        <label>שם החיה</label>
+                        <label htmlFor="animal-name">שם החיה</label>
                         <input
                           value={editData.name || ''}
+                          id="animal-name"
                           onChange={(e) =>
                             setEditData({ ...editData, name: e.target.value })
                           }
@@ -148,11 +153,11 @@ export default function Table() {
                         <label>גיל (חודשים)</label>
                         <input
                           type="number"
-                          value={editData.age_months || ''}
+                          value={editData.age || ''}
                           onChange={(e) =>
                             setEditData({
                               ...editData,
-                              age_months: parseInt(e.target.value) || 0,
+                              age: parseInt(e.target.value) || 0,
                             })
                           }
                         />

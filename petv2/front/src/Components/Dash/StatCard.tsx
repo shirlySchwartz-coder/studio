@@ -13,7 +13,12 @@ export const StatCard: React.FC<StatCardProps> = ({
   variant = 'white',
 }) => {
   return (
-    <div className={`stat-card stat-card-${variant}`}>
+    <div
+      className={`stat-card stat-card-${variant}`}
+      role="status"
+      aria-label={`${label}: ${value}`}
+      tabIndex={0}
+    >
       <span className="stat-card-icon">{icon}</span>
       <div className="stat-card-value">{value}</div>
       <div className="stat-card-label"> {label}</div>

@@ -53,7 +53,9 @@ export function SearchAnimal() {
           >
             <option value="">בחר מין</option>
             {referenceData.species.map((specie) => (
-              <option value={specie.id}>{specie.name}</option>
+              <option key={specie.id} value={specie.id}>
+                {specie.name}
+              </option>
             ))}
           </select>
         </div>
@@ -68,7 +70,9 @@ export function SearchAnimal() {
           >
             <option value="">בחר מגדר</option>
             {referenceData.genders.map((gender) => (
-              <option value={gender.id}>{gender.name}</option>
+              <option key={gender.id} value={gender.id}>
+                {gender.name}
+              </option>
             ))}
           </select>
         </div>
@@ -83,7 +87,9 @@ export function SearchAnimal() {
           >
             <option value="">בחר גודל</option>
             {referenceData.sizes.map((size) => (
-              <option value={size.id}>{size.name}</option>
+              <option key={size.id} value={size.id}>
+                {size.name}
+              </option>
             ))}
           </select>
         </div>

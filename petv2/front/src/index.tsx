@@ -6,6 +6,7 @@ import store from './Redux/store';
 import { ToastContainer } from 'react-toastify';
 import { HomeLayout } from './Layout/HomeLayout';
 import './styles/globals.css';
+import ErrorBoundary from './Components/ErrorBoundary';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -13,7 +14,9 @@ const root = ReactDOM.createRoot(
 root.render(
   <Provider store={store}>
     <BrowserRouter>
-      <HomeLayout />
+      <ErrorBoundary>
+        <HomeLayout />
+      </ErrorBoundary>
     </BrowserRouter>
     <ToastContainer />
   </Provider>

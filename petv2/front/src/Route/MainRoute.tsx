@@ -1,7 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import { Page404 } from '../Pages/Page404';
 import { Login } from '../Pages/Login';
-import { Home } from '../Pages/Home';
 import { Register } from '../Pages/Register';
 import { AddAnimal } from '../Pages/AddAnimal';
 import { SearchAnimal } from '../Pages/SearchAnimal';
@@ -13,7 +12,7 @@ export default function MainRoute() {
     <div>
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/home" element={<Home />} />
+        <Route path="/home" element={<HomePage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/dash" element={<DashPage />} />
