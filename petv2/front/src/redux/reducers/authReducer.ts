@@ -3,10 +3,10 @@ import { login, logout, register } from '../actions/authActions';
 
 interface AuthState {
   userId: number | null;
-  fullName: string  | null;
-  roleId: number  | null;
+  fullName: string | null;
+  roleId: number | null;
   permissions: string[];
-  token: string   | null;
+  token: string | null;
   isLoggedIn: boolean;
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
@@ -14,15 +14,21 @@ interface AuthState {
 }
 
 const initialState: AuthState = {
-  userId: localStorage.getItem('userId') ? Number(localStorage.getItem('userId')) : null,
+  userId: localStorage.getItem('userId')
+    ? Number(localStorage.getItem('userId'))
+    : null,
   fullName: localStorage.getItem('fullName'),
-  roleId: localStorage.getItem('roleId') ? Number(localStorage.getItem('roleId')) :4,
+  roleId: localStorage.getItem('roleId')
+    ? Number(localStorage.getItem('roleId'))
+    : 4,
   permissions: [],
   token: localStorage.getItem('token'),
   isLoggedIn: !!localStorage.getItem('token'),
   status: 'idle',
   error: null,
-  shelterId: localStorage.getItem('shelterId') ? Number(localStorage.getItem('shelterId')) : null,
+  shelterId: localStorage.getItem('shelterId')
+    ? Number(localStorage.getItem('shelterId'))
+    : null,
 };
 
 const authSlice = createSlice({
@@ -38,7 +44,7 @@ const authSlice = createSlice({
       .addCase(login.fulfilled, (state, action) => {
         const payload = action.payload;
         if (!payload) return;
-        
+
         state.status = 'succeeded';
         state.userId = payload.userId;
         state.fullName = payload.fullName;
@@ -46,11 +52,9 @@ const authSlice = createSlice({
         state.token = payload.token;
         state.isLoggedIn = true;
         state.shelterId = payload.shelterId;
-
-        localStorage.setItem('userId', payload.userId.toString());
+        //temp
+        localStorage.setItem('token', action.payload.token);
         localStorage.setItem('fullName', payload.fullName);
-        localStorage.setItem('roleId', payload.roleId.toString());
-        localStorage.setItem('shelterId', payload.shelterId ? payload.shelterId.toString() : '');
       })
       .addCase(login.rejected, (state, action) => {
         state.status = 'failed';
@@ -74,7 +78,7 @@ const authSlice = createSlice({
         state.error = action.payload as string;
       })
       .addCase(logout.fulfilled, (state) => {
-         state.userId = null;
+        state.userId = null;
         state.fullName = null;
         state.roleId = null;
         state.permissions = [];

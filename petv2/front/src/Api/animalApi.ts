@@ -8,16 +8,16 @@ import {
   Species,
   Statuses,
 } from '../Models/ReferenceData';
-import { getAuthHeaders } from '../middleware/authMiddleware';
 import { AddAnimalData } from '../Models/AddAnimalData';
 import {
   loadReferenceData,
   saveReferenceData,
 } from '../utils/referenceDataUtils';
+import axiosInstance from '../middleware/authMiddleware';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
 
-//*****************פונקיות משמש או אורח********************
+//*****************פונקיות  אורח ללא טוקן********************
 
 // ללא הרשאות קבלת כל החיות
 export const fetchAllAnimals = async () => {
@@ -62,25 +62,17 @@ export const searchAnimalsByCriteria = async (filters: {
   is_neutered?: boolean;
   vaccination_status?: string;
 }) => {
-  const token = localStorage.getItem('token');
-  const response = await axios.post(`${API_URL}/animals/search`, filters, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-  });
+  //const token = localStorage.getItem('token');
+  const response = await axiosInstance.post(
+    `${API_URL}/animals/search`,
+    filters
+  );
   return response.data.animals;
 };
 
 // קבלת חיות הזקוקות לאומנה רפואית
 export const fetchMedicalFosterAnimals = async () => {
-  const token = localStorage.getItem('token');
-  const response = await axios.get(`${API_URL}/animals/medical-foster`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-  });
+  const response = await axiosInstance.get(`${API_URL}/animals/medical-foster`);
   return response.data.animals;
 };
 
@@ -89,14 +81,9 @@ export const fetchMedicalFosterAnimals = async () => {
 // קבלת  חיות של עמותה
 export const fetchAnimalsByShelter = async (shelterId: number) => {
   try {
-    const token = localStorage.getItem('token');
-
-    const response = await axios.get(`${API_URL}/animals/list/${shelterId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    });
+    const response = await axiosInstance.get(
+      `${API_URL}/animals/list/${shelterId}`
+    );
     console.log(response);
     return response.data.animals as Animal[];
   } catch (error: any) {
@@ -107,16 +94,9 @@ export const fetchAnimalsByShelter = async (shelterId: number) => {
 // הוספת חיה חדשה
 export const createAnimal = async (animalData: AddAnimalData) => {
   try {
-    const token = localStorage.getItem('token');
-    const response = await axios.post(
+    const response = await axiosInstance.post(
       `${API_URL}/dashboard/addAnimal`,
-      animalData,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      }
+      animalData
     );
 
     return response.data;
@@ -133,20 +113,10 @@ export const updateAnimalById = async (animalData: AddAnimalData) => {
     if (roleId >= 3) {
       throw new Error('אין לך הרשאות לעדכן חיה');
     }
-    const token = localStorage.getItem('token');
-    if (!token) {
-      throw new Error('משתמש לא מחובר');
-    }
 
-    const response = await axios.put(
+    const response = await axiosInstance.put(
       `${API_URL}/animals/updateAnimal/${animalData.id}`,
-      animalData,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      }
+      animalData
     );
     return response.data.animal as Animal;
   } catch (error: any) {

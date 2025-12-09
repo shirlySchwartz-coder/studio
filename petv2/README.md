@@ -46,3 +46,9 @@ cd frontend && npm install && npm run dev
 # Backend
 cd backend && npm install && npm run dev
 ```
+
+מחפשת את המשרה הראשונה שלי כ-Junior/Mid Full-Stack Developer
+אם אהבת את הפרויקט – אשמח מאוד לדבר!
+LinkedIn → שירלי שוורץ
+shirly.schwartz@gmail.com
+בנוי באהבה (ובלילות ארוכים) על ידי שירלי שוורץ ⋅ דצמבר 2025
