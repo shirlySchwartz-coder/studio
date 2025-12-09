@@ -1,4 +1,5 @@
 import axios from 'axios';
+import axiosInstance from '../middleware/authMiddleware';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
 
@@ -12,4 +13,9 @@ export const loginUser = async (credentials: { email: string; password: string }
 export const registerUser = async (userData: { full_name: string; email: string; password: string; phone: string; city: string }) => {
   const response = await axios.post(`${API_URL}/auth/register`, userData);
   return response.data;
+};
+
+// התנתקות משתמש
+export const logoutUser = async () => {
+  await axiosInstance.post(`${API_URL}/auth/logout`);
 };

@@ -6,6 +6,7 @@ import {
   ChevronUp,
   Save,
   X,
+  Edit3,
 } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../Redux/store';
@@ -15,30 +16,23 @@ import {
   updateAnimal,
 } from '../../Redux/actions/animalActions';
 import { toast } from 'sonner';
-import { AnimalEditData } from '../../Models/AnimalEditData';
+import { Animal } from '../../Models/Animal';
+import AnimalEditModal from './AnimalEditModal';
 
 export default function Table() {
   const dispatch = useDispatch<AppDispatch>();
   const { animals, referenceData } = useSelector(
     (state: RootState) => state.animals
   );
-  const { userId, shelterId } = useSelector((state: RootState) => state.auth);
-  const [expandedId, setExpandedId] = useState<number | null>(null);
-  const [editData, setEditData] = useState<Partial<AnimalEditData>>({});
+  const { shelterId } = useSelector((state: RootState) => state.auth);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selected, setSelected] = useState<Animal>();
 
   useEffect(() => {
     if (shelterId) {
       dispatch(getAnimalsByShelter(shelterId));
     }
-  }, [dispatch]);
-
-  const toggleExpand = (id: number) => {
-    setExpandedId(expandedId === id ? null : id);
-    if (expandedId !== id) {
-      const animal = animals.find((a) => a.id === id);
-      setEditData(animal || {});
-    }
-  };
+  }, [dispatch, shelterId]);
 
   // mapping ID לשם להצגה (לא hardcode)
   const getDisplayName = (table: string, id: number | undefined): string => {
@@ -58,270 +52,75 @@ export default function Table() {
     return { label: statusName, class: className };
   };
 
-  const handleSave = async () => {
-    try {
-      console.log('📤 שולחת עדכון:', editData);
-      const actionResult = await dispatch(updateAnimal(editData)); // שמור actionResult
-      if (updateAnimal.fulfilled.match(actionResult)) {
-        // תיקון: actionResult במקום result
-        toast.success('החיה עודכנה בהצלחה! 🐾', {
-          description: 'רענון הטבלה...',
-        });
-        setExpandedId(null);
-        // refresh מיידי – קריאה מחדש לרשימת חיות
-        const userId = Number(localStorage.getItem('shelterId'));
-        await dispatch(getAnimalsByShelter(userId));
-      } else {
-        const errorMsg = (actionResult as any).payload || 'שגיאה לא ידועה';
-        toast.error('שגיאה בשמירה', { description: errorMsg });
-      }
-    } catch (error: any) {
-      toast.error('משהו השתבש', { description: error.message || 'בדקי חיבור' });
-    }
-  };
-
   return (
-    <div className="animals-table-container">
-      <table className="animals-table">
-        <thead>
+    <div className="table-container">
+      <table className="w-full">
+        <thead className="table-header">
           <tr>
-            <th>תמונה</th>
-            <th>שם</th>
-            <th>מין</th>
-            <th>גיל</th>
-            <th>סטטוס</th>
-            <th>תאריך הוספה</th>
-            <th>פעולות</th>
+            <th className="p-4 text-right">תמונה</th>
+            <th className="p-4 text-right">שם</th>
+            <th className="p-4 text-right">מין</th>
+            <th className="p-4 text-right">גיל</th>
+            <th className="p-4 text-right">גזע</th>
+            <th className="p-4 text-right">סטטוס</th>
+            <th className="p-4 text-right">פעולות</th>
           </tr>
         </thead>
         <tbody>
           {animals.map((animal) => (
-            <>
-              <tr key={animal.id}>
-                <td>
-                  <img
-                    src={animal.image_url}
-                    alt={animal.name}
-                    className="animal-thumbnail"
-                  />
-                </td>
-                <td className="animal-name">{animal.name}</td>
-                <td>{getDisplayName('genders', animal.gender_id)}</td>{' '}
-                {/* תיקון: ID → שם */}
-                <td>{animal.age} חודשים</td>
-                <td>
-                  <span
-                    className={`status-badge ${
-                      getStatusBadge(animal.status_id).class
-                    }`}
-                  >
-                    {getStatusBadge(animal.status_id).label}
-                  </span>
-                </td>
-                <td>
-                  {new Date(animal.created_at).toLocaleDateString('he-IL')}
-                </td>
-                <td>
-                  <button
-                    className="action-button"
-                    onClick={() => toggleExpand(animal.id)}
-                  >
-                    {expandedId === animal.id ? (
-                      <ChevronUp size={20} />
-                    ) : (
-                      <ChevronDown size={20} />
-                    )}
-                  </button>
-                </td>
-              </tr>
-
-              {expandedId === animal.id && (
-                <tr className="edit-row" key={animal.name}>
-                  <td colSpan={7}>
-                    <div className="edit-row-content">
-                      <div className="edit-field">
-                        <label htmlFor="animal-name">שם החיה</label>
-                        <input
-                          value={editData.name || ''}
-                          id="animal-name"
-                          onChange={(e) =>
-                            setEditData({ ...editData, name: e.target.value })
-                          }
-                        />
-                      </div>
-                      <div className="edit-field">
-                        <label>גיל (חודשים)</label>
-                        <input
-                          type="number"
-                          value={editData.age || ''}
-                          onChange={(e) =>
-                            setEditData({
-                              ...editData,
-                              age: parseInt(e.target.value) || 0,
-                            })
-                          }
-                        />
-                      </div>
-                      <div className="edit-field">
-                        <label>מין</label>
-                        <select
-                          value={editData.gender_id || ''}
-                          onChange={(e) =>
-                            setEditData({
-                              ...editData,
-                              gender_id: parseInt(e.target.value),
-                            })
-                          }
-                        >
-                          <option value="">בחר מין</option>
-                          {referenceData.genders?.map((g: any) => (
-                            <option key={g.id} value={g.id}>
-                              {g.name}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                      <div className="edit-field">
-                        <label>סטטוס</label>
-                        <select
-                          value={editData.status_id || ''}
-                          onChange={(e) =>
-                            setEditData({
-                              ...editData,
-                              status_id: parseInt(e.target.value),
-                            })
-                          }
-                        >
-                          <option value="">בחר סטטוס</option>
-                          {referenceData.statuses?.map((s: any) => (
-                            <option key={s.id} value={s.id}>
-                              {s.name}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                      <div className="edit-field">
-                        <label>סוג חיה</label>
-                        <select
-                          value={editData.species_id || ''}
-                          onChange={(e) =>
-                            setEditData({
-                              ...editData,
-                              species_id: parseInt(e.target.value),
-                            })
-                          }
-                        >
-                          <option value="">בחר סוג</option>
-                          {referenceData.species?.map((sp: any) => (
-                            <option key={sp.id} value={sp.id}>
-                              {sp.name}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                      <div className="edit-field">
-                        <label>גודל</label>
-                        <select
-                          value={editData.size_id || ''}
-                          onChange={(e) =>
-                            setEditData({
-                              ...editData,
-                              size_id: parseInt(e.target.value),
-                            })
-                          }
-                        >
-                          <option value="">בחר גודל</option>
-                          {referenceData.sizes?.map((sz: any) => (
-                            <option key={sz.id} value={sz.id}>
-                              {sz.name}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                      <div className="edit-field">
-                        <label>גזע</label>
-                        <select
-                          value={editData.breed_id || ''}
-                          onChange={(e) =>
-                            setEditData({
-                              ...editData,
-                              breed_id: parseInt(e.target.value),
-                            })
-                          }
-                        >
-                          <option value="">בחר גזע</option>
-                          {referenceData.breeds?.map((b: any) => (
-                            <option key={b.id} value={b.id}>
-                              {b.name}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                      <div className="edit-field">
-                        <label>חיסונים</label>
-                        <input
-                          value={editData.vaccination_status || ''}
-                          onChange={(e) =>
-                            setEditData({
-                              ...editData,
-                              vaccination_status: e.target.value,
-                            })
-                          }
-                          placeholder="עדכני / חסר כלבת..."
-                        />
-                      </div>
-                      <div className="edit-field">
-                        <label>תיאור</label>
-                        <textarea
-                          rows={3}
-                          value={editData.description || ''}
-                          onChange={(e) =>
-                            setEditData({
-                              ...editData,
-                              description: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
-                    </div>
-                    <div
-                      className="edit-actions"
-                      style={{ padding: '0 24px 24px' }}
-                    >
-                      <button
-                        onClick={handleSave}
-                        style={{
-                          background: '#06b6d4',
-                          color: 'white',
-                          padding: '12px 24px',
-                          borderRadius: '12px',
-                          border: 'none',
-                          cursor: 'pointer',
-                        }}
-                      >
-                        <Save size={20} style={{ marginLeft: '8px' }} /> שמור
-                        שינויים
-                      </button>
-                      <button
-                        onClick={() => setExpandedId(null)}
-                        style={{
-                          background: '#e2e8f0',
-                          padding: '12px 24px',
-                          borderRadius: '12px',
-                          border: 'none',
-                          cursor: 'pointer',
-                        }}
-                      >
-                        <X size={20} style={{ marginLeft: '8px' }} /> ביטול
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              )}
-            </>
+            <tr key={animal.id} className="table-row border-b">
+              <td className="p-4">
+                <img
+                  src={animal.image_url || '/fallback.png'}
+                  alt=""
+                  className="table-img"
+                />
+              </td>
+              <td className="p-4 font-medium">{animal.name}</td>
+              <td className="p-4">
+                {getDisplayName('genders', animal.gender_id)}
+              </td>
+              <td className="p-4">{animal.age}</td>
+              <td className="p-4">
+                {getDisplayName('breeds', animal.breed_id)}
+              </td>
+              <td className="p-4">
+                <span
+                  className={`table-status ${
+                    getStatusBadge(animal.status_id).class
+                  }`}
+                >
+                  {getDisplayName('statuses', animal.status_id)}
+                </span>
+              </td>
+              <td className="p-4">
+                <button
+                  onClick={() => {
+                    setSelected(animal);
+                    setModalOpen(true);
+                  }}
+                  className="table-edit-btn"
+                >
+                  <Edit3 size={20} className="text-cyan-600" />
+                </button>
+              </td>
+            </tr>
           ))}
         </tbody>
       </table>
+
+      {selected && (
+        <AnimalEditModal
+          animal={selected}
+          isOpen={modalOpen}
+          onClose={() => setModalOpen(false)}
+          onSuccess={async () => {
+            if (shelterId) {
+              await dispatch(getAnimalsByShelter(shelterId));
+            }
+          }}
+        />
+      )}
     </div>
   );
 }

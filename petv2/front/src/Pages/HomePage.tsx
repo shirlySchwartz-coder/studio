@@ -15,23 +15,20 @@ import { fetchReferenceData } from '../Api/animalApi';
 export const HomePage = () => {
   const dispatch = useDispatch<AppDispatch>();
   const [loading, setLoading] = useState<boolean>(true);
-  const {
-    animals,
-    referenceData,
-    status: animalsStatus,
-  } = useSelector((state: RootState) => state.animals);
+  const { animals, referenceData, status } = useSelector(
+    (state: RootState) => state.animals
+  );
 
   useEffect(() => {
-    if (!localStorage.getItem('referenceData')) {
+    if (Object.keys(referenceData).length === 0) {
       dispatch(getReferenceData());
     }
-  }, [dispatch, referenceData]);
+    if (animals.length === 0) {
+      dispatch(getAllAnimals());
+    }
+  }, [dispatch, animals.length, referenceData]);
 
-  useEffect(() => {
-    if (animals.length === 0) dispatch(getAllAnimals());
-  }, [dispatch, animals.length]);
-
-  if (animalsStatus === 'loading') {
+  if (status === 'loading') {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <h1>טוען את הנתונים...</h1>

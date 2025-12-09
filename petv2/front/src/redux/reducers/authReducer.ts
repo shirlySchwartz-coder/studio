@@ -52,8 +52,7 @@ const authSlice = createSlice({
         state.token = payload.token;
         state.isLoggedIn = true;
         state.shelterId = payload.shelterId;
-        //temp
-        localStorage.setItem('token', action.payload.token);
+       
         localStorage.setItem('fullName', payload.fullName);
       })
       .addCase(login.rejected, (state, action) => {

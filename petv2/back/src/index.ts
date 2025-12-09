@@ -8,6 +8,7 @@ import { adoptionRequestsRouter } from './routes/adoption-requests';
 import animalRouter from './routes/animalRoutes';
 import dashRouter from './routes/dashRoutes';
 import authRouter from './routes/authRoutes';
+import cookieParser from 'cookie-parser';
 //import sizeRoutes from './routes/sizeRoutes';
 
 dotenv.config();
@@ -20,7 +21,7 @@ app.use(cors({
   exposedHeaders: ['Authorization'],
   credentials: true,
 }));
-
+app.use(cookieParser());
 app.use(express.json());
 // הגדרת תיקיית הקבצים הסטטיים
 app.use('/uploads', express.static(path.join(__dirname,'..', 'public','uploads')));

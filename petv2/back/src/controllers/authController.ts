@@ -101,11 +101,19 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
   );
 
   // CHANGE: Return data only
-  return {
+  /* return {
     token,
     userId: user.id,
     roleId: user.role_id,
     fullName: user.full_name,
     shelterId: user.shelter_id || null,
-  };
+  }; */
+ 
+  return {
+    token,
+   userId: user.id,
+   roleId: user.role_id,
+   fullName: user.full_name,
+   shelterId: user.shelter_id || null,
+  }
 };

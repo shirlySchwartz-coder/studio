@@ -12,6 +12,7 @@ import { AddAnimalData } from '../../Models/AddAnimalData';
 import { RootState } from '../store';
 import { ReferenceData } from '../../Models/ReferenceData';
 import { Animal } from '../../Models/Animal';
+import { logout } from './authActions';
 
 export const getAllAnimals = createAsyncThunk<
   Animal[],
@@ -78,19 +79,25 @@ export const getAnimalsByShelter = createAsyncThunk<
   Animal[],
   number,
   { rejectValue: string }
->('animals/getAnimals', async (shelterId: number, { rejectWithValue }) => {
-  if (shelterId > 2 && !shelterId) {
-    throw new Error('Shelter not linked'); // **[CHANGE]**: בדיקה מקומית
+>(
+  'animals/getAnimals',
+  async (shelterId: number, { dispatch, rejectWithValue }) => {
+    if (shelterId > 2 && !shelterId) {
+      throw new Error('Shelter not linked'); // **[CHANGE]**: בדיקה מקומית
+    }
+    try {
+      const animals = await fetchAnimalsByShelter(shelterId);
+      return animals;
+    } catch (error: any) {
+      if (error.response?.status === 401) {
+        dispatch(logout());
+        // אפשר גם להפעיל toast
+        return rejectWithValue('הסשן פג תוקף');
+      }
+      return rejectWithValue(error.message);
+    }
   }
-  try {
-    const animals = await fetchAnimalsByShelter(shelterId);
-    return animals;
-  } catch (error: any) {
-    return rejectWithValue(
-      error.response?.data?.message || 'שגיאה בקבלת רשימת החיות'
-    );
-  }
-});
+);
 
 export const addAnimal = createAsyncThunk<
   Animal,
@@ -101,7 +108,7 @@ export const addAnimal = createAsyncThunk<
   async (animalData: AddAnimalData, { rejectWithValue }) => {
     try {
       const animal = await createAnimal(animalData);
-      return animal;
+      return animal as Animal;
     } catch (error: any) {
       return rejectWithValue(error.message || 'שגיאה בהוספת חיה');
     }
@@ -127,7 +134,7 @@ export const getReferenceData = createAsyncThunk<
 >('animals/fetchReferenceData', async (_, { rejectWithValue }) => {
   try {
     const data = await fetchReferenceData();
-    return data;
+    return data as ReferenceData;
   } catch (error: any) {
     return rejectWithValue(error.message || 'שגיאה בטעינת נתוני טבלאות');
   }

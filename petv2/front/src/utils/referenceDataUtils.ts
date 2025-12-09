@@ -25,7 +25,8 @@ export const saveReferenceData = (data: any): void => {
 
 /**
  * טעינת referenceData מ-localStorage – מנקה ומחזירה מערכים תקינים
- * @returns {ReferenceData} – אובייקט נקי עם מערכים
+ * @returns {ReferenceData} – אוביProjects
+ יקט נקי עם מערכים
  */
 export const loadReferenceData = (): any => {
   try {

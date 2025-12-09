@@ -54,6 +54,8 @@ export const fetchReferenceData = async (): Promise<ReferenceData> => {
   }
 };
 
+//פונקציות למשתמשים רשומים
+
 // חיפוש חיות לפי קריטריונים
 export const searchAnimalsByCriteria = async (filters: {
   species_id?: string;
