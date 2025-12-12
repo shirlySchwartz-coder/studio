@@ -19,7 +19,7 @@ export function AddAnimal() {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { status, error, referenceData } = useSelector((state: RootState) => state.animals);
-  const { isLoggedIn, roleId, token } = useSelector((state: RootState) => state.auth);
+  const { isLoggedIn, roleId } = useSelector((state: RootState) => state.auth);
   // Upload state from Redux
   const {
     imageUrl,
@@ -139,7 +139,7 @@ export function AddAnimal() {
       return;
     }
 
-    if (!token) {
+    if (!isLoggedIn) {
       alert('אינך מחובר. אנא התחבר מחדש.');
       navigate('/login');
       return;
@@ -147,8 +147,9 @@ export function AddAnimal() {
 
     try {
       setUploadProgress(0);
+      // Token is in HttpOnly cookie, sent automatically via axiosInstance
       const result = await dispatch(
-        uploadAnimalImage({ file: selectedFile, token })
+        uploadAnimalImage({ file: selectedFile })
       ).unwrap();
 
       console.log('✅ Upload completed, image URL:', result);

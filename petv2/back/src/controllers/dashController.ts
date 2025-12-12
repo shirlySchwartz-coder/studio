@@ -1,11 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import db from '../Dal/dal_mysql'
+import { UserPayload } from '../models/userInfo';
 
-interface UserPayload {
-  userId: number;
-  fullName:string,
-  roleId: number;
-}
 
 // הרחבת ממשק Request
 interface AuthRequest extends Request {

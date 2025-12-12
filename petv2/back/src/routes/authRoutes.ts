@@ -10,17 +10,24 @@ authRouter.post(
       if (!user || !user.token) {
         throw new Error('Login failed');
       }
-      console.log(`${user.fullName} 'is now logged in'`);
+
       res.cookie('token', user.token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        sameSite: 'lax',
         path: '/',
         maxAge: 3600000,
       }); // 1 hour
 
+      console.log(`${user.fullName} התחבר בהצלחה`);
+
       res.status(200).json({
-        user,
+        user: {
+          userId: user.userId,
+          fullName: user.fullName,
+          roleId: user.roleId,
+          shelterId: user.shelterId,
+        },
       });
     } catch (error: any) {
       const status = error.message.includes('Invalid') ? 401 : 500;

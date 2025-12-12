@@ -33,7 +33,7 @@ export function Login() {
   });
   useEffect(() => {
     if (isLoggedIn) {
-      navigate('/home');
+      navigate('/dash');
     }
   }, [isLoggedIn, navigate]);
 

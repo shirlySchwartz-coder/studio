@@ -1,25 +1,25 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { createToken, verifyToken } from '../middleware/auth';
 //import { createAnimal, getAnimals, searchAnimals, getMedicalFosterAnimals, getAllTablesInfo, getAllAnimals } from '../controllers/animalController';
-import jwt from 'jsonwebtoken'
-import { createAnimal, getAllAnimals, getAllTablesInfo,getAnimalsByShelter ,updateAnimal} from '../controllers/animalController';
+import jwt from 'jsonwebtoken';
+import {
+  createAnimal,
+  getAllAnimals,
+  getAllTablesInfo,
+  getAnimalsByShelter,
+  updateAnimal,
+} from '../controllers/animalController';
+import { UserPayload } from '../models/userInfo';
 
 const animalRouter = Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
-
 // ממשק עבור נתוני המשתמש בטוקן
-interface UserPayload {
-  id: number;
-  full_name: string;
-  role_id: number;
-}
 
 // הרחבת ממשק Request
 interface AuthRequest extends Request {
   user?: UserPayload;
 }
-
 
 //דף הבית קבלת רשימת כל החיות
 animalRouter.get(
@@ -40,8 +40,32 @@ animalRouter.get(
   verifyToken,
   async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
-      const animals = await getAnimalsByShelter(req, res, next);
-      res.status(200).json({ animals });
+      const animalsFromShelter = await getAnimalsByShelter(req, res, next);
+
+      if (req.user) {
+        const newToken = jwt.sign(
+          {
+            userId: req.user.userId,
+            fullName: req.user.fullName,
+            roleId: req.user.roleId,
+            shelterId: req.user.shelterId,
+          },
+          JWT_SECRET,
+          { expiresIn: '1h' }
+        );
+      }
+      const newToken = createToken(req as any, res, next);
+      res.cookie('token', newToken.replace('Bearer ', ''), {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/',
+        maxAge: 3600000,
+      });
+      console.log(
+        `There is anser for animals from ${req.user?.fullName} are: ${animalsFromShelter} `
+      );
+      res.status(200).json({ animalsFromShelter });
     } catch (err: any) {
       next(err);
     }
@@ -59,17 +83,15 @@ animalRouter.post(
       // יצירת טוקן חדש
       const newToken = jwt.sign(
         {
-          userId: req.user?.id,
-          fullName: req.user?.full_name,
-          roleId: req.user?.role_id,
+          userId: req.user?.userId,
+          fullName: req.user?.fullName,
+          roleId: req.user?.roleId,
+          shelterId: req.user?.shelterId,
         },
         JWT_SECRET,
         { expiresIn: '1h' }
       );
-      res.status(201)
-        .header('Access-Control-Request-Headers', 'Authorization')
-        .header('Authorization', `Bearer ${newToken}`)
-        .json({ message: 'Animal added successfully', animal });
+      res.status(201).json({ message: 'Animal added successfully', animal });
     } catch (err: any) {
       next(err);
     }
@@ -84,21 +106,19 @@ animalRouter.put(
     try {
       const updatedAnimal = await updateAnimal(req, res, next);
       let newToken = createToken(req as any, res, next);
-      res.status(200)
-        .header('Access-Control-Request-Headers', 'Authorization')
-        .header('Authorization', `${newToken}`)
+      res
+        .status(200)
         .json({ message: 'Animal updated successfully', updatedAnimal });
     } catch (err: any) {
       next(err);
     }
-  } 
-
-)
+  }
+);
 
 //table-data
 animalRouter.get(
   '/tables-data',
-  async ( req: Request, res: Response,next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       const tablesData = await getAllTablesInfo(req, res, next);
       res.status(200).json({ tablesData });
@@ -107,7 +127,6 @@ animalRouter.get(
     }
   }
 );
-
 
 export default animalRouter;
 

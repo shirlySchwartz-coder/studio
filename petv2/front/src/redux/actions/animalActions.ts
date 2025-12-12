@@ -90,11 +90,10 @@ export const getAnimalsByShelter = createAsyncThunk<
       return animals;
     } catch (error: any) {
       if (error.response?.status === 401) {
+        console.log('לא מאומת – מפנים ללוגין');
         dispatch(logout());
-        // אפשר גם להפעיל toast
-        return rejectWithValue('הסשן פג תוקף');
       }
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.response?.data || 'שגיאה');
     }
   }
 );

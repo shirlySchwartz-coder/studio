@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { RootState } from '../Redux/store';
+import axiosInstance from '../Api/axiosInstance';
 
 const API_URL = 'http://localhost:8080/api';
 
@@ -21,13 +22,11 @@ async function adoptionRequestAction(
   formData: FormData
 ): Promise<AdoptionRequestState> {
   const animal_id = Number(formData.get('animal_id'));
-  const token = localStorage.getItem('token');
 
   try {
-    await axios.post(
+    await axiosInstance.post(
       `${API_URL}/adoption-requests`,
-      { animal_id },
-      { headers: { Authorization: `Bearer ${token}` } }
+      { animal_id }
     );
     return { error: null, success: true };
   } catch (err: any) {
@@ -53,7 +52,7 @@ export function AdoptionRequest() {
     adoptionRequestAction,
     initialState
   );
-  const { roleId, token } = useSelector((state: RootState) => state.auth);
+  const { roleId } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
     if (state.success) {

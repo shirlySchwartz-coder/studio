@@ -3,15 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 //import AnimalMedicalEvents from '../models/AnimalMedicalEvents';
 import db from '../Dal/dal_mysql';
 import { Animal } from '../models/Animal';
-
-
-// ממשק עבור נתוני המשתמש
-interface UserPayload {
-  id: number;
-  full_name:string,
-  role_id: number;
-  shelter_id?: number;
-}
+import { UserPayload } from '../models/userInfo';
 
 // הרחבת ממשק Request
 interface AuthRequest extends Request {
@@ -19,9 +11,13 @@ interface AuthRequest extends Request {
 }
 
 // קבלת כל החיות - אורח דף הבית
-export const getAllAnimals = async (req: Request, res: Response, next: NextFunction) => {
+export const getAllAnimals = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-    let sql =`SELECT A.id, A.name,  Sp.name As species,
+    let sql = `SELECT A.id, A.name,  Sp.name As species,
       G.name As gender , Sz.name As size, Slt.name As shelter, Ans.name As status,
       A.age,  A.is_neutered, A.is_house_trained, A.vaccination_status,
       B.name As breed, A.description, A.image_url
@@ -37,21 +33,23 @@ export const getAllAnimals = async (req: Request, res: Response, next: NextFunct
       inner join animal_statuses As Ans
       on A.status_id = Ans.id
       inner join breed_types As B
-      on A.breed_id = B.id`
-   
-  const animals = await db.execute(sql);
-      return animals;
+      on A.breed_id = B.id`;
 
+    const animals = await db.execute(sql);
+    return animals;
   } catch (error: any) {
     throw new Error('Error loading animals');
   }
 };
 
-
 //לפי עמותה קבלת כל החיות
-export const getAnimalsByShelter = async (req: AuthRequest, res: Response, next: NextFunction) => {
+export const getAnimalsByShelter = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-    if(req.user?.role_id!>2){
+    if (req.user?.roleId! > 2) {
       throw new Error('No permissions to view animals');
     }
 
@@ -59,7 +57,7 @@ export const getAnimalsByShelter = async (req: AuthRequest, res: Response, next:
     if (!shelterId) {
       throw new Error('Shelter ID not found for the user');
     }
-    let sql =`SELECT A.id, A.name,  Sp.name As species,
+    let sql = `SELECT A.id, A.name,  Sp.name As species,
       G.name As gender , Sz.name As size, Slt.name As shelter, Ans.name As status,
       A.age,  A.is_neutered, A.is_house_trained, A.vaccination_status,
       B.name As breed, A.description, A.image_url
@@ -76,27 +74,45 @@ export const getAnimalsByShelter = async (req: AuthRequest, res: Response, next:
       on A.status_id = Ans.id
       inner join breed_types As B
       on A.breed_id = B.id
-      Where shelter_id=?`
-   
-  const animals = await db.execute<{animals:Animal []}>(sql,[shelterId]);
-      return animals ;
+      Where shelter_id=?`;
+
+    const animals = await db.execute<{ animals: Animal[] }>(sql, [shelterId]);
+    return animals;
   } catch (error: any) {
     throw new Error('Error loading animals');
   }
 };
 
 // יצירת חיה חדשה
-export const createAnimal = async (req: AuthRequest, res: Response, next: NextFunction) => {
+export const createAnimal = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-     const { name, breed_id, species_id,  shelter_id,status_id, gender_id, age, size_id, description, is_neutered, is_house_trained, vaccination_status, image_url } = req.body;
-    
+    const {
+      name,
+      breed_id,
+      species_id,
+      shelter_id,
+      status_id,
+      gender_id,
+      age,
+      size_id,
+      description,
+      is_neutered,
+      is_house_trained,
+      vaccination_status,
+      image_url,
+    } = req.body;
+
     if (!name || !species_id || !gender_id || !size_id) {
-    throw new Error('Required fields are missing');
-  }
-      // וידוא שהמשתמש מאומת
-      if (!req.user || req.user.role_id>2) {
-        throw new Error( 'No permissions to add an animal' );
-      }
+      throw new Error('Required fields are missing');
+    }
+    // וידוא שהמשתמש מאומת
+    if (!req.user || req.user.roleId > 2) {
+      throw new Error('No permissions to add an animal');
+    }
 
     const insertSql = `INSERT INTO animals( 
     name, breed_id, species_id, shelter_id, status_id, gender_id, age, size_id, description, is_neutered, is_house_trained,
@@ -118,7 +134,7 @@ export const createAnimal = async (req: AuthRequest, res: Response, next: NextFu
       vaccination_status || null,
       image_url || null,
       new Date(),
-      req.user.id // שמירת מזהה המשתמש שיצר את החיה
+      req.user.userId, // שמירת מזהה המשתמש שיצר את החיה
     ]);
     // יצירת האובייקט של החיה להחזרה
     const animal = {
@@ -126,7 +142,7 @@ export const createAnimal = async (req: AuthRequest, res: Response, next: NextFu
       breed_id: breed_id || null,
       species_id,
       shelter_id: shelter_id || 1,
-      status_id: status_id || 1,    
+      status_id: status_id || 1,
       gender_id,
       age: age || null,
       size_id: size_id || null,
@@ -143,13 +159,17 @@ export const createAnimal = async (req: AuthRequest, res: Response, next: NextFu
   }
 };
 // עדכון חיה קיימת
-export const updateAnimal = async (req: AuthRequest, res: Response, next: NextFunction) => {
+export const updateAnimal = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const animalId = parseInt(req.params.id);
-    if(isNaN(animalId)) {
+    if (isNaN(animalId)) {
       throw new Error('Invalid animal ID');
     }
-     if (!req.user || req.user.role_id > 2) {
+    if (!req.user || req.user.roleId > 2) {
       throw new Error('אין הרשאה לעדכון חיה');
     }
     const body = req.body;
@@ -167,21 +187,21 @@ export const updateAnimal = async (req: AuthRequest, res: Response, next: NextFu
       is_house_trained: body.is_house_trained ?? null,
       vaccination_status: body.vaccination_status || null,
       image_url: body.image_url || null,
-      user_id: req.user.id, 
+      user_id: req.user.userId,
     };
-  const updates = [];
-  const values = [];
+    const updates = [];
+    const values = [];
 
-  for (const [key, value] of Object.entries(params)) {
-    if (value !== null && value !== undefined) {
-      updates.push(`${key} = ?`);
-      values.push(value);
+    for (const [key, value] of Object.entries(params)) {
+      if (value !== null && value !== undefined) {
+        updates.push(`${key} = ?`);
+        values.push(value);
+      }
     }
-  }
     updates.push('updated_at = NOW(), updated_by_user_id = ?');
-    values.push(req.user.id);
+    values.push(req.user.roleId);
 
-    if (updates.length === 0) return ({ message: 'אין שינויים לעדכון' });
+    if (updates.length === 0) return { message: 'אין שינויים לעדכון' };
 
     const updateSql = `UPDATE animals SET ${updates.join(', ')} WHERE id = ?`;
     values.push(animalId);
@@ -190,13 +210,12 @@ export const updateAnimal = async (req: AuthRequest, res: Response, next: NextFu
     console.log('📊 פרמטרים נקיים:', values); // לוג לבדיקה
 
     const [result] = await db.execute(updateSql, values);
-    if( (result as any).affectedRows === 0 ) {
+    if ((result as any).affectedRows === 0) {
       throw new Error('Animal not found or no changes made');
     }
-    console.log(result)
+    console.log(result);
 
-   
-    return  { message: 'Animal updated successfully' };
+    return { message: 'Animal updated successfully' };
   } catch (err: any) {
     console.error('Error updating animal:', err);
     next(err);
@@ -211,16 +230,15 @@ export const getAllSizes = async (
   next: NextFunction
 ) => {
   try {
-    let sql =`SELECT id, name FROM pet_adoption.sizes
-order by id ASC	`
-    const sizes = await db.execute( sql );
+    let sql = `SELECT id, name FROM pet_adoption.sizes
+order by id ASC	`;
+    const sizes = await db.execute(sql);
     return sizes;
   } catch (error: any) {
     console.error('❌ Error fetching sizes:', error);
     throw new Error('Failed to fetch sizes');
   }
-} 
-
+};
 
 // Get all genders
 export const getAllGenders = async (
@@ -229,15 +247,15 @@ export const getAllGenders = async (
   next: NextFunction
 ) => {
   try {
-    let sql =`SELECT id, name FROM pet_adoption.gender_types
-order by id ASC	`
-    const genders = await db.execute( sql );
+    let sql = `SELECT id, name FROM pet_adoption.gender_types
+order by id ASC	`;
+    const genders = await db.execute(sql);
     return genders;
   } catch (error: any) {
     console.error('❌ Error fetching genders:', error);
     throw new Error('Failed to fetch genders');
   }
-} 
+};
 // Get all Species
 export const getAllSpecies = async (
   req: Request,
@@ -245,15 +263,15 @@ export const getAllSpecies = async (
   next: NextFunction
 ) => {
   try {
-    let sql =`SELECT id, name FROM pet_adoption.species
-order by id ASC	`
-    const species = await db.execute( sql );
+    let sql = `SELECT id, name FROM pet_adoption.species
+order by id ASC	`;
+    const species = await db.execute(sql);
     return species;
   } catch (error: any) {
     console.error('❌ Error fetching species:', error);
     throw new Error('Failed to fetch species');
   }
-}
+};
 // Get all Statuses
 export const getAllStatuses = async (
   req: Request,
@@ -261,15 +279,15 @@ export const getAllStatuses = async (
   next: NextFunction
 ) => {
   try {
-     let sql =`SELECT id, name FROM pet_adoption.animal_statuses
-order by id ASC	`
+    let sql = `SELECT id, name FROM pet_adoption.animal_statuses
+order by id ASC	`;
     const statuses = await db.execute(sql);
     return statuses;
   } catch (error: any) {
     console.error('❌ Error fetching statuses:', error);
     throw new Error('Failed to fetch statuses');
   }
-} 
+};
 // Get all Shelters
 export const getAllShelters = async (
   req: Request,
@@ -277,15 +295,15 @@ export const getAllShelters = async (
   next: NextFunction
 ) => {
   try {
-    let sql =`SELECT id, name FROM pet_adoption.shelters
-order by id ASC	`
+    let sql = `SELECT id, name FROM pet_adoption.shelters
+order by id ASC	`;
     const shelters = await db.execute(sql);
     return shelters;
   } catch (error: any) {
     console.error('❌ Error fetching shelters:', error);
     throw new Error('Failed to fetch shelters');
   }
-}  
+};
 // Get all Breeds
 export const getAllBreeds = async (
   req: Request,
@@ -293,21 +311,21 @@ export const getAllBreeds = async (
   next: NextFunction
 ) => {
   try {
-let sql =`SELECT id, name FROM pet_adoption.breed_types
-order by id ASC	`
-    
+    let sql = `SELECT id, name FROM pet_adoption.breed_types
+order by id ASC	`;
+
     const breeds = await db.execute(sql);
     return breeds;
   } catch (error: any) {
     console.error('❌ Error fetching breeds:', error);
     throw new Error('Failed to fetch breeds');
   }
-} 
+};
 
 export const getAllTablesInfo = async (
   req: Request,
   res: Response,
-  next:NextFunction
+  next: NextFunction
 ) => {
   try {
     const sizes: [] = await getAllSizes(req, res, next);
@@ -315,18 +333,17 @@ export const getAllTablesInfo = async (
     const species: [] = await getAllSpecies(req, res, next);
     const statuses: [] = await getAllStatuses(req, res, next);
     const shelters: [] = await getAllShelters(req, res, next);
-       const breeds: [] = await getAllBreeds(req, res, next);
+    const breeds: [] = await getAllBreeds(req, res, next);
     return {
-    genders: genders,
-    sizes: sizes,
-    species: species,
-    statuses: statuses,
+      genders: genders,
+      sizes: sizes,
+      species: species,
+      statuses: statuses,
       shelters: shelters,
-      breeds: breeds
+      breeds: breeds,
     };
   } catch (error) {
-     console.error('❌ Error fetching data from tables:', error);
+    console.error('❌ Error fetching data from tables:', error);
     throw new Error('Failed to fetch data');
   }
-}
-
+};

@@ -13,7 +13,7 @@ import {
   loadReferenceData,
   saveReferenceData,
 } from '../utils/referenceDataUtils';
-import axiosInstance from '../middleware/authMiddleware';
+import axiosInstance from './axiosInstance';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
 
@@ -64,7 +64,6 @@ export const searchAnimalsByCriteria = async (filters: {
   is_neutered?: boolean;
   vaccination_status?: string;
 }) => {
-  //const token = localStorage.getItem('token');
   const response = await axiosInstance.post(
     `${API_URL}/animals/search`,
     filters
@@ -87,7 +86,7 @@ export const fetchAnimalsByShelter = async (shelterId: number) => {
       `${API_URL}/animals/list/${shelterId}`
     );
     console.log(response);
-    return response.data.animals as Animal[];
+    return response.data.animalsFromShelter as Animal[];
   } catch (error: any) {
     throw new Error(error.response?.data?.message);
   }

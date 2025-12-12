@@ -24,10 +24,19 @@ interface AnimalState {
   error: string | null;
 }
 
+const safeParseAnimals = (): Animal[] => {
+  const stored = localStorage.getItem('animals');
+  if (!stored) return [];
+  try {
+    const parsed = JSON.parse(stored);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+};
+
 const initialState: AnimalState = {
-  animals: localStorage.getItem('animals')
-    ? JSON.parse(localStorage.getItem('animals') || '[]')
-    : [],
+  animals: safeParseAnimals(),
   referenceData: loadReferenceData(),
   searchResults: [],
   medicalFosterAnimals: [],

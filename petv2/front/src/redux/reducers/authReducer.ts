@@ -6,7 +6,6 @@ interface AuthState {
   fullName: string | null;
   roleId: number | null;
   permissions: string[];
-  token: string | null;
   isLoggedIn: boolean;
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
@@ -14,21 +13,14 @@ interface AuthState {
 }
 
 const initialState: AuthState = {
-  userId: localStorage.getItem('userId')
-    ? Number(localStorage.getItem('userId'))
-    : null,
-  fullName: localStorage.getItem('fullName'),
-  roleId: localStorage.getItem('roleId')
-    ? Number(localStorage.getItem('roleId'))
-    : 4,
+  userId: null,
+  fullName: null,
+  roleId: 4,
   permissions: [],
-  token: localStorage.getItem('token'),
-  isLoggedIn: !!localStorage.getItem('token'),
+  isLoggedIn: false,
   status: 'idle',
   error: null,
-  shelterId: localStorage.getItem('shelterId')
-    ? Number(localStorage.getItem('shelterId'))
-    : null,
+  shelterId: null,
 };
 
 const authSlice = createSlice({
@@ -49,11 +41,16 @@ const authSlice = createSlice({
         state.userId = payload.userId;
         state.fullName = payload.fullName;
         state.roleId = payload.roleId;
-        state.token = payload.token;
         state.isLoggedIn = true;
         state.shelterId = payload.shelterId;
-       
+
+        // Store user data in localStorage for refresh restoration (not token)
+        if (payload.shelterId) {
+          localStorage.setItem('shelterId', payload.shelterId.toString());
+        }
         localStorage.setItem('fullName', payload.fullName);
+        localStorage.setItem('userId', payload.userId?.toString() || '');
+        localStorage.setItem('roleId', payload.roleId?.toString() || '');
       })
       .addCase(login.rejected, (state, action) => {
         state.status = 'failed';
@@ -69,7 +66,6 @@ const authSlice = createSlice({
         state.fullName = action.payload.fullName;
         state.roleId = action.payload.roleId;
         state.permissions = action.payload.permissions;
-        state.token = action.payload.token;
         state.isLoggedIn = true;
       })
       .addCase(register.rejected, (state, action) => {
@@ -77,14 +73,16 @@ const authSlice = createSlice({
         state.error = action.payload as string;
       })
       .addCase(logout.fulfilled, (state) => {
+        state.isLoggedIn = false;
         state.userId = null;
         state.fullName = null;
         state.roleId = null;
-        state.permissions = [];
-        state.token = null;
-        state.isLoggedIn = false;
-        state.status = 'idle';
-        state.error = null;
+        state.shelterId = null;
+        // Clear localStorage (token is in cookie, cleared by backend)
+        localStorage.removeItem('shelterId');
+        localStorage.removeItem('fullName');
+        localStorage.removeItem('userId');
+        localStorage.removeItem('roleId');
       });
   },
 });

@@ -11,8 +11,8 @@ export const login = createAsyncThunk(
     try {
       const response = await loginUser(credentials);
 
+      // Token is in HttpOnly cookie, not needed in response
       const userData = {
-        token: response.user.token,
         userId: response.user.userId,
         roleId: response.user.roleId,
         fullName: response.user.fullName,
@@ -79,6 +79,12 @@ export const logout = createAsyncThunk('auth/logout', async (_, {}) => {
   localStorage.removeItem('fullName');
   localStorage.removeItem('roleId');
   localStorage.removeItem('animals');
+  localStorage.removeItem('shelterId');
+  // Token is in HttpOnly cookie, cleared by backend on logout
+  document.cookie =
+    'token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=' +
+    window.location.hostname +
+    '; SameSite=Lax';
   console.log('You are logged out');
   return null;
 });

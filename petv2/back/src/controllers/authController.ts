@@ -95,6 +95,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
       userId: user.id,
       fullName: user.full_name,
       roleId: user.role_id,
+      shelterId: user.shelter_id || null,
     },
     JWT_SECRET,
     { expiresIn: "1h" }

@@ -15,11 +15,7 @@ export function Menu() {
   );
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('animals');
-    localStorage.removeItem('userId');
-    localStorage.removeItem('fullName');
-    localStorage.removeItem('roleId');
+   
     dispatch(logout());
     navigate('/login');
     setIsOpen(false);
