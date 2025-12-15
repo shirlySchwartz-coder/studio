@@ -9,18 +9,14 @@ import {
   getAnimalsByShelter,
   updateAnimal,
 } from '../controllers/animalController';
-import { UserPayload } from '../models/userInfo';
+import { UserPayload } from '../models/UserInfo';
 
 const animalRouter = Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
-// ממשק עבור נתוני המשתמש בטוקן
-
-// הרחבת ממשק Request
 interface AuthRequest extends Request {
   user?: UserPayload;
 }
-
 //דף הבית קבלת רשימת כל החיות
 animalRouter.get(
   '/listAll',

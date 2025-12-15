@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 //import AnimalMedicalEvents from '../models/AnimalMedicalEvents';
 import db from '../Dal/dal_mysql';
 import { Animal } from '../models/Animal';
-import { UserPayload } from '../models/userInfo';
+import { UserPayload } from '../models/UserInfo';
 
 // הרחבת ממשק Request
 interface AuthRequest extends Request {

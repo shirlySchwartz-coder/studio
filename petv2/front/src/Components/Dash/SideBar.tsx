@@ -1,15 +1,7 @@
 import React from 'react';
 import { Title } from './Title';
 import { cn } from '../Ui/utils';
-
-interface NavItem {
-  icon: string;
-  label: string;
-  badge?: string;
-  badgeColor?: string;
-  active?: boolean;
-  onClick?: () => void;
-}
+import { NavItem } from '../../Models/componentTypes';
 
 interface SideBarProps {
   userName: string;

@@ -1,15 +1,16 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import { UserPayload } from '../models/userInfo';
+import { UserPayload } from '../models/UserInfo';
+
 dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
 // הרחבת ממשק Request להוספת user
-interface AuthRequest extends Request {
+ interface AuthRequest extends Request {
   user?: UserPayload;
-}
+} 
 export const createToken = (
   req: AuthRequest,
   res: Response,

@@ -1,14 +1,6 @@
 import { SideBar } from '../Components/Dash/SideBar';
 //import '../styles/dashboard.css';
-
-interface NavItem {
-  icon: string;
-  label: string;
-  badge?: string;
-  badgeColor?: string;
-  active?: boolean;
-  onClick?: () => void;
-}
+import { NavItem } from '../Models/componentTypes';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;

@@ -15,9 +15,9 @@ export function Menu() {
   );
 
   const handleLogout = () => {
-   
     dispatch(logout());
-    navigate('/login');
+
+    navigate('/home');
     setIsOpen(false);
   };
 

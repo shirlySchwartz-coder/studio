@@ -5,20 +5,8 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../Redux/store';
 import { getReferenceData } from '../Redux/actions/animalActions';
-
-interface NavItem {
-  icon: string;
-  label: string;
-  badge?: string;
-  badgeColor?: string;
-  active?: boolean;
-}
-interface StatsItem {
-  icon: string;
-  label: string;
-  value: string;
-  variant: string;
-}
+import { NavItem } from '../Models/componentTypes';
+import { StatsItem } from '../Models/componentTypes';
 
 function DashPage() {
   const dispatch = useDispatch<AppDispatch>();

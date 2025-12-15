@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../Redux/store';
 import { updateAnimal } from '../../Redux/actions/animalActions';
 import { toast } from 'sonner';
-import { AnimalEditData } from '../../Models/AnimalEditData';
 import { Animal } from '../../Models/Animal';
 
 interface AnimalEditModalProps {
@@ -128,7 +127,7 @@ export default function AnimalEditModal({
           <div className="modal-field">
             <label>גודל</label>
             <select
-              value={data.size_id }
+              value={data.size_id}
               onChange={(e) =>
                 setData((p) => ({ ...p, size_id: +e.target.value }))
               }
@@ -140,7 +139,7 @@ export default function AnimalEditModal({
           <div className="modal-field">
             <label>סוג</label>
             <select
-              value={data.species_id }
+              value={data.species_id}
               onChange={(e) =>
                 setData((p) => ({ ...p, species_id: +e.target.value }))
               }
@@ -167,7 +166,7 @@ export default function AnimalEditModal({
           <div className="modal-field">
             <label>סטטוס</label>
             <select
-              value={data.status_id }
+              value={data.status_id}
               onChange={(e) =>
                 setData((p) => ({ ...p, status_id: +e.target.value }))
               }
@@ -179,7 +178,7 @@ export default function AnimalEditModal({
           <div className="modal-field">
             <label>מצב חיסונים</label>
             <input
-              value={data.vaccination_status }
+              value={data.vaccination_status}
               onChange={(e) =>
                 setData((p) => ({ ...p, vaccination_status: e.target.value }))
               }
