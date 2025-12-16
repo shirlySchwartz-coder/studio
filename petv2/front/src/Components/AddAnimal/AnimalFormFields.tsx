@@ -11,6 +11,8 @@ import {
   Statuses,
 } from '../../Models/ReferenceData';
 import { AddAnimalData } from '../../Models/AddAnimalData';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../Redux/store';
 
 interface Props {
   register: UseFormRegister<AddAnimalData>;
@@ -45,6 +47,11 @@ export const AnimalFormFields: React.FC<Props> = ({
   errors,
   dropdowns,
 }) => {
+  const shelterId = useSelector((state: RootState) => state.auth.shelterId);
+  const currentShelter = dropdowns.shelters.find(
+    (shelter: Shelters) => shelter.id === shelterId
+  );
+
   return (
     <div className="form-section">
       <div className="form-group">
@@ -57,19 +64,19 @@ export const AnimalFormFields: React.FC<Props> = ({
       </div>
       <div className="form-group">
         <label>הגיע מעמותה</label>
-        <select
-          {...register('shelter_id', { required: 'שם עמותה חובה' })}
-          className="p-3 border rounded-lg"
-        >
-          <option value="">בחר עמותה</option>
-          {dropdowns.shelters.map((shelter: any) => (
-            <option key={shelter.id} value={shelter.id}>
-              {shelter.name}
-            </option>
-          ))}
-        </select>
-        {errors.shelter_id && (
-          <p className={errorClass}>{errors.shelter_id.message}</p>
+        {currentShelter ? (
+          <div className="p-3 border rounded-lg bg-gray-100">
+            {currentShelter.name}
+            <input
+              type="hidden"
+              {...register('shelter_id')}
+              value={shelterId || 0}
+            />
+          </div>
+        ) : (
+          <p className={errorClass}>
+            התחבר מחדש למערכת כדי להוסיף חיה לעמותה זו
+          </p>
         )}
       </div>
       <div className="form-group">

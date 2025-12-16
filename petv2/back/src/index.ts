@@ -27,12 +27,16 @@ app.use(
 );
 app.use(cookieParser());
 app.use(express.json());
-// הגדרת תיקיית הקבצים הסטטיים
+
+// הגדרת תיקיית הקבצים הסטטיים עבור העלאות
 const uploadsPath = path.join(__dirname, '..', 'public', 'uploads');
 if (!fs.existsSync(uploadsPath)) {
   fs.mkdirSync(uploadsPath, { recursive: true });
 }
-// נתיבים
+// קבצים סטטיים נגישים בנתיב /uploads/...
+app.use('/uploads', express.static(uploadsPath));
+
+// נתיבי API
 app.use('/api/auth', authRouter);
 app.use('/api/animals', animalRouter);
 app.use('/api/uploads', uploadRouter);
@@ -51,6 +55,6 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 app.listen(process.env.PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);
   console.log(
-    `✅ Static files served from: http://localhost:${process.env.PORT}/public/uploads`
+    `✅ Static files served from: http://localhost:${process.env.PORT}/uploads`
   );
 });

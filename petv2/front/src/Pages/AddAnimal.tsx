@@ -155,7 +155,7 @@ export function AddAnimal() {
         uploadAnimalImage({
           file: selectedFile,
           animalId: 0,
-          shelterId: shelterId,
+          shelterId: shelterId ?? 0,
         })
       ).unwrap();
 
@@ -183,9 +183,14 @@ export function AddAnimal() {
   // Handle form submission
   const onSubmit = async (animalData: AddAnimalData) => {
     try {
-      console.log('📤 Submitting animal data:', animalData);
+      // Ensure shelter_id is set from Redux state (user's shelter)
+      const animalDataWithShelter = {
+        ...animalData,
+        shelter_id: shelterId || 0,
+      };
+      console.log('📤 Submitting animal data:', animalDataWithShelter);
 
-      await dispatch(addAnimal(animalData)).unwrap();
+      await dispatch(addAnimal(animalDataWithShelter)).unwrap();
       alert('החיה נוספה בהצלחה!');
 
       // Reset form and clear image

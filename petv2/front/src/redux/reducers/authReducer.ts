@@ -15,7 +15,7 @@ interface AuthState {
 const initialState: AuthState = {
   userId: null,
   fullName: null,
-  roleId: 4,
+  roleId: null,
   permissions: [],
   isLoggedIn: false,
   status: 'idle',
@@ -58,7 +58,7 @@ const authSlice = createSlice({
       })
       .addCase(register.pending, (state) => {
         state.status = 'loading';
-        state.error = null;
+        state.error = '';
       })
       .addCase(register.fulfilled, (state, action) => {
         state.status = 'succeeded';
@@ -74,10 +74,10 @@ const authSlice = createSlice({
       })
       .addCase(logout.fulfilled, (state) => {
         state.isLoggedIn = false;
-        state.userId = null;
-        state.fullName = null;
-        state.roleId = null;
-        state.shelterId = null;
+        state.userId = 0;
+        state.fullName = '';
+        state.roleId = 0;
+        state.shelterId = 0;
         // Clear localStorage (token is in cookie, cleared by backend)
         localStorage.removeItem('shelterId');
         localStorage.removeItem('fullName');

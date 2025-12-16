@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction, Router } from 'express';
 import { register, login } from '../controllers/authController';
 import { createToken } from '../middleware/auth';
+import { AuthRequest } from '../models/UserInfo';
 const authRouter = Router();
 
 authRouter.post(
@@ -12,8 +13,42 @@ authRouter.post(
         throw new Error('Login failed');
       }
 
-      const newToken = createToken(req, res, next);
-      res.cookie('token', newToken.replace('Bearer', ''), {
+      // Populate req.user so createToken has the required payload
+      const authReq = req as AuthRequest;
+      authReq.user = {
+        userId: user.userId,
+        fullName: user.fullName,
+        roleId: user.roleId,
+        shelterId: user.shelterId || 0,
+      };
+
+      const newToken = createToken(authReq, res, next);
+      const tokenValue = newToken.replace('Bearer ', '').trim(); // Remove 'Bearer ' prefix and any whitespace
+
+      // #region agent log
+      fetch(
+        'http://127.0.0.1:7243/ingest/ba661516-14f1-4506-a49a-cbaf3e4dfb23',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sessionId: 'debug-session',
+            runId: 'initial',
+            hypothesisId: 'B5_login_setCookie',
+            location: 'authRoutes.ts:/login',
+            message: 'Setting token cookie after login',
+            data: {
+              tokenLength: tokenValue.length,
+              hasToken: !!tokenValue,
+              userId: user.userId,
+            },
+            timestamp: Date.now(),
+          }),
+        }
+      ).catch(() => {});
+      // #endregion
+
+      res.cookie('token', tokenValue, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',

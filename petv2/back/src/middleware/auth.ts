@@ -30,6 +30,29 @@ export const verifyToken = (
   res: Response,
   next: NextFunction
 ) => {
+  // #region agent log
+  fetch('http://127.0.0.1:7243/ingest/ba661516-14f1-4506-a49a-cbaf3e4dfb23', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      sessionId: 'debug-session',
+      runId: 'initial',
+      hypothesisId: 'B5_verifyToken_cookie',
+      location: 'auth.ts:verifyToken',
+      message: 'Checking for token cookie',
+      data: {
+        hasCookies: !!req.cookies,
+        cookieKeys: req.cookies ? Object.keys(req.cookies) : [],
+        hasToken: !!req.cookies?.token,
+        tokenLength: req.cookies?.token?.length || 0,
+        path: req.path,
+        method: req.method,
+      },
+      timestamp: Date.now(),
+    }),
+  }).catch(() => {});
+  // #endregion
+
   const token = req.cookies.token;
   if (!token) {
     return res.status(401).json({ message: 'Missing token' });

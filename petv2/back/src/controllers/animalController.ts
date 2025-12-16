@@ -87,11 +87,15 @@ export const createAnimal = async (
   next: NextFunction
 ) => {
   try {
+    // וידוא שהמשתמש מאומת
+    if (!req.user || req.user.roleId > 2) {
+      throw new Error('No permissions to add an animal');
+    }
+
     const {
       name,
       breed_id,
       species_id,
-      shelter_id,
       status_id,
       gender_id,
       age,
@@ -106,21 +110,22 @@ export const createAnimal = async (
     if (!name || !species_id || !gender_id || !size_id) {
       throw new Error('Required fields are missing');
     }
-    // וידוא שהמשתמש מאומת
-    if (!req.user || req.user.roleId > 2) {
-      throw new Error('No permissions to add an animal');
-    }
+
+    // Use shelter_id from req.user, not from req.body
+    const shelter_id = req.user.shelterId || 0;
+    const user_id = req.user.userId;
 
     const insertSql = `INSERT INTO animals( 
-    name, breed_id, species_id, shelter_id, status_id, gender_id, age, size_id, description, is_neutered, is_house_trained,
+    name, breed_id, species_id, shelter_id, status_id, gender_id, age, 
+    size_id, description, is_neutered, is_house_trained,
      vaccination_status, created_at, created_by_user_id
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?)`;
 
-    const [result] = await db.execute(insertSql, [
+    const result = await db.execute(insertSql, [
       name,
       breed_id,
       species_id,
-      shelter_id || req.user.shelterId,
+      shelter_id,
       status_id,
       gender_id,
       age,
@@ -129,11 +134,34 @@ export const createAnimal = async (
       is_neutered,
       is_house_trained,
       vaccination_status,
-      req.user.userId,
+      new Date(),
+      user_id,
     ]);
 
+    // #region agent log
+    fetch('http://127.0.0.1:7243/ingest/ba661516-14f1-4506-a49a-cbaf3e4dfb23', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        sessionId: 'debug-session',
+        runId: 'initial',
+        hypothesisId: 'B4_createAnimal_dbResult',
+        location: 'animalController.ts:createAnimal',
+        message: 'Result from db.execute insert for animal',
+        data: {
+          resultType: typeof result,
+          isArray: Array.isArray(result as any),
+          keys: result ? Object.keys(result as any) : null,
+        },
+        timestamp: Date.now(),
+      }),
+    }).catch(() => {});
+    // #endregion
+    if (!result || !(result as any).insertId) {
+      console.error('Error creating animal:', result);
+      throw new Error('Error creating animal');
+    }
     const animalId = (result as any).insertId; // Get new ID
-
     // Handle media temps
     if (mediaTemps && mediaTemps.length > 0) {
       for (const media of mediaTemps) {
@@ -166,7 +194,7 @@ export const createAnimal = async (
               url,
               media.alt_text || 'Animal image',
               media.is_primary ? 1 : 0,
-              req.user.userId,
+              user_id,
             ]
           );
         }
@@ -191,14 +219,14 @@ export const createAnimal = async (
     };
     return {
       message: 'Animal created successfully',
-      animalId: animalId,
       animal: newAnimal,
     };
   } catch (err: any) {
     console.error('Error creating animal:', err);
-    next(err);
+    throw new Error('Error creating animal');
   }
 };
+
 // עדכון חיה קיימת
 export const updateAnimal = async (
   req: AuthRequest,
@@ -206,60 +234,44 @@ export const updateAnimal = async (
   next: NextFunction
 ) => {
   try {
-    const animalId = parseInt(req.params.id);
-    if (isNaN(animalId)) {
-      throw new Error('Invalid animal ID');
+    const {
+      id,
+      name,
+      breed_id,
+      species_id,
+      shelter_id,
+      status_id,
+      gender_id,
+      age,
+      size_id,
+      description,
+      is_neutered,
+      is_house_trained,
+      vaccination_status,
+      image_url,
+      user_id,
+    } = req.body;
+    if (!id || !name || !species_id || !gender_id || !size_id) {
+      throw new Error('Required fields are missing');
     }
     if (!req.user || req.user.roleId > 2) {
-      throw new Error('אין הרשאה לעדכון חיה');
+      throw new Error('No permissions to update an animal');
     }
-    const body = req.body;
-    const params = {
-      name: body.name || null,
-      breed_id: body.breed_id || null,
-      species_id: body.species_id || null,
-      shelter_id: body.shelter_id || null, // קבוע למקלט – אל תשנה אם לא צריך
-      status_id: body.status_id || null,
-      gender_id: body.gender_id || null,
-      age: body.age || null,
-      size_id: body.size_id || null,
-      description: body.description || null,
-      is_neutered: body.is_neutered ?? null,
-      is_house_trained: body.is_house_trained ?? null,
-      vaccination_status: body.vaccination_status || null,
-      image_url: body.image_url || null,
-      user_id: req.user.userId,
-    };
     const updates = [];
     const values = [];
-
-    for (const [key, value] of Object.entries(params)) {
-      if (value !== null && value !== undefined) {
-        updates.push(`${key} = ?`);
-        values.push(value);
-      }
-    }
     updates.push('updated_at = NOW(), updated_by_user_id = ?');
-    values.push(req.user.roleId);
-
-    if (updates.length === 0) return { message: 'אין שינויים לעדכון' };
+    values.push(user_id);
 
     const updateSql = `UPDATE animals SET ${updates.join(', ')} WHERE id = ?`;
-    values.push(animalId);
+    values.push(id);
 
-    console.log('🔧 SQL עדכון:', updateSql);
-    console.log('📊 פרמטרים נקיים:', values); // לוג לבדיקה
-
-    const [result] = await db.execute(updateSql, values);
-    if ((result as any).affectedRows === 0) {
-      throw new Error('Animal not found or no changes made');
+    const result = await db.execute(updateSql, values);
+    if (!result || !(result as any).affectedRows) {
+      throw new Error('Error updating animal');
     }
-    console.log(result);
-
     return { message: 'Animal updated successfully' };
   } catch (err: any) {
-    console.error('Error updating animal:', err);
-    next(err);
+    throw new Error('Error updating animal');
   }
 };
 

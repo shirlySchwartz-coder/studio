@@ -3,7 +3,6 @@ import { Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import db from '../Dal/dal_mysql';
-import { createToken } from '../middleware/auth';
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
 const isValidEmail = (email: string): boolean => {
@@ -128,15 +127,6 @@ export const login = async (
     ]);
     if (!shelter[0]) throw new Error('Shelter not linked');
   }
-
-  const newToken = createToken(req, res, next);
-  res.cookie('token', newToken.replace('Bearer', ''), {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    path: '/',
-    maxAge: 3600000,
-  });
 
   return {
     userId: user.id,

@@ -74,50 +74,119 @@ uploadRouter.post(
   verifyToken,
   restrictTo([1, 2]),
   (req: AuthRequest, res: Response, next: NextFunction) => {
-    try {
-      const {
-        animalId,
-        isTemp = false,
-        alt_text = 'Animal image',
-        is_primary = false,
-      } = req.body;
+    if (!req.user) {
+      return res.status(401).json({ message: 'User not authenticated' });
+    }
 
-      if (!req.user) throw new Error('User not authenticated');
+    // Cache what we need from user (TS now knows these are defined)
+    const uploadedByUserId = req.user.userId;
+    const userRoleId = req.user.roleId;
+    const userShelterId = req.user.shelterId;
 
-      // Cache what we need from user (TS now knows these are defined)
-      const uploadedByUserId = req.user.userId;
-      const userRoleId = req.user.roleId;
-      const userShelterId = req.user.shelterId;
+    const effectiveShelterId = userShelterId ?? (userRoleId === 1 ? 0 : null);
+    if (effectiveShelterId === null) {
+      return res.status(400).json({ error: 'No shelter associated with user' });
+    }
 
-      const effectiveShelterId = userShelterId ?? (userRoleId === 1 ? 0 : null);
-      if (effectiveShelterId === null)
-        throw new Error('No shelter associated with user');
+    // Use memory storage first, then move file after reading body fields
+    const tempUpload = multer({
+      storage: multer.memoryStorage(),
+      fileFilter,
+      limits: { fileSize: 5 * 1024 * 1024 },
+    }).single('image');
 
-      const { storage, tempId } = getStorage(
-        effectiveShelterId,
-        animalId ? parseInt(animalId) : undefined,
-        isTemp
-      );
+    tempUpload(req, res, async (err) => {
+      if (err) return next(err);
+      if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
 
-      const upload = multer({
-        storage,
-        fileFilter,
-        limits: { fileSize: 5 * 1024 * 1024 },
-      }).single('image');
+      try {
+        // NOW we can read req.body after multer processed the form
+        const {
+          animalId,
+          isTemp = false,
+          alt_text = 'Animal image',
+          is_primary = false,
+        } = req.body || {};
 
-      upload(req, res, async (err) => {
-        if (err) return next(err);
-        if (!req.file)
-          return res.status(400).json({ error: 'No file uploaded' });
+        // Determine if this is a temp upload or permanent
+        const isTempUpload =
+          isTemp === true ||
+          isTemp === 'true' ||
+          !animalId ||
+          animalId === '0' ||
+          animalId === 0;
 
-        const fileName = req.file.filename;
+        // Get proper directory based on whether it's temp or permanent
+        let finalDir: string;
+        let tempId: string | undefined;
+
+        if (isTempUpload) {
+          tempId = uuidv4();
+          finalDir = path.join(
+            __dirname,
+            '../../public/uploads/shelters',
+            effectiveShelterId.toString(),
+            'temp',
+            tempId
+          );
+        } else if (animalId) {
+          finalDir = path.join(
+            __dirname,
+            '../../public/uploads/shelters',
+            effectiveShelterId.toString(),
+            'animals',
+            String(animalId)
+          );
+        } else {
+          return res
+            .status(400)
+            .json({ error: 'Missing animalId for non-temp upload' });
+        }
+
+        if (!fs.existsSync(finalDir)) {
+          fs.mkdirSync(finalDir, { recursive: true });
+        }
+
+        // Generate unique filename
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+        const ext = path.extname(req.file.originalname);
+        const fileName = `image-${uniqueSuffix}${ext}`;
+        const finalPath = path.join(finalDir, fileName);
+
+        // Write file from memory buffer to disk
+        fs.writeFileSync(finalPath, req.file.buffer);
+
         const url = `${req.protocol}://${req.get(
           'host'
         )}/uploads/shelters/${effectiveShelterId}${
-          isTemp ? `/temp/${tempId}` : `/animals/${animalId}`
+          isTempUpload ? `/temp/${tempId}` : `/animals/${animalId}`
         }/${fileName}`;
 
-        if (!isTemp && animalId) {
+        // #region agent log
+        fetch(
+          'http://127.0.0.1:7243/ingest/ba661516-14f1-4506-a49a-cbaf3e4dfb23',
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              sessionId: 'debug-session',
+              runId: 'initial',
+              hypothesisId: 'B1_uploads_url',
+              location: 'uploads.ts:POST /api/uploads',
+              message: 'Generated upload URL for file',
+              data: {
+                url,
+                isTemp: isTempUpload,
+                effectiveShelterId,
+                animalId,
+              },
+              timestamp: Date.now(),
+            }),
+          }
+        ).catch(() => {});
+        // #endregion
+
+        if (!isTempUpload && animalId) {
           await db.execute(
             'INSERT INTO animal_media (animal_id, media_type, url, alt_text, is_primary, uploaded_at, uploaded_by_user_id) VALUES (?, "image", ?, ?, ?, NOW(), ?)',
             [animalId, url, alt_text, is_primary ? 1 : 0, uploadedByUserId]
@@ -126,14 +195,14 @@ uploadRouter.post(
 
         res.status(200).json({
           imageUrl: url,
-          tempId: isTemp ? tempId : undefined,
+          tempId: isTempUpload ? tempId : undefined,
           filename: fileName,
           message: 'תמונה הועלתה בהצלחה',
         });
-      });
-    } catch (error: any) {
-      next(error);
-    }
+      } catch (error: any) {
+        next(error);
+      }
+    });
   }
 );
 
