@@ -1,5 +1,5 @@
 POST /auth/register
-→ { full_name, email, password, phone, city }
+→ { full_name, email, password, phone, city_id }
 → 201 { message, userId }
 
 POST /auth/login

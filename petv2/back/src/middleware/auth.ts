@@ -1,26 +1,24 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import { UserPayload } from '../models/UserInfo';
+import { UserPayload, AuthRequest } from '../models/UserInfo';
 
 dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
 // הרחבת ממשק Request להוספת user
- interface AuthRequest extends Request {
-  user?: UserPayload;
-} 
+
 export const createToken = (
   req: AuthRequest,
   res: Response,
   next: NextFunction
-) => {
+): string => {
   const payload = {
-    userId: req.user?.userId,
-    fullName: req.user?.fullName,
-    roleId: req.user?.roleId,
-    shelterId: req.user?.shelterId || null,
+    userId: req.user!.userId,
+    fullName: req.user!.fullName,
+    roleId: req.user!.roleId,
+    shelterId: req.user!.shelterId,
   };
   const myJWT = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
   return 'Bearer ' + myJWT;
@@ -38,9 +36,6 @@ export const verifyToken = (
   }
 
   try {
-    //const decoded = jwt.verify(token, JWT_SECRET) as UserPayload;
-    //const cleanToken = token.startsWith('Bearer ') ? token.slice(7) :token;
-
     const decoded = jwt.verify(token, JWT_SECRET) as UserPayload;
     req.user = {
       userId: decoded.userId,
@@ -48,10 +43,6 @@ export const verifyToken = (
       roleId: decoded.roleId,
       shelterId: decoded.shelterId,
     };
-    // //console.log('decoded:',decoded,'req.user:',req.user)
-    // if (!req.user.userId || !req.user.roleId) {
-    //   return res.status(401).json({message: 'Token not ok'})
-    // }
     next();
   } catch (error) {
     return res.status(401).json({ message: 'טוקן לא תקין' });

@@ -10,6 +10,8 @@ import dashRouter from './routes/dashRoutes';
 import authRouter from './routes/authRoutes';
 import cookieParser from 'cookie-parser';
 import favoritesRouter from './routes/favoritesRouter';
+import animalAttributeRouter from './routes/animalAttributeRouter';
+import fs from 'fs';
 
 dotenv.config();
 const app = express();
@@ -26,17 +28,17 @@ app.use(
 app.use(cookieParser());
 app.use(express.json());
 // הגדרת תיקיית הקבצים הסטטיים
-app.use(
-  '/uploads',
-  express.static(path.join(__dirname, '..', 'public', 'uploads'))
-);
+const uploadsPath = path.join(__dirname, '..', 'public', 'uploads');
+if (!fs.existsSync(uploadsPath)) {
+  fs.mkdirSync(uploadsPath, { recursive: true });
+}
 // נתיבים
 app.use('/api/auth', authRouter);
 app.use('/api/animals', animalRouter);
 app.use('/api/uploads', uploadRouter);
 app.use('/api/dashboard', dashRouter);
-//app.use('/api/adoption-requests', adoptionRequestsRouter);
 app.use('/api/favorites', favoritesRouter);
+app.use('/api/animalAttributeRouter', animalAttributeRouter);
 app.use(errorHandler);
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {

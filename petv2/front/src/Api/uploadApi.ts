@@ -3,12 +3,18 @@ import axiosInstance from './axiosInstance';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
 
-export const uploadImage = async (file: File) => {
+export const uploadImage = async (
+  file: File,
+  animalId: number,
+  shelterId: number
+) => {
   try {
+    console.log('📤 Uploading image to:', `${API_URL}/uploads/`);
     const formData = new FormData();
     formData.append('image', file);
+    formData.append('animalId', animalId.toString());
+    formData.append('shelterId', shelterId.toString());
 
-    console.log('📤 Uploading image to:', `${API_URL}/uploads/`);
     console.log('📤 File details:', {
       filename: file.name,
       size: file.size,

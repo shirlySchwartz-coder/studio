@@ -47,7 +47,7 @@ export const register = createAsyncThunk(
       email: string;
       password: string;
       phone: string;
-      city: string;
+      city_id: number;
     },
     { rejectWithValue }
   ) => {

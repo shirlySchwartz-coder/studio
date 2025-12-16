@@ -18,8 +18,12 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
 export function AddAnimal() {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const { status, error, referenceData } = useSelector((state: RootState) => state.animals);
-  const { isLoggedIn, roleId } = useSelector((state: RootState) => state.auth);
+  const { status, error, referenceData } = useSelector(
+    (state: RootState) => state.animals
+  );
+  const { isLoggedIn, roleId, shelterId } = useSelector(
+    (state: RootState) => state.auth
+  );
   // Upload state from Redux
   const {
     imageUrl,
@@ -54,7 +58,6 @@ export function AddAnimal() {
       status_id: 0,
     },
   });
- 
 
   useEffect(() => {
     if (!isLoggedIn || !roleId || roleId > 2) {
@@ -62,11 +65,11 @@ export function AddAnimal() {
     }
   }, [isLoggedIn, roleId, navigate]);
 
- useEffect(() => {
-   if (!referenceData || Object.keys(referenceData).length === 0) {
-     dispatch(getReferenceData());
-   }
- }, [dispatch, referenceData]);
+  useEffect(() => {
+    if (!referenceData || Object.keys(referenceData).length === 0) {
+      dispatch(getReferenceData());
+    }
+  }, [dispatch, referenceData]);
 
   // Reset upload state when component unmounts or navigates away
   useEffect(() => {
@@ -149,7 +152,11 @@ export function AddAnimal() {
       setUploadProgress(0);
       // Token is in HttpOnly cookie, sent automatically via axiosInstance
       const result = await dispatch(
-        uploadAnimalImage({ file: selectedFile })
+        uploadAnimalImage({
+          file: selectedFile,
+          animalId: 0,
+          shelterId: shelterId,
+        })
       ).unwrap();
 
       console.log('✅ Upload completed, image URL:', result);

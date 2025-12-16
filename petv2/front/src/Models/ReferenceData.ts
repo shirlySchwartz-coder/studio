@@ -25,11 +25,26 @@ export interface Breeds {
   name: string;
 }
 
+export interface City {
+  id: number;
+  name: string;
+}
+
+export interface FilterOption {
+  id: number;
+  category: string;
+  name: string;
+  description?: string;
+  display_order: number;
+}
+
 export interface ReferenceData {
   sizes: Size[];
   genders: Gender[];
   species: Species[];
-  breeds: Breeds[],
-  statuses: Statuses[],
-  shelters: Shelters[],
+  breeds: Breeds[];
+  statuses: Statuses[];
+  shelters: Shelters[];
+  cities: City[];
+  filterOptions: FilterOption[];
 }

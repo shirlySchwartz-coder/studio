@@ -1,13 +1,6 @@
 import axios from 'axios';
 import { Animal } from '../Models/Animal';
-import {
-  Gender,
-  ReferenceData,
-  Shelters,
-  Size,
-  Species,
-  Statuses,
-} from '../Models/ReferenceData';
+import { ReferenceData } from '../Models/ReferenceData';
 import { AddAnimalData } from '../Models/AddAnimalData';
 import {
   loadReferenceData,
@@ -46,6 +39,8 @@ export const fetchReferenceData = async (): Promise<ReferenceData> => {
       statuses: response.data.tablesData.statuses,
       shelters: response.data.tablesData.shelters,
       breeds: response.data.tablesData.breeds,
+      cities: response.data.tablesData.cities,
+      filterOptions: response.data.tablesData.filterOptions,
     };
   } catch (error: any) {
     console.error('❌ Error fetching reference data:', error);

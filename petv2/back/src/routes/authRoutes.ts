@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction, Router } from 'express';
 import { register, login } from '../controllers/authController';
+import { createToken } from '../middleware/auth';
 const authRouter = Router();
 
 authRouter.post(
@@ -7,11 +8,12 @@ authRouter.post(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const user = await login(req, res, next);
-      if (!user || !user.token) {
+      if (!user || !user.userId) {
         throw new Error('Login failed');
       }
 
-      res.cookie('token', user.token, {
+      const newToken = createToken(req, res, next);
+      res.cookie('token', newToken.replace('Bearer', ''), {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',

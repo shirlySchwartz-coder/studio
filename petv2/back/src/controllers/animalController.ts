@@ -1,14 +1,10 @@
 import { Shelter } from './../models/Shelter';
 import { Request, Response, NextFunction } from 'express';
-//import AnimalMedicalEvents from '../models/AnimalMedicalEvents';
 import db from '../Dal/dal_mysql';
 import { Animal } from '../models/Animal';
-import { UserPayload } from '../models/UserInfo';
-
-// הרחבת ממשק Request
-interface AuthRequest extends Request {
-  user?: UserPayload;
-}
+import { AuthRequest } from '../models/UserInfo';
+import fs from 'fs';
+import path from 'path';
 
 // קבלת כל החיות - אורח דף הבית
 export const getAllAnimals = async (
@@ -20,7 +16,7 @@ export const getAllAnimals = async (
     let sql = `SELECT A.id, A.name,  Sp.name As species,
       G.name As gender , Sz.name As size, Slt.name As shelter, Ans.name As status,
       A.age,  A.is_neutered, A.is_house_trained, A.vaccination_status,
-      B.name As breed, A.description, A.image_url
+      B.name As breed, A.description
       FROM pet_adoption.animals As A 
       inner join pet_adoption.species As Sp
       on A.species_id = Sp.id
@@ -42,6 +38,7 @@ export const getAllAnimals = async (
   }
 };
 
+///////עמותות בלבד///////
 //לפי עמותה קבלת כל החיות
 export const getAnimalsByShelter = async (
   req: AuthRequest,
@@ -49,8 +46,8 @@ export const getAnimalsByShelter = async (
   next: NextFunction
 ) => {
   try {
-    if (req.user?.roleId! > 2) {
-      throw new Error('No permissions to view animals');
+    if (!req.user) {
+      throw new Error('User not authenticated');
     }
 
     const shelterId = req.params?.shelterId;
@@ -60,7 +57,7 @@ export const getAnimalsByShelter = async (
     let sql = `SELECT A.id, A.name,  Sp.name As species,
       G.name As gender , Sz.name As size, Slt.name As shelter, Ans.name As status,
       A.age,  A.is_neutered, A.is_house_trained, A.vaccination_status,
-      B.name As breed, A.description, A.image_url
+      B.name As breed, A.description
       FROM pet_adoption.animals As A 
       inner join pet_adoption.species As Sp
       on A.species_id = Sp.id
@@ -103,7 +100,7 @@ export const createAnimal = async (
       is_neutered,
       is_house_trained,
       vaccination_status,
-      image_url,
+      mediaTemps,
     } = req.body;
 
     if (!name || !species_id || !gender_id || !size_id) {
@@ -116,43 +113,87 @@ export const createAnimal = async (
 
     const insertSql = `INSERT INTO animals( 
     name, breed_id, species_id, shelter_id, status_id, gender_id, age, size_id, description, is_neutered, is_house_trained,
-     vaccination_status, image_url, created_at, created_by_user_id
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+     vaccination_status, created_at, created_by_user_id
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?)`;
 
-    await db.execute(insertSql, [
+    const [result] = await db.execute(insertSql, [
       name,
-      breed_id || null,
+      breed_id,
       species_id,
-      shelter_id || 1,
-      status_id || 1,
+      shelter_id || req.user.shelterId,
+      status_id,
       gender_id,
-      age || null,
-      size_id || null,
-      description || null,
-      is_neutered || false,
-      is_house_trained || false,
-      vaccination_status || null,
-      image_url || null,
-      new Date(),
-      req.user.userId, // שמירת מזהה המשתמש שיצר את החיה
+      age,
+      size_id,
+      description,
+      is_neutered,
+      is_house_trained,
+      vaccination_status,
+      req.user.userId,
     ]);
-    // יצירת האובייקט של החיה להחזרה
-    const animal = {
-      name,
-      breed_id: breed_id || null,
-      species_id,
-      shelter_id: shelter_id || 1,
-      status_id: status_id || 1,
-      gender_id,
-      age: age || null,
-      size_id: size_id || null,
-      description: description || null,
-      is_neutered: is_neutered || false,
-      is_house_trained: is_house_trained || false,
-      vaccination_status: vaccination_status || null,
-      image_url: image_url || null,
+
+    const animalId = (result as any).insertId; // Get new ID
+
+    // Handle media temps
+    if (mediaTemps && mediaTemps.length > 0) {
+      for (const media of mediaTemps) {
+        const tempPath = path.join(
+          __dirname,
+          '../../public/uploads/shelters',
+          req.user.shelterId.toString(),
+          'temp',
+          media.tempId
+        );
+        if (fs.existsSync(tempPath)) {
+          const fileName = path.basename(tempPath);
+          const newDir = path.join(
+            __dirname,
+            '../../public/uploads/shelters',
+            req.user.shelterId.toString(),
+            'animals',
+            animalId.toString()
+          );
+          if (!fs.existsSync(newDir)) fs.mkdirSync(newDir, { recursive: true });
+          const newPath = path.join(newDir, fileName);
+          fs.renameSync(tempPath, newPath); // Move file
+          const url = `${req.protocol}://${req.get('host')}/uploads/shelters/${
+            req.user.shelterId
+          }/animals/${animalId}/${fileName}`;
+          await db.execute(
+            'INSERT INTO animal_media (animal_id, media_type, url, alt_text, is_primary, uploaded_at, uploaded_by_user_id) VALUES (?, "image", ?, ?, ?, NOW(), ?)',
+            [
+              animalId,
+              url,
+              media.alt_text || 'Animal image',
+              media.is_primary ? 1 : 0,
+              req.user.userId,
+            ]
+          );
+        }
+      }
+    }
+    const newAnimal = {
+      id: animalId,
+      name: name,
+      breed_id: breed_id,
+      species_id: species_id,
+      shelter_id: shelter_id || req.user.shelterId,
+      status_id: status_id,
+      gender_id: gender_id,
+      age: age,
+      size_id: size_id,
+      description: description,
+      is_neutered: is_neutered,
+      is_house_trained: is_house_trained,
+      vaccination_status: vaccination_status,
+      created_at: new Date(),
+      created_by_user_id: req.user.userId,
     };
-    return animal;
+    return {
+      message: 'Animal created successfully',
+      animalId: animalId,
+      animal: newAnimal,
+    };
   } catch (err: any) {
     console.error('Error creating animal:', err);
     next(err);
@@ -322,6 +363,48 @@ order by id ASC	`;
   }
 };
 
+// Get all Cities
+export const getAllCities = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    let sql = `SELECT id, name FROM pet_adoption.cities
+order by name ASC	`;
+    const cities = await db.execute(sql);
+    return cities;
+  } catch (error: any) {
+    console.error('❌ Error fetching cities:', error);
+    throw new Error('Failed to fetch cities');
+  }
+};
+
+// Get all filter options (from animal_attributes)
+export const getAllFilterOptions = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const sql = `
+      SELECT 
+        id,
+        category,
+        name,
+        description,
+        display_order
+      FROM animal_attributes
+      ORDER BY category, display_order, name
+    `;
+    const filterOptions = await db.execute(sql);
+    return filterOptions;
+  } catch (error: any) {
+    console.error('❌ Error fetching filter options:', error);
+    throw new Error('Failed to fetch filter options');
+  }
+};
+
 export const getAllTablesInfo = async (
   req: Request,
   res: Response,
@@ -334,6 +417,36 @@ export const getAllTablesInfo = async (
     const statuses: [] = await getAllStatuses(req, res, next);
     const shelters: [] = await getAllShelters(req, res, next);
     const breeds: [] = await getAllBreeds(req, res, next);
+    const cities: [] = await getAllCities(req, res, next);
+    const filterOptions: [] = await getAllFilterOptions(req, res, next);
+
+    // #region agent log
+    fetch('http://127.0.0.1:7243/ingest/ba661516-14f1-4506-a49a-cbaf3e4dfb23', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        sessionId: 'debug-session',
+        runId: 'initial',
+        hypothesisId: 'H_tables',
+        location: 'animalController.ts:getAllTablesInfo',
+        message: 'tables-data keys',
+        data: {
+          sizes: Array.isArray(sizes) ? sizes.length : null,
+          genders: Array.isArray(genders) ? genders.length : null,
+          species: Array.isArray(species) ? species.length : null,
+          statuses: Array.isArray(statuses) ? statuses.length : null,
+          shelters: Array.isArray(shelters) ? shelters.length : null,
+          breeds: Array.isArray(breeds) ? breeds.length : null,
+          cities: Array.isArray(cities) ? cities.length : null,
+          filterOptions: Array.isArray(filterOptions)
+            ? filterOptions.length
+            : null,
+        },
+        timestamp: Date.now(),
+      }),
+    }).catch(() => {});
+    // #endregion
+
     return {
       genders: genders,
       sizes: sizes,
@@ -341,6 +454,8 @@ export const getAllTablesInfo = async (
       statuses: statuses,
       shelters: shelters,
       breeds: breeds,
+      cities: cities,
+      filterOptions: filterOptions,
     };
   } catch (error) {
     console.error('❌ Error fetching data from tables:', error);
