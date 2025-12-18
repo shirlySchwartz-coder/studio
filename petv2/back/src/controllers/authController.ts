@@ -135,3 +135,46 @@ export const login = async (
     shelterId: user.shelter_id || null,
   };
 };
+
+export const getMe = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const token = req.cookies.token;
+  if (!token) {
+    throw new Error('No token provided');
+  }
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET) as {
+      userId: number;
+      roleId: number;
+      fullName: string;
+      shelterId: number;
+    };
+
+    // שאילתת DB לקבלת פרטים טריים (ללא סיסמה)
+    const sql = `SELECT id, full_name, role_id, shelter_id FROM users WHERE id = ?`;
+    const users = await db.execute<
+      {
+        id: number;
+        full_name: string;
+        role_id: number;
+        shelter_id: number | null;
+      }[]
+    >(sql, [decoded.userId]);
+    if (users.length === 0) {
+      throw new Error('User not found');
+    }
+    const user = users[0];
+
+    return {
+      userId: user.id,
+      fullName: user.full_name,
+      roleId: user.role_id,
+      shelterId: user.shelter_id || null,
+    };
+  } catch (error) {
+    throw new Error('Invalid token');
+  }
+};

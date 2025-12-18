@@ -19,6 +19,7 @@ export interface AnimalBase {
   rejection_reason?: string;
   created_at?: string;
   updated_at?: string;
+  images?: string[];
 }
 
 export interface Animal extends AnimalBase {

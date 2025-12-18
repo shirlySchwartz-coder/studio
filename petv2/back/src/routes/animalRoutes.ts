@@ -1,5 +1,5 @@
 import { Router, Request, Response, NextFunction } from 'express';
-import { createToken, verifyToken } from '../middleware/auth';
+import { createToken, restrictTo, verifyToken } from '../middleware/auth';
 import {
   createAnimal,
   getAllAnimals,
@@ -41,6 +41,7 @@ animalRouter.get(
 animalRouter.get(
   '/list/:shelterId',
   verifyToken,
+  restrictTo([1,2]),
   async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
       const animalsFromShelter = await getAnimalsByShelter(req, res, next);
@@ -67,6 +68,7 @@ animalRouter.get(
 animalRouter.post(
   '/addAnimal',
   verifyToken,
+  restrictTo([1,2]),
   async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
       console.log('route add:', req.body, 'user:', req.user);

@@ -13,25 +13,26 @@ export const getAllAnimals = async (
   next: NextFunction
 ) => {
   try {
-    let sql = `SELECT A.id, A.name,  Sp.name As species,
-      G.name As gender , Sz.name As size, Slt.name As shelter, Ans.name As status,
-      A.age,  A.is_neutered, A.is_house_trained, A.vaccination_status,
-      B.name As breed, A.description
+    let sql = `SELECT A.id, A.name, Sp.name As species,
+      G.name As gender, Sz.name As size, Slt.name As shelter, Ans.name As status,
+      A.age, A.is_neutered, A.is_house_trained, A.vaccination_status,
+      B.name As breed, A.description,
+      COALESCE(
+        (SELECT JSON_ARRAYAGG(Am.media_url) 
+         FROM animal_media Am 
+         WHERE Am.animal_id = A.id),
+        JSON_ARRAY()
+      ) AS images
       FROM pet_adoption.animals As A 
-      inner join pet_adoption.species As Sp
-      on A.species_id = Sp.id
-      inner join gender_types As G
-      on A.gender_id= G.id
-      inner join sizes As Sz
-      on A.size_id = Sz.id
-      inner join shelters As Slt
-      on A.shelter_id= Slt.id
-      inner join animal_statuses As Ans
-      on A.status_id = Ans.id
-      inner join breed_types As B
-      on A.breed_id = B.id`;
+      INNER JOIN pet_adoption.species As Sp ON A.species_id = Sp.id
+      INNER JOIN gender_types As G ON A.gender_id = G.id
+      INNER JOIN sizes As Sz ON A.size_id = Sz.id
+      INNER JOIN shelters As Slt ON A.shelter_id = Slt.id
+      INNER JOIN animal_statuses As Ans ON A.status_id = Ans.id
+      INNER JOIN breed_types As B ON A.breed_id = B.id`;
 
     const animals = await db.execute(sql);
+    console.log('Fetched all animals:', animals);
     return animals;
   } catch (error: any) {
     throw new Error('Error loading animals');
@@ -57,23 +58,24 @@ export const getAnimalsByShelter = async (
     let sql = `SELECT A.id, A.name,  Sp.name As species,
       G.name As gender , Sz.name As size, Slt.name As shelter, Ans.name As status,
       A.age,  A.is_neutered, A.is_house_trained, A.vaccination_status,
-      B.name As breed, A.description
-      FROM pet_adoption.animals As A 
-      inner join pet_adoption.species As Sp
-      on A.species_id = Sp.id
-      inner join gender_types As G
-      on A.gender_id= G.id
-      inner join sizes As Sz
-      on A.size_id = Sz.id
-      inner join shelters As Slt
-      on A.shelter_id= Slt.id
-      inner join animal_statuses As Ans
-      on A.status_id = Ans.id
-      inner join breed_types As B
-      on A.breed_id = B.id
-      Where shelter_id=?`;
+      B.name As breed, A.description,
+      COALESCE(
+        (SELECT JSON_ARRAYAGG(Am.media_url) 
+         FROM animal_media Am 
+         WHERE Am.animal_id = A.id),
+        JSON_ARRAY()
+      ) AS images
+      FROM pet_adoption.animals As A
+      INNER JOIN pet_adoption.species As Sp ON A.species_id = Sp.id
+      INNER JOIN gender_types As G ON A.gender_id = G.id
+      INNER JOIN sizes As Sz ON A.size_id = Sz.id
+      INNER JOIN shelters As Slt ON A.shelter_id = Slt.id
+      INNER JOIN animal_statuses As Ans ON A.status_id = Ans.id
+      INNER JOIN breed_types As B ON A.breed_id = B.id
+      WHERE shelter_id = ?`;
 
     const animals = await db.execute<{ animals: Animal[] }>(sql, [shelterId]);
+    console.log(`Fetched animals for shelter ${shelterId}:`, animals);
     return animals;
   } catch (error: any) {
     throw new Error('Error loading animals');
@@ -163,63 +165,60 @@ export const createAnimal = async (
     }
     const animalId = (result as any).insertId; // Get new ID
     // Handle media temps
-    if (mediaTemps && mediaTemps.length > 0) {
+    if (mediaTemps && Array.isArray(mediaTemps) && mediaTemps.length > 0) {
       for (const media of mediaTemps) {
-        const tempPath = path.join(
+        const tempDir = path.join(
           __dirname,
           '../../public/uploads/shelters',
-          req.user.shelterId.toString(),
+          shelter_id.toString(),
           'temp',
           media.tempId
         );
-        if (fs.existsSync(tempPath)) {
-          const fileName = path.basename(tempPath);
+        const tempFilePath = path.join(tempDir, media.filename); // Full path to file
+
+        if (fs.existsSync(tempFilePath)) {
           const newDir = path.join(
             __dirname,
             '../../public/uploads/shelters',
-            req.user.shelterId.toString(),
+            shelter_id.toString(),
             'animals',
             animalId.toString()
           );
-          if (!fs.existsSync(newDir)) fs.mkdirSync(newDir, { recursive: true });
-          const newPath = path.join(newDir, fileName);
-          fs.renameSync(tempPath, newPath); // Move file
-          const url = `${req.protocol}://${req.get('host')}/uploads/shelters/${
-            req.user.shelterId
-          }/animals/${animalId}/${fileName}`;
+          if (!fs.existsSync(newDir)) {
+            fs.mkdirSync(newDir, { recursive: true });
+          }
+          const newPath = path.join(newDir, media.filename);
+          fs.renameSync(tempFilePath, newPath); // Move the file
+
+          // Optional: Delete empty temp folder
+          if (fs.readdirSync(tempDir).length === 0) {
+            fs.rmdirSync(tempDir);
+          }
+
+          const newUrl = `${req.protocol}://${req.get(
+            'host'
+          )}/uploads/shelters/${shelter_id}/animals/${animalId}/${
+            media.filename
+          }`;
+
           await db.execute(
-            'INSERT INTO animal_media (animal_id, media_type, url, alt_text, is_primary, uploaded_at, uploaded_by_user_id) VALUES (?, "image", ?, ?, ?, NOW(), ?)',
+            'INSERT INTO animal_media (animal_id, media_type, media_url, media_title, is_primary, uploaded_at, uploaded_by_user_id) VALUES (?, "image", ?, ?, ?, NOW(), ?)',
             [
               animalId,
-              url,
+              newUrl,
               media.alt_text || 'Animal image',
               media.is_primary ? 1 : 0,
               user_id,
             ]
           );
+        } else {
+          console.warn(`Temp file not found: ${tempFilePath}`);
         }
       }
     }
-    const newAnimal = {
-      id: animalId,
-      name: name,
-      breed_id: breed_id,
-      species_id: species_id,
-      shelter_id: shelter_id || req.user.shelterId,
-      status_id: status_id,
-      gender_id: gender_id,
-      age: age,
-      size_id: size_id,
-      description: description,
-      is_neutered: is_neutered,
-      is_house_trained: is_house_trained,
-      vaccination_status: vaccination_status,
-      created_at: new Date(),
-      created_by_user_id: req.user.userId,
-    };
     return {
       message: 'Animal created successfully',
-      animal: newAnimal,
+      animalId,
     };
   } catch (err: any) {
     console.error('Error creating animal:', err);

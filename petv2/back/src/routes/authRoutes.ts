@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction, Router } from 'express';
-import { register, login } from '../controllers/authController';
+import { register, login, getMe } from '../controllers/authController';
 import { createToken } from '../middleware/auth';
 import { AuthRequest } from '../models/UserInfo';
 const authRouter = Router();
@@ -102,5 +102,32 @@ authRouter.post(
     res.json({ message: 'Logged out successfully' });
   }
 );
+
+authRouter.get(
+  '/me',
+ async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const user = await getMe(req,res,next);
+    const newToken = createToken(req as any, res, next);
+    res.cookie('token', newToken.replace('Bearer ', ''), {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 3600000,
+    });
+    res.status(200).json({
+      user: {
+          userId: user.userId,
+          fullName: user.fullName,
+          roleId: user.roleId,
+          shelterId: user.shelterId,
+        }
+      });
+  } catch (error: any) {
+    res.status(401).json({ message: error.message || 'Unauthorized' });
+  }
+ }
+)
 
 export default authRouter;

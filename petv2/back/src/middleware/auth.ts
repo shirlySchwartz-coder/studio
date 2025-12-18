@@ -67,6 +67,7 @@ export const verifyToken = (
       shelterId: decoded.shelterId,
     };
     next();
+    
   } catch (error) {
     return res.status(401).json({ message: 'טוקן לא תקין' });
   }

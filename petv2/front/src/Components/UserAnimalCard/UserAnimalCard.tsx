@@ -10,18 +10,21 @@ interface UserAnimalCardProps {
 export const UserAnimalCard: React.FC<UserAnimalCardProps> = ({ animal }) => {
   const defaultImageDog = `http://localhost:8080/uploads/animals/dog.jpeg`;
   const defaultImageCat = `http://localhost:8080/uploads/animals/cat.jpeg`;
+  const primaryImage =
+    animal.images?.[0] ||
+    (animal.species === 'כלב' ? defaultImageDog : defaultImageCat);
 
   return (
     <div className="pet-card">
       <div className="pet-card-image">
         <img
-          src={animal.image_url}
+          src={primaryImage}
           alt={animal.name}
           loading="lazy"
           className="image"
           onError={(e) => {
             console.log('Image load error:', e);
-            // Fallback to generic default if image fails to load
+            // Fallback to generic default if even primary fails
             e.currentTarget.src =
               animal.species === 'כלב' ? defaultImageDog : defaultImageCat;
           }}

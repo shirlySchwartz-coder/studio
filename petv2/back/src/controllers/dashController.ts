@@ -1,11 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import db from '../Dal/dal_mysql';
-import { UserPayload } from '../models/UserInfo';
-
-// הרחבת ממשק Request
-interface AuthRequest extends Request {
-  user?: UserPayload;
-}
+import { AuthRequest } from '../models/UserInfo';
 
 export const addBreed = async (
   req: Request,

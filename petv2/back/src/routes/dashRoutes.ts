@@ -1,10 +1,8 @@
 import { NextFunction, Request, Response, Router } from 'express';
 import { restrictTo, verifyToken } from '../middleware/auth';
 import { addAnimal, addBreed, addShelter } from '../controllers/dashController';
-import { User } from '../models/User';
+
 const dashRouter = Router();
-
-
 
 dashRouter.post(
   '/addBreed',
@@ -14,6 +12,7 @@ dashRouter.post(
     try {
       console.log('add-breed body:', req.body); // Now works!
       const result = await addBreed(req, res, next); // Get returned data
+      const token   = 
       res.status(201).json(result); // Send it
     } catch (err: any) {
       res.status(400).json({ message: err.message });
@@ -49,12 +48,5 @@ dashRouter.post(
       } 
   )
 
-  // Example dashboard route
-dashRouter.get(
-  '/',
-  verifyToken,
-    async(req:Request, res: Response, next: NextFunction) => {
-  res.json({ message: 'Welcome to the Dashboard API' });
-  });
-
+ 
 export default dashRouter;
