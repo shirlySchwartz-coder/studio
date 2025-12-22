@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import  authReducer  from "./reducers/authReducer";
 import animalReducer from "./reducers/animalReducer";
 import uploadReducer from "./reducers/uploadReducer";
+import favoritesReducer from "./reducers/favoriteReducer";
 
 
  const store = configureStore({
@@ -9,6 +10,7 @@ import uploadReducer from "./reducers/uploadReducer";
      auth: authReducer,
      animals: animalReducer,
      upload: uploadReducer,
+     favorites: favoritesReducer,
   },
 });
 

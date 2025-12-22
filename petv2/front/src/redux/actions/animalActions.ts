@@ -7,9 +7,9 @@ import {
   fetchAnimalsByShelter,
   updateAnimalById,
   fetchReferenceData,
+  fetchAnimalByIdApi,
 } from '../../Api/animalApi';
 import { AddAnimalData } from '../../Models/AddAnimalData';
-import { RootState } from '../store';
 import { ReferenceData } from '../../Models/ReferenceData';
 import { Animal } from '../../Models/Animal';
 import { logout } from './authActions';
@@ -73,6 +73,19 @@ export const getMedicalFosterAnimals = createAsyncThunk(
     }
   }
 );
+
+export const fetchAnimalById = createAsyncThunk<
+    Animal,
+  number,
+  { rejectValue: string }
+>('animals/fetchById', async (id: number, { rejectWithValue }) => {
+  try {
+    const animal = await fetchAnimalByIdApi(id);
+    return animal;
+  } catch (error: any) {
+    return rejectWithValue(error.message || 'שגיאה בטעינת פרטי החיה');
+  }
+});
 
 //**********************פונקציות למנהלים ולעמותות בלבד*********************
 export const getAnimalsByShelter = createAsyncThunk<

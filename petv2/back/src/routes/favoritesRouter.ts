@@ -18,14 +18,14 @@ favoritesRouter.post(
   async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
       const result = await addFavorite(req, res, next);
-      const newToken = createToken(req, res, next);
+    /*   const newToken = createToken(req, res, next);
       res.cookie('token', newToken.replace('Bearer', ''), {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
         path: '/',
         maxAge: 3600000,
-      });
+      }); */
       res.status(201).json(result);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -40,14 +40,14 @@ favoritesRouter.delete(
     try {
       const result = await removeFavorite(req, res, next);
 
-      const newToken = createToken(req as any, res, next);
+     /*  const newToken = createToken(req as any, res, next);
       res.cookie('token', newToken.replace('Bearer ', ''), {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
         path: '/',
         maxAge: 3600000,
-      });
+      }); */
 
       res.status(200).json(result);
     } catch (err: any) {
@@ -64,7 +64,7 @@ favoritesRouter.get(
     try {
       const favorites = await getUserFavorites(req, res, next);
 
-      const newToken = createToken(req as any, res, next);
+    /*   const newToken = createToken(req as any, res, next);
       res.cookie('token', newToken.replace('Bearer ', ''), {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
@@ -72,8 +72,8 @@ favoritesRouter.get(
         path: '/',
         maxAge: 3600000,
       });
-
-      res.status(200).json({ favorites });
+ */
+      res.status(200).json( favorites );
     } catch (err: any) {
       res.status(400).json({ message: err.message });
     }
@@ -88,14 +88,14 @@ favoritesRouter.get(
     try {
       const result = await checkIsFavorite(req, res, next);
 
-      const newToken = createToken(req as any, res, next);
+      /* const newToken = createToken(req as any, res, next);
       res.cookie('token', newToken.replace('Bearer ', ''), {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
         path: '/',
         maxAge: 3600000,
-      });
+      }); */
 
       res.status(200).json(result);
     } catch (err: any) {
@@ -112,14 +112,14 @@ favoritesRouter.get(
     try {
       const result = await getFavoritesCount(req, res, next);
 
-      const newToken = createToken(req as any, res, next);
+     /*  const newToken = createToken(req as any, res, next);
       res.cookie('token', newToken.replace('Bearer ', ''), {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
         path: '/',
         maxAge: 3600000,
-      });
+      }); */
 
       res.status(200).json(result);
     } catch (err: any) {

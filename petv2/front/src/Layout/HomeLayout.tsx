@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import MainRoute from '../Route/MainRoute';
 import { Footer } from './Footer';
 import { Header } from './Header';
+import { Cookie } from 'lucide-react';
 //import '../styles/globals.css';
 
 export function HomeLayout() {

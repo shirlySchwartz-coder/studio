@@ -6,6 +6,7 @@ import { AddAnimal } from '../Pages/AddAnimal';
 import { SearchAnimal } from '../Pages/SearchAnimal';
 import DashPage from '../Pages/DashPage';
 import HomePage from '../Pages/HomePage';
+import AnimalDetailsPage from '../Components/AnimalDetailsPage';
 
 export default function MainRoute() {
   return (
@@ -19,6 +20,7 @@ export default function MainRoute() {
         <Route path="/addAnimal" element={<AddAnimal />} />
         <Route path="/searchAnimals" element={<SearchAnimal />} />
         <Route path="/about" element={<h1>About Page</h1>} />
+        <Route path="/animal/:id" element={<AnimalDetailsPage />} />
         <Route path="*" element={<Page404 />} />
       </Routes>
     </div>

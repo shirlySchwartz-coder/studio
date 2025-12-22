@@ -1,20 +1,70 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Animal } from '../../Models/Animal';
 import { Heart } from 'lucide-react';
 import { Button } from '../Ui/button';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../Redux/store';
+import {
+  addToFavorites,
+  removeFromFavorites,
+  fetchFavoritesCount,
+} from '../../Redux/actions/favoriteAction';
+import { useNavigate } from 'react-router';
 
 interface UserAnimalCardProps {
   animal: Animal;
 }
 
 export const UserAnimalCard: React.FC<UserAnimalCardProps> = ({ animal }) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { isLoggedIn } = useSelector((state: RootState) => state.auth);
+  const { favoritesCount, status, favoriteIds } = useSelector(
+    (state: RootState) => state.favorites
+  );
+  const [loadingHeart, setLoadingHeart] = useState(false);
+
+  const navigate = useNavigate();
+
   const defaultImageDog = `http://localhost:8080/uploads/animals/dog.jpeg`;
   const defaultImageCat = `http://localhost:8080/uploads/animals/cat.jpeg`;
   const primaryImage =
     animal.images?.[0] ||
     (animal.species === 'כלב' ? defaultImageDog : defaultImageCat);
 
-  return (
+  const isFavorite = favoriteIds.has(animal.id);
+  // פונקציית טוגל ללב
+  const toggleFavorite = async () => {
+    if (!isLoggedIn) {
+      alert('You must be logged in to add to favorites');
+      return;
+    }
+    setLoadingHeart(true);
+    if (isFavorite) {
+      const result = await dispatch(removeFromFavorites(animal.id));
+      if (removeFromFavorites.fulfilled.match(result)) {
+        dispatch(fetchFavoritesCount());
+      }
+    } else {
+      if (favoritesCount <= 10) {
+        const result = await dispatch(addToFavorites(animal.id));
+        if (addToFavorites.fulfilled.match(result)) {
+          dispatch(fetchFavoritesCount());
+        }
+      } else {
+        alert(
+          'הגעת למקסימום המועדפים המותרים (5). הסר חיה ממועדפים כדי להוסיף חדשה.'
+        );
+      }
+    }
+    setLoadingHeart(false);
+  };
+  const getAnimalDetails = (id: number) => {
+    return () => {
+      navigate(`/animal/${animal.id}`);
+    };
+  };
+
+   return (
     <div className="pet-card">
       <div className="pet-card-image">
         <img
@@ -29,8 +79,17 @@ export const UserAnimalCard: React.FC<UserAnimalCardProps> = ({ animal }) => {
               animal.species === 'כלב' ? defaultImageDog : defaultImageCat;
           }}
         />
-        <button className="pet-card-heart">
-          <Heart className="text-orange-400" size={22} />
+        <button
+          className="pet-card-heart"
+          onClick={toggleFavorite}
+          disabled={loadingHeart || status === 'loading'}
+          title={isFavorite ? 'הסר ממועדפים' : 'הוסף למועדפים'}
+        >
+          {loadingHeart ? (
+            '⟳'
+          ) : (
+            <span style={{ fontSize: '24px' }}>{isFavorite ? '❤️' : '🤍'}</span>
+          )}
         </button>
         <div
           className={
@@ -51,9 +110,10 @@ export const UserAnimalCard: React.FC<UserAnimalCardProps> = ({ animal }) => {
           <p className="detail">מין: {animal.gender}</p>
           <p className="detail">גודל: {animal.size}</p>
         </div>
-        <Button className="btn-primary" style={{ width: '100%' }}>
+        <button className="btn-primary" style={{ width: '100%' }} 
+        onClick={getAnimalDetails(animal.id)}>
           צפה בפרטים ✨
-        </Button>
+        </button>
       </div>
     </div>
   );

@@ -61,30 +61,27 @@ export const register = createAsyncThunk(
   }
 );
 
-export const logout = createAsyncThunk('auth/logout', async (_, {}) => {
-  await logoutUser();
-  toast.error('You are logged out! Goodbye...', {
-    position: 'top-left',
-    autoClose: 5000,
-    hideProgressBar: false,
-    closeOnClick: false,
-    pauseOnHover: true,
-    draggable: true,
-    progress: undefined,
-    theme: 'colored',
-    transition: Slide,
-  });
+export const logout = createAsyncThunk(
+  'auth/logout',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await logoutUser();
 
-  localStorage.removeItem('userId');
-  localStorage.removeItem('fullName');
-  localStorage.removeItem('roleId');
-  localStorage.removeItem('animals');
-  localStorage.removeItem('shelterId');
-  // Token is in HttpOnly cookie, cleared by backend on logout
-  document.cookie =
-    'token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=' +
-    window.location.hostname +
-    '; SameSite=Lax';
-  console.log('You are logged out');
-  return null;
-});
+           toast.error('You are logged out! Goodbye...', {
+        position: 'top-left',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'colored',
+        transition: Slide,
+      });
+
+      return;
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'שגיאה בהתנתקות');
+    }
+  }
+);

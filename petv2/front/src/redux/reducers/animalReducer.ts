@@ -8,6 +8,7 @@ import {
   getAnimalsByShelter,
   updateAnimal,
   getReferenceData,
+  fetchAnimalById,
 } from '../actions/animalActions';
 import { Animal } from '../../Models/Animal';
 import {
@@ -17,6 +18,7 @@ import {
 
 interface AnimalState {
   animals: Animal[];
+  selectedAnimal: Animal ;
   referenceData: ReferenceData;
   searchResults: any[];
   medicalFosterAnimals: any[];
@@ -37,6 +39,7 @@ const safeParseAnimals = (): Animal[] => {
 
 const initialState: AnimalState = {
   animals: safeParseAnimals(),
+  selectedAnimal: {} as Animal,
   referenceData: loadReferenceData(),
   searchResults: [],
   medicalFosterAnimals: [],
@@ -141,7 +144,20 @@ const animalSlice = createSlice({
       .addCase(getReferenceData.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload as string;
-      });
+      })
+      .addCase(fetchAnimalById.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(fetchAnimalById.fulfilled, (state, action) => {
+        state.selectedAnimal = action.payload;
+        state.status = 'succeeded';
+        
+      })
+      .addCase(fetchAnimalById.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload as string;
+      }); 
   },
 });
 

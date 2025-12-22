@@ -32,7 +32,7 @@ export const getAllAnimals = async (
       INNER JOIN breed_types As B ON A.breed_id = B.id`;
 
     const animals = await db.execute(sql);
-    console.log('Fetched all animals:', animals);
+    //console.log('Fetched all animals:', animals);
     return animals;
   } catch (error: any) {
     throw new Error('Error loading animals');

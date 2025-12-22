@@ -9,16 +9,18 @@ export const addFavorite = async (
   next: NextFunction
 ) => {
   try {
-    if (!req.user) {
-      throw new Error('User not authenticated');
-    }
+        console.log(req.body);
 
-    const { animal_id } = req.body;
+     if (!req.user || !req.user.userId) {
+       throw new Error('User not authenticated');
+     }
+    const user_id = req.user.userId;
+    const  animal_id  = parseInt(req.body.animalId);
     if (!animal_id) {
       throw new Error('Animal ID is required');
     }
 
-    const user_id = req.user.userId;
+
 
     // #region agent log
     fetch('http://127.0.0.1:7243/ingest/ba661516-14f1-4506-a49a-cbaf3e4dfb23', {
@@ -139,8 +141,7 @@ export const getUserFavorites = async (
     const user_id = req.user.userId;
 
     const sql = `
-      SELECT 
-        uf.id as favorite_id,
+      SELECT uf.id as favorite_id,
         uf.created_at as favorited_at,
         a.id as animal_id,
         a.name,
@@ -152,7 +153,7 @@ export const getUserFavorites = async (
         ans.name AS status,
         a.status_id,
         s.name AS shelter_name,
-        s.city AS shelter_city,
+        c.name AS shelter_city,
         a.description,
         a.is_neutered,
         a.is_house_trained,
@@ -164,6 +165,7 @@ export const getUserFavorites = async (
       INNER JOIN sizes sz ON a.size_id = sz.id
       INNER JOIN animal_statuses ans ON a.status_id = ans.id
       INNER JOIN shelters s ON a.shelter_id = s.id
+      INNER JOIN cities c ON c.id=s.city_id
       WHERE uf.user_id = ?
       ORDER BY uf.created_at DESC
     `;

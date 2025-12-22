@@ -3,14 +3,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { searchAnimals } from '../Redux/actions/animalActions';
 import { AppDispatch, RootState } from '../Redux/store';
-import {
+/*import {
   containerClass,
   formClass,
   inputClass,
   buttonClass,
   errorClass,
   labelClass,
-} from '../utils/style';
+} from '../utils/style';*/
 
 export function SearchAnimal() {
   const dispatch = useDispatch<AppDispatch>();
@@ -39,14 +39,14 @@ export function SearchAnimal() {
   };
 
   return (
-    <div className={containerClass}>
+    <div className='containerClass'>
       <h1 className="text-3xl font-bold mb-4">חיפוש חיות</h1>
-      <form onSubmit={handleSubmit} className={formClass}>
-        <div className={labelClass}>
+      <form onSubmit={handleSubmit} className='formClass'>
+        <div className='labelClass'>
           <label>מין</label>
           <select
             name="species_id"
-            className={inputClass}
+            className='inputClass'
             onChange={(e) =>
               setFilters({ ...filters, species_id: e.target.value })
             }
@@ -59,11 +59,11 @@ export function SearchAnimal() {
             ))}
           </select>
         </div>
-        <div className={labelClass}>
+        <div className={'labelClass'}>
           <label>מגדר</label>
           <select
             name="gender_id"
-            className={inputClass}
+            className={'inputClass'}
             onChange={(e) =>
               setFilters({ ...filters, gender_id: e.target.value })
             }
@@ -76,11 +76,11 @@ export function SearchAnimal() {
             ))}
           </select>
         </div>
-        <div className={labelClass}>
+        <div className={'labelClass'}>
           <label>גודל</label>
           <select
             name="size_id"
-            className={inputClass}
+            className={'inputClass'}
             onChange={(e) =>
               setFilters({ ...filters, size_id: e.target.value })
             }
@@ -97,19 +97,19 @@ export function SearchAnimal() {
           <input
             type="checkbox"
             name="is_neutered"
-            className={inputClass}
+            className={'inputClass'}
             onChange={(e) =>
               setFilters({ ...filters, is_neutered: e.target.checked })
             }
           />
-          <label className={labelClass}>מסורס</label>
+          <label className={'labelClass'}>מסורס</label>
         </div>
-        <div className={labelClass}>
+        <div className={'labelClass'}>
           <label>סטטוס חיסונים</label>
           <input
             type="text"
             name="vaccination_status"
-            className={inputClass}
+            className={'inputClass'}
             onChange={(e) =>
               setFilters({ ...filters, vaccination_status: e.target.value })
             }
@@ -117,12 +117,12 @@ export function SearchAnimal() {
         </div>
         <button
           type="submit"
-          className={buttonClass}
+          className={'buttonClass'}
           disabled={status === 'loading'}
         >
           {status === 'loading' ? 'מחפש...' : 'חפש'}
         </button>
-        {error && <p className={errorClass}>{error}</p>}
+        {error && <p className={'errorClass'}>{error}</p>}
       </form>
 
       {searchResults.length > 0 ? (

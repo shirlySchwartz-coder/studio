@@ -60,7 +60,7 @@ export function Menu() {
             </a>
           ))}
           <div className="user-section">
-            <span className="user-name">{fullName || 'משתמש'}</span>
+            <span className="user-name">{fullName }</span>
             <Button onClick={handleLogout} className="btn-ghost">
               התנתק
             </Button>
@@ -100,7 +100,7 @@ export function Menu() {
           {isLoggedIn ? (
             <>
               <div className="mobile-user">
-                <span>{fullName || 'משתמש'}</span>
+                <span>{fullName }</span>
               </div>
               {filteredItems.map((item) => (
                 <a

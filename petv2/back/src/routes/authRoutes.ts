@@ -95,8 +95,8 @@ authRouter.post(
   async (req: Request, res: Response, next: NextFunction) => {
     res.clearCookie('token', {
       httpOnly: true,
+      sameSite: 'lax',
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
       path: '/',
     });
     res.json({ message: 'Logged out successfully' });

@@ -2,9 +2,9 @@ import { createSlice } from '@reduxjs/toolkit';
 import { login, logout, register } from '../actions/authActions';
 
 interface AuthState {
-  userId: number | null;
-  fullName: string | null;
-  roleId: number | null;
+  userId: number ;
+  fullName: string ;
+  roleId: number ;
   permissions: string[];
   isLoggedIn: boolean;
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
@@ -13,9 +13,9 @@ interface AuthState {
 }
 
 const initialState: AuthState = {
-  userId: null,
-  fullName: null,
-  roleId: null,
+  userId: 0,
+  fullName: '',
+  roleId: 0,
   permissions: [],
   isLoggedIn: false,
   status: 'idle',
@@ -78,11 +78,9 @@ const authSlice = createSlice({
         state.fullName = '';
         state.roleId = 0;
         state.shelterId = 0;
-        // Clear localStorage (token is in cookie, cleared by backend)
-        localStorage.removeItem('shelterId');
-        localStorage.removeItem('fullName');
-        localStorage.removeItem('userId');
-        localStorage.removeItem('roleId');
+        // Clear localStorage (token is in HttpOnly cookie, cleared by backend)
+        localStorage.clear();
+        console.log('You are logged out');
       });
   },
 });

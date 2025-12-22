@@ -7,150 +7,70 @@ import { AppDispatch, RootState } from '../Redux/store';
 import { getReferenceData } from '../Redux/actions/animalActions';
 import { NavItem } from '../Models/componentTypes';
 import { StatsItem } from '../Models/componentTypes';
+import { List } from '../Components/List';
+import { menuConfig, statsConfig } from '../config/dashboardConfig';
+import {
+  fetchFavoritesCount,
+  fetchMyFavorites,
+} from '../Redux/actions/favoriteAction';
 
 function DashPage() {
   const dispatch = useDispatch<AppDispatch>();
 
-  const [navItems, setNavItems] = useState<NavItem[]>([]);
-  const [statsItems, setStatsItems] = useState<StatsItem[]>([]);
+ 
   const { isLoggedIn, roleId, fullName } = useSelector(
     (state: RootState) => state.auth
+  );
+  const { favoritesCount, favoritesList } = useSelector(
+    (state: RootState) => state.favorites
   );
 
   const userData = {
     notificationCount: 50,
   };
-  const menuConfig: Record<number, NavItem[]> = {
-    1: [
-      { icon: '🏠', label: 'סקירה כללית', active: true },
-      { icon: '🐾', label: 'כל החיות', badge: '5' },
-      { icon: '✅', label: 'אישור פוסטים', badge: '12', badgeColor: 'orange' },
-      { icon: '🏢', label: 'ניהול עמותות' },
-      { icon: '👥', label: 'משתמשים' },
-      { icon: '📝', label: 'ניהול גזעים' },
-      { icon: '📈', label: 'סטטיסטיקות' },
-      { icon: '⚙️', label: 'הגדרות מערכת' },
-      { icon: '🚪', label: 'התנתק' /*onClick: () => onNavigate('home') */ },
-    ],
-    2: [
-      { icon: '🏠', label: 'סקירה כללית', active: true },
-      { icon: '🐾', label: 'החיות שלי', badge: '24' },
-      { icon: '📋', label: 'בקשות אימוץ', badge: '8', badgeColor: 'orange' },
-      { icon: '✉️', label: 'הודעות' },
-      { icon: '⚙️', label: 'הגדרות' },
-      { icon: '🚪', label: 'התנתק' /*onClick: () => onNavigate('home')*/ },
-    ],
-    3: [
-      { icon: '🏠', label: 'דף הבית', active: true },
-      { icon: '❤️', label: 'המועדפים שלי', badge: '3' },
-      { icon: '📝', label: 'הבקשות שלי', badge: '1', badgeColor: 'orange' },
-      { icon: '💬', label: 'הודעות', badge: '2' },
-      { icon: '⚙️', label: 'העדפות חיפוש' },
-      { icon: '👤', label: 'הפרופיל שלי' },
-      { icon: '🚪', label: 'התנתק' /*onClick: () => onNavigate('home')*/ },
-    ],
-  };
-  const statsConfig: Record<number, StatsItem[]> = {
-    1: [
-      {
-        icon: '🐾',
-        label: 'סה״כ חיות במערכת',
-        value: '1,248',
-        variant: 'orange',
-      },
-      {
-        icon: '👥',
-        label: 'משתמשים רשומים',
-        value: '856',
-        variant: 'mint',
-      },
-      {
-        icon: '🏢',
-        label: 'עמותות פעילות',
-        value: '25',
-        variant: 'violet',
-      },
-      {
-        icon: '🐾',
-        label: 'בקשות ממתינות',
-        value: '1,248',
-        variant: 'orange',
-      },
-      {
-        icon: '✅',
-        label: 'פוסטים לאישור',
-        value: '12',
-        variant: 'cyan',
-      },
-      {
-        icon: '❤️',
-        label: 'אימוצים השבוע',
-        value: '18',
-        variant: 'mint',
-      },
-    ],
-    2: [
-      {
-        icon: '🐾',
-        label: 'סך החיות',
-        value: '1,248',
-        variant: 'cyan',
-      },
-      {
-        icon: '⏳',
-        label: 'ממתינות לאישור',
-        value: '3',
-        variant: 'orange',
-      },
-      {
-        icon: '✉️',
-        label: 'בקשות חדשות',
-        value: '8',
-        variant: 'violet',
-      },
-      {
-        icon: '💬',
-        label: 'הודעות חדשות',
-        value: '12',
-        variant: 'mint',
-      },
-    ],
-    3: [
-      {
-        icon: '❤️',
-        label: 'מועדפים',
-        value: '12',
-        variant: 'cyan',
-      },
-      {
-        icon: '📝',
-        label: 'בקשות',
-        value: '3',
-        variant: 'orange',
-      },
-    ],
-  };
 
   useEffect(() => {
-    if (roleId == null || !isLoggedIn) {
-      setNavItems([]);
-      setStatsItems([]);
-      return;
+    if (isLoggedIn && roleId) {
+      dispatch(getReferenceData());
     }
-    const r = roleId;
-    setNavItems(menuConfig[r] || menuConfig[3]); // fallback ל-user רגיל
-    setStatsItems(statsConfig[r] || statsConfig[3]);
-  }, [roleId, isLoggedIn]);
+  }, [dispatch, isLoggedIn, roleId]);
+
   useEffect(() => {
-    if (roleId && isLoggedIn) {
-      dispatch(getReferenceData()); // טעינה גלובלית – פעם אחת
-    }
-  }, [dispatch, roleId, isLoggedIn]);
+    const fetchFavoritesData = async () => {
+      if (isLoggedIn && roleId === 3) {
+        await dispatch(fetchFavoritesCount());
+        await dispatch(fetchMyFavorites());
+      }
+    };
+    fetchFavoritesData();
+  }, [dispatch, isLoggedIn, roleId]);
+  
+  const navItems =
+    roleId && isLoggedIn
+      ? menuConfig[roleId]?.map((item) =>
+          item.label === 'המועדפים שלי'
+            ? {
+                ...item,
+                badge: favoritesCount > 0 ? String(favoritesCount) : undefined,
+              }
+            : item
+        ) || menuConfig[3]
+      : [];
 
-  if (!isLoggedIn || !fullName) {
-    return <div>טוען...</div>;
-  }
-
+      
+ const getStatsItems = (): StatsItem[] => {
+   if (roleId === 3 && isLoggedIn) {
+     return (statsConfig[roleId] || statsConfig[3]).map((item: StatsItem) => {
+       if (item.label === 'מועדפים') {
+         return { ...item, value: String(favoritesCount) };
+       }
+       return item;
+     });
+   }
+   return [];
+ };
+  const statsItems = getStatsItems();
+ 
   return (
     <DashboardLayout
       userName={fullName}
@@ -160,7 +80,7 @@ function DashPage() {
       title={roleId === 1 ? 'מנהל מערכת' : roleId === 2 ? 'מנהל מקלט' : 'משתמש'}
     >
       <Stats userRole={roleId ?? 3} statsItems={statsItems} />
-      <Tabs />
+      {roleId === 3 ? <List /> : <Tabs />}
     </DashboardLayout>
   );
 }

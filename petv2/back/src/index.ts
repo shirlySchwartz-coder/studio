@@ -3,15 +3,15 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { errorHandler } from './middleware/errorHandler';
 import path from 'path';
-import { adoptionRequestsRouter } from './routes/adoptionRequests';
 import animalRouter from './routes/animalRoutes';
 import { uploadRouter } from './routes/uploadRouter';
 import dashRouter from './routes/dashRoutes';
 import authRouter from './routes/authRoutes';
+import adoptionReqRouter from './routes/adoptionReqRouter';
 import cookieParser from 'cookie-parser';
-import favoritesRouter from './routes/favoritesRouter';
 import animalAttributeRouter from './routes/animalAttributeRouter';
 import fs from 'fs';
+import favoritesRouter from './routes/favoritesRouter';
 
 dotenv.config();
 const app = express();
@@ -42,7 +42,8 @@ app.use('/api/animals', animalRouter);
 app.use('/api/uploads', uploadRouter);
 app.use('/api/dashboard', dashRouter);
 app.use('/api/favorites', favoritesRouter);
-app.use('/api/animalAttributeRouter', animalAttributeRouter);
+app.use('/api/animal-attribute', animalAttributeRouter);
+app.use('/api/adoption-req', adoptionReqRouter);
 app.use(errorHandler);
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {

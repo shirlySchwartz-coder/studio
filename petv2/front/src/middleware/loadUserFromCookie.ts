@@ -116,20 +116,10 @@ export const loadUserFromCookie = () => async (dispatch: AppDispatch) => {
         return;
       }
     } catch (error) {
-      // API verification failed, but we have stored data - restore optimistically
-      // Next API call will verify if session is still valid
-      dispatch(
-        login.fulfilled(
-          {
-            userId: storedUserId ? parseInt(storedUserId) : null,
-            fullName: storedFullName,
-            roleId: storedRoleId ? parseInt(storedRoleId) : null,
-            shelterId: storedShelterId ? parseInt(storedShelterId) : null,
-          },
-          '',
-          { email: '', password: '' }
-        )
-      );
+      // API verification failed - session likely invalid
+      // Clear localStorage and don't restore state
+      localStorage.clear();
+      return;
     }
   }
 };

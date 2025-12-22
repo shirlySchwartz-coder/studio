@@ -66,6 +66,15 @@ export const searchAnimalsByCriteria = async (filters: {
   return response.data.animals;
 };
 
+export const fetchAnimalByIdApi = async (id: number) => {
+  try {
+  const response = await axiosInstance.get(`${API_URL}/animals/${id}`);
+  return response.data.animal;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || 'שגיאה בקבלת פרטי החיה');
+  }
+};
+
 // קבלת חיות הזקוקות לאומנה רפואית
 export const fetchMedicalFosterAnimals = async () => {
   const response = await axiosInstance.get(`${API_URL}/animals/medical-foster`);

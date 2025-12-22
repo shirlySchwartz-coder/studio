@@ -1,5 +1,6 @@
 import axios from 'axios';
 import axiosInstance from './axiosInstance';
+import { isRejectedWithValue } from '@reduxjs/toolkit';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
 
@@ -54,7 +55,13 @@ export const registerUser = async (userData: {
 
 // התנתקות משתמש
 export const logoutUser = async () => {
-  await axiosInstance.post(`${API_URL}/auth/logout`);
+  try {
+    await axiosInstance.post(`${API_URL}/auth/logout`);
+   
+    return ;
+  } catch (error: any) {
+    throw error;
+  }
 };
 
 // בדיקת סשן - מחזיר פרטי משתמש אם הטוקן תקין
