@@ -69,7 +69,7 @@ export const searchAnimalsByCriteria = async (filters: {
 export const fetchAnimalByIdApi = async (id: number) => {
   try {
   const response = await axiosInstance.get(`${API_URL}/animals/${id}`);
-  return response.data.animal;
+  return response.data.selectedAnimal;
   } catch (error: any) {
     throw new Error(error.response?.data?.message || 'שגיאה בקבלת פרטי החיה');
   }

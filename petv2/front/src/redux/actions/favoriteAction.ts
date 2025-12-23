@@ -34,7 +34,7 @@ export const addToFavorites = createAsyncThunk<
   number,
   number,
   { rejectValue: string }
->('favorite/add', async (animalId, { rejectWithValue }) => {
+>('favorites/add', async (animalId, { rejectWithValue }) => {
   try {
     const newFavorite = await addFavoriteApi(animalId);
     return newFavorite.animal_id || newFavorite || animalId;

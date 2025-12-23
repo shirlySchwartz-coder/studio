@@ -20,6 +20,11 @@ export interface AnimalBase {
   created_at?: string;
   updated_at?: string;
   images?: string[];
+
+  grooming_level?: string;
+  living_conditions?: string;
+  good_with_children?: string;
+  good_with_other_animals?: string;
 }
 
 export interface Animal extends AnimalBase {

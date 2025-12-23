@@ -31,7 +31,7 @@ export const UserAnimalCard: React.FC<UserAnimalCardProps> = ({ animal }) => {
     animal.images?.[0] ||
     (animal.species === 'כלב' ? defaultImageDog : defaultImageCat);
 
-  const isFavorite = favoriteIds.has(animal.id);
+  const isFavorite = favoriteIds.includes(animal.id);
   // פונקציית טוגל ללב
   const toggleFavorite = async () => {
     if (!isLoggedIn) {
@@ -60,7 +60,8 @@ export const UserAnimalCard: React.FC<UserAnimalCardProps> = ({ animal }) => {
   };
   const getAnimalDetails = (id: number) => {
     return () => {
-      navigate(`/animal/${animal.id}`);
+      
+      navigate(`/animals/${animal.id}`);
     };
   };
 

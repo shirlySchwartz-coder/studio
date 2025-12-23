@@ -18,7 +18,7 @@ import {
 
 interface AnimalState {
   animals: Animal[];
-  selectedAnimal: Animal ;
+  selectedAnimal: Animal | null;
   referenceData: ReferenceData;
   searchResults: any[];
   medicalFosterAnimals: any[];
@@ -39,7 +39,7 @@ const safeParseAnimals = (): Animal[] => {
 
 const initialState: AnimalState = {
   animals: safeParseAnimals(),
-  selectedAnimal: {} as Animal,
+  selectedAnimal: null,
   referenceData: loadReferenceData(),
   searchResults: [],
   medicalFosterAnimals: [],
@@ -148,6 +148,7 @@ const animalSlice = createSlice({
       .addCase(fetchAnimalById.pending, (state) => {
         state.status = 'loading';
         state.error = null;
+        state.selectedAnimal = null;
       })
       .addCase(fetchAnimalById.fulfilled, (state, action) => {
         state.selectedAnimal = action.payload;
@@ -157,6 +158,7 @@ const animalSlice = createSlice({
       .addCase(fetchAnimalById.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload as string;
+        state.selectedAnimal = null;
       }); 
   },
 });

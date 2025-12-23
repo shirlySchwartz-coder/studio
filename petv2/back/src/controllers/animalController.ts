@@ -39,6 +39,43 @@ export const getAllAnimals = async (
   }
 };
 
+// קבלת פרטים נוספים לפי מזהה חיה
+export const getAnimalById = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const animalId = req.params?.id;
+    if (!animalId) {
+      throw new Error('Animal ID is required');
+    }
+    let sql = `SELECT A.id, A.name, Sp.name As species,
+      G.name As gender, Sz.name As size, Slt.name As shelter, Ans.name As status,
+      A.age, A.is_neutered, A.is_house_trained, A.vaccination_status,
+      B.name As breed, A.description,
+      COALESCE(
+        (SELECT JSON_ARRAYAGG(Am.media_url) 
+         FROM animal_media Am 
+         WHERE Am.animal_id = A.id),
+        JSON_ARRAY()
+      ) AS images
+      FROM pet_adoption.animals As A 
+      INNER JOIN pet_adoption.species As Sp ON A.species_id = Sp.id
+      INNER JOIN gender_types As G ON A.gender_id = G.id
+      INNER JOIN sizes As Sz ON A.size_id = Sz.id
+      INNER JOIN shelters As Slt ON A.shelter_id = Slt.id
+      INNER JOIN animal_statuses As Ans ON A.status_id = Ans.id
+      INNER JOIN breed_types As B ON A.breed_id = B.id
+      WHERE A.id = ?`;
+
+    const animal = await db.execute<{ animals: Animal }>(sql, [animalId]);
+    return animal;
+   } 
+    catch (error: any) {
+    throw new Error('Error loading animal details');
+  }   
+};
 ///////עמותות בלבד///////
 //לפי עמותה קבלת כל החיות
 export const getAnimalsByShelter = async (

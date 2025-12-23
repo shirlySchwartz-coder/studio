@@ -10,7 +10,7 @@ import { logout } from '../actions/authActions';
 
 interface FavoritesState {
 favoritesList: any[]; 
-favoriteIds: Set<number> ;
+favoriteIds: number[] ;
   favoritesCount: number; 
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
@@ -18,7 +18,7 @@ favoriteIds: Set<number> ;
 
 const initialState: FavoritesState = {
   favoritesList: [],
-  favoriteIds: new Set<number>(),
+  favoriteIds: [],
   favoritesCount: 0,
   status: 'idle',
   error: null,
@@ -36,7 +36,7 @@ const favoritesSlice = createSlice({
       })
       .addCase(fetchMyFavorites.fulfilled, (state, action) => {
         state.favoritesList = action.payload;
-        state.favoriteIds= new Set(action.payload.map((animal: any) => animal.animal_id));
+        state.favoriteIds= (action.payload.map((animal: any) => animal.animal_id));
         state.status = 'succeeded';
       })
       .addCase(fetchMyFavorites.rejected, (state, action) => {
@@ -63,7 +63,7 @@ const favoritesSlice = createSlice({
       })
       .addCase(addToFavorites.fulfilled, (state, action) => {
         const animalId= action.payload;
-        state.favoriteIds.add(animalId);
+        state.favoriteIds.push(animalId);
         state.favoritesCount += 1;
         state.status = 'succeeded';
       })
@@ -78,7 +78,7 @@ const favoritesSlice = createSlice({
       })
       .addCase(removeFromFavorites.fulfilled, (state,action) => {
         const animalId= action.payload;
-        state.favoriteIds.delete(animalId);
+        state.favoriteIds = state.favoriteIds.filter(id => id !== animalId);
         state.favoritesCount -= 1;
         state.status = 'succeeded';
 
@@ -92,7 +92,7 @@ const favoritesSlice = createSlice({
       .addCase(logout.fulfilled, (state) => {
         state.favoritesCount = 0;
         state.favoritesList = [];
-        state.favoriteIds = new Set<number>();
+        state.favoriteIds = [];
         state.status = 'idle';
         state.error = null;
       });

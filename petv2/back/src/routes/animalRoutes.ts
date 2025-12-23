@@ -4,6 +4,7 @@ import {
   createAnimal,
   getAllAnimals,
   getAllTablesInfo,
+  getAnimalById,
   getAnimalsByShelter,
   updateAnimal,
 } from '../controllers/animalController';
@@ -36,12 +37,34 @@ animalRouter.get(
     }
   }
 );
+// קבלת חיה לפי מספר מזהה
+animalRouter.get(
+  '/:id',
+  verifyToken,
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+      const animalId = parseInt(req.params.id);
+      const animal = await getAnimalById(req, res, next);
+      const newToken = createToken(req as any, res, next);
+      res.cookie('token', newToken.replace('Bearer ', ''), {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/',
+        maxAge: 3600000,
+      });
+      res.status(200).json({ animal });
+    } catch (err: any) {
+      next(err);
+    }
+  }
+);
 
 //של עמותה קבלת רשימת כל החיות
 animalRouter.get(
   '/list/:shelterId',
   verifyToken,
-  restrictTo([1,2]),
+  restrictTo([1, 2]),
   async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
       const animalsFromShelter = await getAnimalsByShelter(req, res, next);
@@ -68,7 +91,7 @@ animalRouter.get(
 animalRouter.post(
   '/addAnimal',
   verifyToken,
-  restrictTo([1,2]),
+  restrictTo([1, 2]),
   async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
       console.log('route add:', req.body, 'user:', req.user);

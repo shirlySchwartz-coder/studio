@@ -12,6 +12,7 @@ import cookieParser from 'cookie-parser';
 import animalAttributeRouter from './routes/animalAttributeRouter';
 import fs from 'fs';
 import favoritesRouter from './routes/favoritesRouter';
+import animalMediaRouter from './controllers/animalMediaRoutes';
 
 dotenv.config();
 const app = express();
@@ -42,6 +43,7 @@ app.use('/api/animals', animalRouter);
 app.use('/api/uploads', uploadRouter);
 app.use('/api/dashboard', dashRouter);
 app.use('/api/favorites', favoritesRouter);
+app.use('/api/animal-media', animalMediaRouter);
 app.use('/api/animal-attribute', animalAttributeRouter);
 app.use('/api/adoption-req', adoptionReqRouter);
 app.use(errorHandler);
